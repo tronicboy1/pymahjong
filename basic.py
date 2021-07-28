@@ -1,9 +1,25 @@
-from flask import Flask, render_template,request
+from flask import Flask, render_template,flash,request,session,redirect,url_for
+from flask_wtf import FlaskForm
+from wtforms import StringField,SubmitField,PasswordField
+from wtforms.validators import DataRequired,Regexp,Email,EqualTo,InputRequired
 import datetime
 
 app = Flask(__name__)
 
+app.config['SECRET_KEY'] = 'mykey'
+
 login_status = False
+
+#form for user sign up with checks on input
+class SignUp(FlaskForm):
+
+    #email validator to check email is correct format
+    email_address = StringField('メールアドレス',validators=[InputRequired(),Email("正しいメールアドレスを入力してください")])
+    #confirms password is input correctly twice
+    password = PasswordField('パスワード',validators=[InputRequired()])
+    #confirms username has correct characters
+    username = StringField('ユーザーネーム',validators=[InputRequired(),Regexp('^\w+$',message='英数字のみ入力可能')])
+
 
 @app.route('/')
 def index():
@@ -16,42 +32,24 @@ def index():
 def login():
     return render_template('login.html',login_status=login_status)
 
-@app.route('/signup')
+@app.route('/signup',methods=['get','post'])
 def signup():
-    return render_template('signup.html',login_status=login_status)
+
+    form = SignUp()
+
+    if form.validate_on_submit():
+        #save data to database
+        session['email_address'] = form.email_address.data
+        session['password'] = form.password.data
+        session['username'] = form.username.data
+        print(session)
+        return redirect(url_for('signed_up'))
+
+    return render_template('signup.html',login_status=login_status,form=form)
 
 @app.route('/signed_up')
 def signed_up():
-    #checks username to see if it fits criteria
-    def username_check(username):
-        has_lower = False
-        has_upper = False
-        ends_num = username[-1].isdigit()
-        for char in username:
-            if char.islower():
-                has_lower = True
-            elif char.isupper():
-                has_upper = True
-            elif char == ' ':
-                return False
-                
-        if has_lower and has_upper and ends_num:
-            return True
-        else:
-            return False
-
-    #retrieve information from submitted form
-    request.args.get('email')
-    request.args.get('password')
-    username = request.args.get('username')
-
-    username_result = username_check(username)
-    #send user to signed up page if username meets criteria
-    if username_result:
-        return render_template('signed_up.html', login_status=login_status,username=username)
-    #send user back to signup page and display error
-    else:
-        return render_template('signup.html', username_result=False)
+    return render_template('signed_up.html')
 
 
 @app.route('/friends')

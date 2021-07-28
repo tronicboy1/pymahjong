@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="jp" dir="ltr">
   <head>
     <meta charset="utf-8">
     <title>PyMahJong</title>
@@ -24,24 +24,24 @@
         <a class="nav-link active" href="{{url_for('login')}}">Logout</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" href="{{url_for('friends')}}">Friends</a>
+          <a class="nav-link active" href="{{url_for('friends')}}">友達</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" href="{{url_for('game')}}">Game</a>
+          <a class="nav-link active" href="{{url_for('game')}}">ゲーム</a>
         </li>
         {% else %}
         <li class="nav-item">
         <a class="nav-link active" href="{{url_for('login')}}">Login</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" href="{{url_for('signup')}}">Signup</a>
+            <a class="nav-link active" href="{{url_for('signup')}}">登録</a>
         </li>
         {% endif %}
 
 
 
         <li class="nav-item">
-          <a class="nav-link" href="#">About</a>
+          <a class="nav-link" href="#">PyMahjongについて</a>
         </li>
       </ul>
     </div>
@@ -51,10 +51,13 @@
   {% block content %}
 
   {% endblock %}
-  <footer class="footer mt-auto py-3 bg-light relative-bottom">
-    <div class="container p-3 text-center">
+
+  <div class="my-3">
+  <footer class="footer mt-auto mu-5 bg-light fixed-bottom">
+    <div class="container p-1 text-center">
       <span class="text-muted">Mahjong Delivered to you by Python</span>
     </div>
   </footer>
+    </div>
   </body>
 </html>
