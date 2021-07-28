@@ -1,6 +1,7 @@
 from flask import Flask, render_template,flash,request,session,redirect,url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
+from flask_socketio import SocketIO
 from flask_migrate import Migrate
 from wtforms import StringField,SubmitField,PasswordField
 from wtforms.validators import DataRequired,Regexp,Email,EqualTo,InputRequired
@@ -17,6 +18,10 @@ app.config['SECRET_KEY'] = 'mykey'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir,'data.sqlite')
 #keep tracking figures off until necessary
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+#create socketio for chat rooms
+socketio = SocketIO(app)
+
 
 #create database object and link to flask object
 db = SQLAlchemy(app)
