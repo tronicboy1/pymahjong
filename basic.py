@@ -9,6 +9,7 @@ import os
 #get base dir here for path to create db
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+#create flask object
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'mykey'
