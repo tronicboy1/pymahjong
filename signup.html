@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container text-center p-3 mx-auto">
+  <h1>Signup!</h1>
+  <p>It will only take 2 minutes!</p>
+</div>
+
+{% if username_result == False %}
+<div class="text-left px-5">
+  <p class="font-italic text-danger">Whoops! looks like you input an incorrect value. Check and submit again.</p>
+</div>
+{% endif %}
+
+<form action="{{url_for('signed_up')}}" class="col-auto mx-5 pb-3">
+  <div class="form-row">
+    <div class="form-group col-md-6  py-2">
+      <label for="inputEmail4">Email</label>
+      <input name="email" type="email" class="form-control" id="inputEmail4" placeholder="mail@email.com">
+    </div>
+    <div class="form-group col-md-6  py-2">
+      <label for="inputPassword4">Password</label>
+      <input name="password" type="password" class="form-control" id="inputPassword4" placeholder="Password">
+    </div>
+    <div class="form-group col-md-6  py-2">
+      <label for="inputusername">Username</label>
+      <input name="username" type="username" class="form-control" id="inputusername" placeholder="username123">
+      <div class="px-3 py-2">
+        <small id="passwordHelpBlock" class="form-text text-muted">
+          Username must contain one lower and upper case letter and end in numbers. Must not contain spaces, special characters, or emoji.
+        </small>
+      </div>
+
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="form-check py-2">
+      <input class="form-check-input" type="checkbox" id="gridCheck">
+      <label class="form-check-label" for="gridCheck">
+        Keep me logged in
+      </label>
+    </div>
+  </div>
+  <div class="py-4">
+    <button type="submit" class="btn btn-primary ">Sign up!</button>
+  </div>
+
+</form>
+
+
+{% endblock %}

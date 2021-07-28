@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container p-3">
+  <h1>Welcome to PyMahJong!</h1>
+  <p>The Date is: {{date_now}}</p>
+  <p>Time at the loading of this page: {{time_now}}</p>
+  {% if login_status %}
+    <p>Thank you for signing in!</p>
+  {% else %}
+    <h5><a href="{{url_for('login')}}">Please log in!</a></h5>
+    <p><a href="{{url_for('signup')}}">Or signup!</a></p>
+  {% endif %}
+</div>
+
+
+{% endblock %}
