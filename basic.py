@@ -1,12 +1,56 @@
 from flask import Flask, render_template,flash,request,session,redirect,url_for
+from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField,SubmitField,PasswordField
 from wtforms.validators import DataRequired,Regexp,Email,EqualTo,InputRequired
 import datetime
+import os
+
+#get base dir here for path to create db
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'mykey'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir,'data.sqlite')
+#keep tracking figures off until necessary
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+#create database object and link to flask object
+db = SQLAlchemy(app)
+#migration can be added if necessary with flask_migrate.Migrate
+
+class UserData(db.Model):
+    
+    #override default name
+    __tablename__ = 'userdata'
+    
+    #create primary keys for user data to be stored
+    id = db.Column(db.Integer,primary_key=True)
+    
+    #values to be stored in userdata db
+    username = db.Column(db.Text)
+    email_address = db.Column(db.Text)
+    password = db.Column(db.Text)
+    #friend list data will be stored as a python list to be evaluated and converted into a variable when necessary
+    friend_list = db.Column(db.Text)
+    kyoku_win_count = db.Column(db.Integer)
+    game_win_count = db.Column(db.Integer)
+    points = db.Column(db.Integer)
+    
+    #assign db values as attributes for easy access
+    def __init__(self,username,email_address,password,friend_list,kyoku_win_count,game_win_count,points):
+        self.username = username
+        self.email_address = email_address
+        self.password = password
+        self.friend_list = friend_list
+        self.kyoku_win_count = kyoku_win_count
+        self.game_win_count = game_win_count
+        self.points = points
+
+#create db
+db.create_all()
+    
 
 login_status = False
 
