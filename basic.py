@@ -1,6 +1,7 @@
 from flask import Flask, render_template,flash,request,session,redirect,url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
+from flask_migrate import Migrate
 from wtforms import StringField,SubmitField,PasswordField
 from wtforms.validators import DataRequired,Regexp,Email,EqualTo,InputRequired
 import datetime
@@ -20,15 +21,17 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 #create database object and link to flask object
 db = SQLAlchemy(app)
 #migration can be added if necessary with flask_migrate.Migrate
+Migrate(app,db)
 
+#parent class
 class UserData(db.Model):
-    
+
     #override default name
     __tablename__ = 'userdata'
-    
+
     #create primary keys for user data to be stored
     id = db.Column(db.Integer,primary_key=True)
-    
+
     #values to be stored in userdata db
     username = db.Column(db.Text)
     email_address = db.Column(db.Text)
@@ -39,9 +42,12 @@ class UserData(db.Model):
     kyoku_win_count = db.Column(db.Integer)
     game_win_count = db.Column(db.Integer)
     points = db.Column(db.Integer)
-    
+    #chat data will be stored in seperate db ChatData so multiple users can access
+    chat_id = db.Column(db.Integer,db.ForeignKey('chatdata.id'))
+    chat = db.relationship('ChatData')
+
     #assign db values as attributes for easy access
-    def __init__(self,username,email_address,password,friend_list,friend_requests,kyoku_win_count,game_win_count,points):
+    def __init__(self,username,email_address,password,friend_list,friend_requests,chat_id,kyoku_win_count,game_win_count,points):
         self.username = username
         self.email_address = email_address
         self.password = password
@@ -50,10 +56,24 @@ class UserData(db.Model):
         self.kyoku_win_count = kyoku_win_count
         self.game_win_count = game_win_count
         self.points = points
+        #users will have chatroom id associated with their account while in a chat room
+        self.chat_id = chat_id
 
-#create db
+#child database to hold chat info connected to many users
+class ChatData(db.Model):
+
+    __tablename__ = 'chatdata'
+
+    id = db.Column(db.Integer,primary_key=True)
+    #chat data will be stored as '[time_of_post,user_posted,content]' to be evaluted in python
+    chat_content = db.Column(db.Text)
+
+    def __init__(self,chat_content):
+        self.chat_content = chat_content
+
+#create all db
 db.create_all()
-    
+
 
 login_status = False
 
