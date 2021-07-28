@@ -35,16 +35,18 @@ class UserData(db.Model):
     password = db.Column(db.Text)
     #friend list data will be stored as a python list to be evaluated and converted into a variable when necessary
     friend_list = db.Column(db.Text)
+    friend_requests = db.Column(db.Text)
     kyoku_win_count = db.Column(db.Integer)
     game_win_count = db.Column(db.Integer)
     points = db.Column(db.Integer)
     
     #assign db values as attributes for easy access
-    def __init__(self,username,email_address,password,friend_list,kyoku_win_count,game_win_count,points):
+    def __init__(self,username,email_address,password,friend_list,friend_requests,kyoku_win_count,game_win_count,points):
         self.username = username
         self.email_address = email_address
         self.password = password
         self.friend_list = friend_list
+        self.friend_requests = friend_requests
         self.kyoku_win_count = kyoku_win_count
         self.game_win_count = game_win_count
         self.points = points
