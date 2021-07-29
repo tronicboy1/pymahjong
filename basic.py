@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from flask_socketio import SocketIO,emit,join_room,leave_room
 from flask_migrate import Migrate
-from wtforms import StringField,SubmitField,PasswordField,SelectField
+from wtforms import StringField,SubmitField,PasswordField,SelectField,RadioField,SelectMultipleField
 from wtforms.validators import DataRequired,Regexp,Email,EqualTo,InputRequired
 import datetime
 import os
@@ -79,7 +79,16 @@ class ChatData(db.Model):
     def __init__(self,chat_content):
         self.chat_content = chat_content
 
-###FUNCTIONS FOR DB HANDLING############
+
+
+
+
+###FUNCTIONS FOR DB HANDLING#################
+#############################################
+
+
+
+
 
 #checks username for duplicates
 def duplicate_username_check(potential_username):
@@ -103,27 +112,77 @@ def username_password_check(potential_username,input_password):
 
 
 #adds new friend to both the requester and requested
-def add_friend(newfriend_username,requester_username):
-    pass
+def add_friend(requested_username,requester_username):
+    #add requester to requested
+    result1 = UserData.query.filter_by(username=requested_username).first()
+    new_friends_list = eval(result1.friends_list)
+    new_friends_list.append(requester_username)
+    result.friends_list = str(new_friends_list)
+    #add requested to requester
+    result2 = UserData.query.filter_by(username=requester_username).first()
+    new_friends_list = eval(result2.friends_list)
+    new_friends_list.append(requested_username)
+    result.friends_list = str(new_friends_list)
 
-#this function will call the username of a friend that a user invited and add to their database the username of the invitee
-def send_invite(friend_username):
-    pass
+    db.session.add_all([result1,result2])
+    db.session.commit()
+
+#adds new friend request to requested user from requesting user
+def send_request(requester_username,requested_username):
+    result = UserData.query.filter_by(username=requested_username).all()
+    if len(result) > 0:
+        result = result[0]
+        new_friend_requests = eval(result.friend_requests)
+        new_friend_requests.append(requester_username)
+        result.friend_requests = str(new_friend_requests)
+        db.session.add(result)
+        db.session.commit()
+        return True
+    else:
+        return False
+
+#gets new friend request from db and adds to session, deleting from db
+def get_new_requests(session_username):
+    current_usr = UserData.query.filter_by(username=session_username).first()
+    new_requests_list = eval(current_usr.friend_requests)
+    if len(new_requests_list) > 0:
+        session['requests'] = new_requests_list
+        session['new_requests'] = True
+        current_usr.friend_requests = str([])
+        db.session.add(current_usr)
+        db.session.commit()
+    else:
+        session['new_requests'] = False
+
+#retrieve list of users friends
+def get_friends_list(session_username):
+    current_usr = UserData.query.filter_by(username=session_username).first()
+    friends_list = eval(current_usr.friends_list)
+    session['friends'] = friends_list
+    if len(friends_list) > 0:
+        session['has_friends'] = True
+    else:
+        session['has_friends'] = False
+    return friends_list
 
 #call username and retrieve invites. invites retrieved will be transferred to session memory and deleted form database
 def get_invites(session_username):
     current_usr = UserData.query.filter_by(username=session_username).first()
     invites = eval(current_usr.invites)
-
     if len(invites) > 0:
+        session['has_new_invites'] = True
+        session['invites'] = invites
         current_usr.invites = str([])
         db.session.add(current_usr)
         db.session.commit()
-        return [(username,username) for username in invites]
     else:
-        return ('no_invites','招待されていないようです')
+        session['has_new_invites'] = False
 
-##################################
+
+
+
+#########################################################
+##########################################################
 
 
 #create all db
@@ -152,11 +211,17 @@ class InviteFriend(FlaskForm):
 
 #form for users to send friend requests
 class FriendRequest(FlaskForm):
-    username = StringField('友達として追加したいユーザーネーム：',validators=[InputRequired(),Regexp('^\w+$',message='英数字のみ入力可能')])
+    username = StringField('追加したいユーザーネーム：',validators=[InputRequired(),Regexp('^\w+$',message='英数字のみ入力可能')])
     submit = SubmitField('リクエストを送る')
+
+#form to accept friend requests if user has new ones
+class AcceptFriendRequest(FlaskForm):
+    select_friend = SelectMultipleField("承諾したいリクエストを選んでください")
+    submit = SubmitField("承諾する")
 
 #form for users to join games invited
 class JoinGame(FlaskForm):
+    pass
 
 
     select_friend = SelectField("招待したい友達を選んでください")
@@ -178,7 +243,7 @@ def login():
     if form.validate_on_submit():
         if username_password_check(form.username.data,form.password.data):
             session['username'] = form.username.data
-            session['invites_updated'] = False
+            session['updated'] = False
             session['authenticated'] = True
             return redirect(url_for('logged_in'))
         else:
@@ -199,7 +264,7 @@ def signup():
             db.session.add(new_user)
             db.session.commit()
             session['username'] = form.username.data
-            session['invites_updated'] = False
+            session['updated'] = False
             session['authenticated'] = True
             print(session)
             return redirect(url_for('signed_up'))
@@ -211,6 +276,9 @@ def signup():
 @app.route('/signed_up')
 def signed_up():
     return render_template('signed_up.html')
+@app.route('/friend_request_sent')
+def friend_request_sent():
+    return render_template('friend_request_sent.html')
 @app.route('/logged_in')
 def logged_in():
     return render_template('logged_in.html')
@@ -224,34 +292,49 @@ def logout():
 @app.route('/friends',methods=['GET','POST'])
 def friends():
     #function to generate friend lists for invite choice
-    def get_friends(form_invite):
-        current_usr = UserData.query.filter_by(username=session['username']).first()
-        friends_list = eval(current_usr.friends_list)
-        if len(friends_list) > 0:
-              [(usr.username,usr.username) for usr in friends_list]
+    def add_friends_to_form(form_invite):
+        if len(session['friends']) > 0:
+            form_invite.select_friend.choices = [(usr,usr) for usr in session['friends']]
         else:
             form_invite.select_friend.choices = [('no_friends','友達はまだいないようです')]
         return form_invite
-    #function to generate friend requests
-    def new_friend_requests(form_add):
-
+    #function to add friend requests to form
+    def add_friend_requests_to_form(form_add):
+        if session['new_requests']:
+            form_add.select_friend.choices = [(usr,usr) for usr in session['requests']]
+        else:
+            form_add.select_friend.choices = [('no_friends','友達はまだいないようです')]
         return form_add
 
+    #pull user data from database to session for easy access
 
-    try:
-        if session['invites_updated'] == False and session['authenticated']:
-            session['invites'] = get_invites()
-            session['invites_updated'] = True
-            session['friends'] = get_friends()
-
-            form_invite = InviteFriend()
-            form_invite = get_friends(form_invite)
-            form_add = FriendRequest()
+    if session['updated'] == False and session['authenticated']:
+        get_new_requests(session['username'])
+        get_invites(session['username'])
+        get_friends_list(session['username'])
+        session['updated'] = True
 
 
-    except:
+        #add choices to forms
+    form_invite = InviteFriend()
+    form_invite = add_friends_to_form(form_invite)
+    form_req = FriendRequest()
+    form_add = AcceptFriendRequest()
+    form_add = add_friend_requests_to_form(form_add)
+
+    #check all forms for positive return
+    if form_invite.validate_on_submit():
+        if send_request(requester_username=session['username'],requested_username=form.invite.username.data):
+            return redirect(url_for('friend_request_sent'))
+        else:
+            return render_template('friends.html',form_invite=form_invite,form_add=form_add,form_req=form_req,friend_request_error=True)
+    if form_req.validate_on_submit():
         pass
-    return render_template('friends.html')
+    if form_add.validate_on_submit():
+        pass
+
+
+    return render_template('friends.html',form_invite=form_invite,form_add=form_add,form_req=form_req,friend_request_error=False)
 
 @app.route('/game')
 def game():
