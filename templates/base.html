@@ -19,9 +19,9 @@
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="{{url_for('index')}}">Home</a>
         </li>
-        {% if login_status %}
+        {% if session['authenticated'] %}
         <li class="nav-item">
-        <a class="nav-link active" href="{{url_for('login')}}">Logout</a>
+        <a class="nav-link active" href="{{url_for('logout')}}">Logout</a>
         </li>
         <li class="nav-item">
           <a class="nav-link active" href="{{url_for('friends')}}">友達</a>

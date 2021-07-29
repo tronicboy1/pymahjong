@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="">
+  <h1>{{session['username']}}、ログインできました！</h1>
+  <p>The Date is: {{date_now}}</p>
+  <p>Time at the loading of this page: {{time_now}}</p>
+</div>
+
+
+{% endblock %}
