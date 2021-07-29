@@ -324,12 +324,12 @@ def friends():
 
     #check all forms for positive return
     if form_invite.validate_on_submit():
-        if send_request(requester_username=session['username'],requested_username=form.invite.username.data):
+        pass
+    if form_req.validate_on_submit():
+        if send_request(requester_username=session['username'],requested_username=form_req.username.data):
             return redirect(url_for('friend_request_sent'))
         else:
             return render_template('friends.html',form_invite=form_invite,form_add=form_add,form_req=form_req,friend_request_error=True)
-    if form_req.validate_on_submit():
-        pass
     if form_add.validate_on_submit():
         pass
 
