@@ -130,13 +130,18 @@ def add_friend(requested_username,requester_username):
 #adds new friend request to requested user from requesting user
 def send_request(requester_username,requested_username):
     result = UserData.query.filter_by(username=requested_username).all()
-    if len(result) > 0:
+    if len(result) > 0 and requester_username != requested_username:
         result = result[0]
         new_friend_requests = eval(result.friend_requests)
         new_friend_requests.append(requester_username)
         result.friend_requests = str(new_friend_requests)
         db.session.add(result)
         db.session.commit()
+
+        print(result.friend_requests)
+        result = UserData.query.filter_by(username=requested_username).first()
+        print(result.friend_requests)
+
         return True
     else:
         return False
@@ -145,14 +150,18 @@ def send_request(requester_username,requested_username):
 def get_new_requests(session_username):
     current_usr = UserData.query.filter_by(username=session_username).first()
     new_requests_list = eval(current_usr.friend_requests)
+    print(new_requests_list)
     if len(new_requests_list) > 0:
         session['requests'] = new_requests_list
         session['new_requests'] = True
         current_usr.friend_requests = str([])
         db.session.add(current_usr)
         db.session.commit()
+    elif session['new_requests']:
+        pass
     else:
         session['new_requests'] = False
+        session['requests'] = []
 
 #retrieve list of users friends
 def get_friends_list(session_username):
@@ -169,6 +178,7 @@ def get_friends_list(session_username):
 def get_invites(session_username):
     current_usr = UserData.query.filter_by(username=session_username).first()
     invites = eval(current_usr.invites)
+    print(invites)
     if len(invites) > 0:
         session['has_new_invites'] = True
         session['invites'] = invites
@@ -284,8 +294,7 @@ def logged_in():
     return render_template('logged_in.html')
 @app.route('/logout')
 def logout():
-    session['authenticated'] = False
-    session['username'] = ''
+    session.clear()
     return render_template('logout.html')
 
 
@@ -313,6 +322,11 @@ def friends():
         get_invites(session['username'])
         get_friends_list(session['username'])
         session['updated'] = True
+    elif session['authenticated']:
+        get_new_requests(session['username'])
+        get_invites(session['username'])
+    print(session['requests'])
+    print(session['new_requests'])
 
 
         #add choices to forms

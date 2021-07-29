@@ -14,7 +14,7 @@
 
 <div class="container py-3">
   <h3 class="pb-2">友達リクエスト</h3>
-  {% if has_new_requests %}
+  {% if session['new_requests'] %}
   <p>新しい友達のリクエストが届いていました！</p>
   <form class="" action="" method="POST">
     {{form_add.hidden_tag()}}
