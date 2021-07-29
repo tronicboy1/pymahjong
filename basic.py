@@ -117,15 +117,21 @@ def add_friend(requested_username,requester_username):
     result1 = UserData.query.filter_by(username=requested_username).first()
     new_friends_list = eval(result1.friends_list)
     new_friends_list.append(requester_username)
-    result.friends_list = str(new_friends_list)
+    result1.friends_list = str(new_friends_list)
     #add requested to requester
     result2 = UserData.query.filter_by(username=requester_username).first()
     new_friends_list = eval(result2.friends_list)
     new_friends_list.append(requested_username)
-    result.friends_list = str(new_friends_list)
+    result2.friends_list = str(new_friends_list)
 
     db.session.add_all([result1,result2])
     db.session.commit()
+
+    ##check to see if written correctly
+    result1 = UserData.query.filter_by(username=requested_username).first()
+    result2 = UserData.query.filter_by(username=requester_username).first()
+    print(result1.friends_list,result2.friends_list)
+
 
 #adds new friend request to requested user from requesting user
 def send_request(requester_username,requested_username):
@@ -133,16 +139,15 @@ def send_request(requester_username,requested_username):
     if len(result) > 0 and requester_username != requested_username:
         result = result[0]
         new_friend_requests = eval(result.friend_requests)
-        new_friend_requests.append(requester_username)
-        result.friend_requests = str(new_friend_requests)
-        db.session.add(result)
-        db.session.commit()
-
-        print(result.friend_requests)
-        result = UserData.query.filter_by(username=requested_username).first()
-        print(result.friend_requests)
-
-        return True
+        #check to make sure multiple requests are not being sent
+        if requester_username in new_friend_requests:
+            return False
+        else:
+            new_friend_requests.append(requester_username)
+            result.friend_requests = str(new_friend_requests)
+            db.session.add(result)
+            db.session.commit()
+            return True
     else:
         return False
 
@@ -150,18 +155,29 @@ def send_request(requester_username,requested_username):
 def get_new_requests(session_username):
     current_usr = UserData.query.filter_by(username=session_username).first()
     new_requests_list = eval(current_usr.friend_requests)
-    print(new_requests_list)
-    if len(new_requests_list) > 0:
-        session['requests'] = new_requests_list
-        session['new_requests'] = True
-        current_usr.friend_requests = str([])
-        db.session.add(current_usr)
-        db.session.commit()
-    elif session['new_requests']:
-        pass
-    else:
-        session['new_requests'] = False
-        session['requests'] = []
+    #try to check and see if requests pulled from the database still havent been addressed in same session
+    try:
+        if len(new_requests_list) > 0:
+            session['requests'] = new_requests_list
+            session['new_requests'] = True
+            current_usr.friend_requests = str([])
+            db.session.add(current_usr)
+            db.session.commit()
+        elif session['new_requests']:
+            pass
+        else:
+            session['new_requests'] = False
+            session['requests'] = []
+    except:
+        if len(new_requests_list) > 0:
+            session['requests'] = new_requests_list
+            session['new_requests'] = True
+            current_usr.friend_requests = str([])
+            db.session.add(current_usr)
+            db.session.commit()
+        else:
+            session['new_requests'] = False
+            session['requests'] = []
 
 #retrieve list of users friends
 def get_friends_list(session_username):
@@ -178,7 +194,6 @@ def get_friends_list(session_username):
 def get_invites(session_username):
     current_usr = UserData.query.filter_by(username=session_username).first()
     invites = eval(current_usr.invites)
-    print(invites)
     if len(invites) > 0:
         session['has_new_invites'] = True
         session['invites'] = invites
@@ -257,9 +272,10 @@ def login():
             session['authenticated'] = True
             return redirect(url_for('logged_in'))
         else:
-            return render_template('login.html',form=form,errors=True)
+            flash('パスワードもしくはユーザーネームが間違っていたようです。','alert-danger')
+            return render_template('login.html',form=form)
 
-    return render_template('login.html',form=form,errors=False)
+    return render_template('login.html',form=form)
 
 @app.route('/signup',methods=['GET','POST'])
 def signup():
@@ -280,8 +296,9 @@ def signup():
             return redirect(url_for('signed_up'))
         #send user back to signup page and display duplicate username error
         else:
-            return render_template('signup.html',form=form,errors=['ユーザーネームはすでに登録されている'])
-    return render_template('signup.html',form=form,errors=False)
+            flash('ユーザーネームはすでに登録されている','alert-warning')
+            return render_template('signup.html')
+    return render_template('signup.html',form=form)
 
 @app.route('/signed_up')
 def signed_up():
@@ -325,8 +342,10 @@ def friends():
     elif session['authenticated']:
         get_new_requests(session['username'])
         get_invites(session['username'])
-    print(session['requests'])
-    print(session['new_requests'])
+        get_friends_list(session['username'])
+
+    #print(session['requests'])
+    #print(session['new_requests'])
 
 
         #add choices to forms
@@ -341,14 +360,21 @@ def friends():
         pass
     if form_req.validate_on_submit():
         if send_request(requester_username=session['username'],requested_username=form_req.username.data):
-            return redirect(url_for('friend_request_sent'))
+            flash(f'{form_req.username.data}にリクエストを送りました！','alert-success')
+            return render_template('friends.html',form_invite=form_invite,form_add=form_add,form_req=form_req)
         else:
-            return render_template('friends.html',form_invite=form_invite,form_add=form_add,form_req=form_req,friend_request_error=True)
+            flash('入力に問題があるようです。すでにリクエストを送ったか、ユーザーネームが間違っていないかご確認ください。','alert-danger')
+            return render_template('friends.html',form_invite=form_invite,form_add=form_add,form_req=form_req)
     if form_add.validate_on_submit():
-        pass
+        for friend in form_add.select_friend.data:
+            add_friend(requested_username=session['username'],requester_username=friend)
+        session['new_requests'] = False
+        session['requests'] = []
+        flash('友達を追加しました！','alert-success')
+        return render_template('friends.html',form_invite=form_invite,form_add=form_add,form_req=form_req)
 
 
-    return render_template('friends.html',form_invite=form_invite,form_add=form_add,form_req=form_req,friend_request_error=False)
+    return render_template('friends.html',form_invite=form_invite,form_add=form_add,form_req=form_req)
 
 @app.route('/game')
 def game():

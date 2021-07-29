@@ -7,12 +7,6 @@
   <p>PyJongの世界が待っています。</p>
 </div>
 
-{% if errors %}
-<ul class="text-danger mx-5 my-3">
-  <li>パスワードもしくはユーザーネームが間違っていたようです。</li>
-</ul>
-{% endif %}
-
 
 <form class="col-auto mx-5 pb-3" method="POST" action="">
   {{form.hidden_tag()}}

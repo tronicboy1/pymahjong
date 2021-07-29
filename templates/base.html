@@ -16,9 +16,6 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="{{url_for('index')}}">Home</a>
-        </li>
         {% if session['authenticated'] %}
         <li class="nav-item">
         <a class="nav-link active" href="{{url_for('logout')}}">ログアウト</a>
@@ -47,6 +44,17 @@
     </div>
   </div>
   </nav>
+
+{% with messages = get_flashed_messages(with_categories=True) %}
+ {% if messages %}
+ {% for category,message in messages %}
+ <div class="alert {{ category }} alert-dismissible fade show" role="alert">
+ {{message}}
+ <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
 
   {% block content %}
 

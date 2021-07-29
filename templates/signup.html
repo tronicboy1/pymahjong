@@ -7,16 +7,6 @@
   <p>すぐにPyMahjongのコミュニティーに入れるよー！</p>
 </div>
 
-{% if errors != False %}
-<div class="text-left w-5">
-  <p class="font-italic text-danger">フォームに問題があったようです。ご確認ください。</p>
-  <ul>
-    {% for error in error %}
-    <li class="font-italic text-danger">{{error}}</li>
-    {% endfor %}
-  </ul>
-</div>
-{% endif %}
 
 <form class="col-auto mx-5 pb-3" method="POST">
   {{form.hidden_tag()}}

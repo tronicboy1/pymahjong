@@ -2,15 +2,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container p-3 bg-light">
+<div class="container p-3">
   <h1>友達の状況を確認しましょう！</h1>
 </div>
-
-{% if friend_request_error %}
-<ul class="text-danger mx-5 my-3">
-  <li>入力したユーザーネームが間違っているようです。</li>
-</ul>
-{% endif %}
 
 <div class="container py-3">
   <h3 class="pb-2">友達リクエスト</h3>
@@ -61,11 +55,6 @@
 {{form_req.submit(class="form-control")}}
 </div>
 </form>
-
-{% if form_req.errors %}
-{{ form_req.errors }}
-{% endif %}
-
 
 <p class="relative-bottom p-3 text-muted">注意：招待と友達リクエストはログアウトする時に消えるので、ログアウトする前にしっかり確認してくださいね。</p>
 {% endblock %}
