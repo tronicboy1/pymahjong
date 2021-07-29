@@ -170,21 +170,23 @@ def index():
     time_now = datetime.datetime.now().strftime('%H:%M:%S')
     return render_template('home.html',date_now=date_now,time_now=time_now)
 
-@app.route('/login')
+@app.route('/login',methods=['GET','POST'])
 def login():
 
     form = Login()
 
     if form.validate_on_submit():
-        if username_password_check(form.username.data,):
+        if username_password_check(form.username.data,form.password.data):
             session['username'] = form.username.data
             session['invites_updated'] = False
             session['authenticated'] = True
-            return redirect(url_for('logged_in.html'))
+            return redirect(url_for('logged_in'))
+        else:
+            return render_template('login.html',form=form,errors=True)
 
     return render_template('login.html',form=form,errors=False)
 
-@app.route('/signup',methods=['get','post'])
+@app.route('/signup',methods=['GET','POST'])
 def signup():
 
     form = SignUp()
@@ -219,7 +221,7 @@ def logout():
     return render_template('logout.html')
 
 
-@app.route('/friends')
+@app.route('/friends',methods=['GET','POST'])
 def friends():
     #function to generate friend lists for invite choice
     def get_friends(form_invite):

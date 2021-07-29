@@ -2,16 +2,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container p-3">
-  <h1 class="text-center">Login Page</h1>
+<div class="container p-3 text-center">
+  <h1 class="">ログインして、友達と遊びましょう！</h1>
+  <p>PyJongの世界が待っています。</p>
 </div>
 
 
-<form class="col-auto mx-5 pb-3" method="post">
+<form class="col-auto mx-5 pb-3" method="POST" action="">
+  {{form.hidden_tag()}}
   <div class="mb-3">
     <label for="exampleInputEmail1" class="form-label">ユーザーネーム：</label>
     {{form.username(class="form-control",id="exampleInputEmail1",placeholder="username123")}}
-    <div id="emailHelp" class="form-text"><a href="{{url_for('signup')}}">Or create an account.</a></div>
+    <div id="emailHelp" class="form-text"><a href="{{url_for('signup')}}">新規登録はこちら</a></div>
   </div>
   <div class="mb-3">
     <label for="exampleInputPassword1" class="form-label">パスワード：</label>
@@ -20,6 +22,8 @@
   {{form.submit(class="btn btn-primary")}}
 </form>
 
-
+{% if form.errors %}
+{{ form.errors }}
+{% endif %}
 
 {% endblock %}
