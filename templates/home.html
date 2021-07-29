@@ -2,8 +2,70 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+<div class="container text-left p-3">
+{% if session['authenticated'] %}
+<div class="container text-center w-3">
+  <h1 class="">{{session['username']}}、PyJongへようこそ！</h1>
+</div>
+<div class="container py-3">
+  <h3 class="pb-2">友達リクエスト</h3>
+  {% if session['new_requests'] %}
+  <p class="">新しい友達のリクエストが届いていました！</p>
+  <form class="" action="" method="POST">
+    {{form_add.hidden_tag()}}
+    {{form_add.select_friend(class='form-select')}}
+    <div class="py-2">
+    {{form_add.submit(class="btn btn-primary btn-lg")}}
+    </div>
+  </form>
+  {% else %}
+  <p>新しいリクエストは届いていません。</p>
+  {% endif %}
+</div>
+
+<div class="container py-3">
+  <h3 class="pb-2">友達からの招待</h3>
+  {% if  session['has_new_invites'] %}
+
+  {% else %}
+  <p>新しい招待が来ていません。</p>
+{% endif %}
+</div>
+
+<div class="container py-3">
+  <h3 class="pb-2">友達の情報</h3>
+{% if session['has_friends'] %}
+<ul>
+  {% for friend in session['friends'] %}
+  <li>{{friend}}</li>
+  {% endfor %}
+</ul>
+
+{% else %}
+<p>現在、友達は追加していないようです。</p>
+{% endif %}
+</div>
+
+<div class="container py-3">
+<h3 class="pb-2">友達リクエストを送りましょうか？</h3>
+<form class="" action="" method="POST">
+
+
+{{form_req.hidden_tag()}}
+<div class="py-2">
+{{form_req.username.label(class="form-label")}}{{form_req.username(class="form-control",placeholder="username123")}}
+</div>
+{{form_req.submit(class="form-control")}}
+</div>
+</form>
+
+<p class="relative-bottom p-3 text-muted">注意：招待と友達リクエストはログアウトする時に消えるので、ログアウトする前にしっかり確認してくださいね。</p>
+
+
+{% else %}
 <div class="container text-center bg-light">
-  <h1 class="p-3">PyJongへようこそ！</h1>
+  <h1 class="px-3">PyJongへようこそ！</h1>
 </div>
 
 
@@ -11,11 +73,6 @@
   <p class="lead">今日の日付は：{{date_now}}</p>
   <p class="lead">このページを開いた時の時間：{{time_now}}</p>
 </div>
-
-<div class="container text-left p-3">
-  {% if session['authenticated'] %}
-    <p>{{session['username']}}、ようこそ！</p>
-  {% else %}
   <p class="text-center">
   <a href="{{url_for('login')}}" class="btn btn-primary my-2 mx-1">ログインのページはこちら</a>
   <a href="{{url_for('signup')}}" class="btn btn-secondary my-2 mx-1">新しいメンバーは新規登録へ</a>

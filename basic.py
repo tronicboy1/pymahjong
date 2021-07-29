@@ -254,11 +254,65 @@ class JoinGame(FlaskForm):
 
 
 
-@app.route('/')
+@app.route('/',methods=['GET','POST'])
 def index():
     date_now = datetime.date.today()
     time_now = datetime.datetime.now().strftime('%H:%M:%S')
-    return render_template('home.html',date_now=date_now,time_now=time_now)
+    #function to generate friend lists for invite choice
+    def add_friends_to_form(form_invite):
+        if len(session['friends']) > 0:
+            form_invite.select_friend.choices = [(usr,usr) for usr in session['friends']]
+        else:
+            form_invite.select_friend.choices = [('no_friends','友達はまだいないようです')]
+        return form_invite
+    #function to add friend requests to form
+    def add_friend_requests_to_form(form_add):
+        if session['new_requests']:
+            form_add.select_friend.choices = [(usr,usr) for usr in session['requests']]
+        else:
+            form_add.select_friend.choices = [('no_friends','友達はまだいないようです')]
+        return form_add
+
+    #pull user data from database to session for easy access
+    try:
+        if session['updated'] == False and session['authenticated']:
+            get_new_requests(session['username'])
+            get_invites(session['username'])
+            get_friends_list(session['username'])
+            session['updated'] = True
+        elif session['authenticated']:
+            get_new_requests(session['username'])
+            get_invites(session['username'])
+            get_friends_list(session['username'])
+    except:
+        return render_template('home.html',date_now=date_now,time_now=time_now)
+
+    #add choices to forms
+    form_invite = InviteFriend()
+    form_invite = add_friends_to_form(form_invite)
+    form_req = FriendRequest()
+    form_add = AcceptFriendRequest()
+    form_add = add_friend_requests_to_form(form_add)
+
+    #check all forms for positive return
+    if form_invite.validate_on_submit():
+        pass
+    if form_req.validate_on_submit():
+        if send_request(requester_username=session['username'],requested_username=form_req.username.data):
+            flash(f'{form_req.username.data}にリクエストを送りました！','alert-success')
+            return render_template('home.html',form_invite=form_invite,form_add=form_add,form_req=form_req)
+        else:
+            flash('入力に問題があるようです。すでにリクエストを送ったか、ユーザーネームが間違っていないかご確認ください。','alert-warning')
+            return render_template('home.html',form_invite=form_invite,form_add=form_add,form_req=form_req)
+    if form_add.validate_on_submit():
+        for friend in form_add.select_friend.data:
+            add_friend(requested_username=session['username'],requester_username=friend)
+        session['new_requests'] = False
+        session['requests'] = []
+        get_friends_list(session['username'])
+        flash('友達を追加しました！','alert-success')
+        return render_template('home.html',form_invite=form_invite,form_add=form_add,form_req=form_req)
+    return render_template('home.html',date_now=date_now,time_now=time_now,form_invite=form_invite,form_add=form_add,form_req=form_req)
 
 @app.route('/login',methods=['GET','POST'])
 def login():
@@ -297,7 +351,7 @@ def signup():
         #send user back to signup page and display duplicate username error
         else:
             flash('ユーザーネームはすでに登録されている','alert-warning')
-            return render_template('signup.html')
+            return render_template('signup.html',form=form)
     return render_template('signup.html',form=form)
 
 @app.route('/signed_up')
@@ -313,68 +367,6 @@ def logged_in():
 def logout():
     session.clear()
     return render_template('logout.html')
-
-
-@app.route('/friends',methods=['GET','POST'])
-def friends():
-    #function to generate friend lists for invite choice
-    def add_friends_to_form(form_invite):
-        if len(session['friends']) > 0:
-            form_invite.select_friend.choices = [(usr,usr) for usr in session['friends']]
-        else:
-            form_invite.select_friend.choices = [('no_friends','友達はまだいないようです')]
-        return form_invite
-    #function to add friend requests to form
-    def add_friend_requests_to_form(form_add):
-        if session['new_requests']:
-            form_add.select_friend.choices = [(usr,usr) for usr in session['requests']]
-        else:
-            form_add.select_friend.choices = [('no_friends','友達はまだいないようです')]
-        return form_add
-
-    #pull user data from database to session for easy access
-
-    if session['updated'] == False and session['authenticated']:
-        get_new_requests(session['username'])
-        get_invites(session['username'])
-        get_friends_list(session['username'])
-        session['updated'] = True
-    elif session['authenticated']:
-        get_new_requests(session['username'])
-        get_invites(session['username'])
-        get_friends_list(session['username'])
-
-    #print(session['requests'])
-    #print(session['new_requests'])
-
-
-        #add choices to forms
-    form_invite = InviteFriend()
-    form_invite = add_friends_to_form(form_invite)
-    form_req = FriendRequest()
-    form_add = AcceptFriendRequest()
-    form_add = add_friend_requests_to_form(form_add)
-
-    #check all forms for positive return
-    if form_invite.validate_on_submit():
-        pass
-    if form_req.validate_on_submit():
-        if send_request(requester_username=session['username'],requested_username=form_req.username.data):
-            flash(f'{form_req.username.data}にリクエストを送りました！','alert-success')
-            return render_template('friends.html',form_invite=form_invite,form_add=form_add,form_req=form_req)
-        else:
-            flash('入力に問題があるようです。すでにリクエストを送ったか、ユーザーネームが間違っていないかご確認ください。','alert-danger')
-            return render_template('friends.html',form_invite=form_invite,form_add=form_add,form_req=form_req)
-    if form_add.validate_on_submit():
-        for friend in form_add.select_friend.data:
-            add_friend(requested_username=session['username'],requester_username=friend)
-        session['new_requests'] = False
-        session['requests'] = []
-        flash('友達を追加しました！','alert-success')
-        return render_template('friends.html',form_invite=form_invite,form_add=form_add,form_req=form_req)
-
-
-    return render_template('friends.html',form_invite=form_invite,form_add=form_add,form_req=form_req)
 
 @app.route('/game')
 def game():
