@@ -186,6 +186,12 @@ def get_friends_list(session_username):
     session['friends'] = friends_list
     if len(friends_list) > 0:
         session['has_friends'] = True
+        #retrieve friend stats
+        session['friend_stats'] = dict()
+        # for friend in session['friends']:
+        #     current_usr = UserData.query.filter_by(username=friend).first()
+
+
     else:
         session['has_friends'] = False
     return friends_list
@@ -324,7 +330,8 @@ def login():
             session['username'] = form.username.data
             session['updated'] = False
             session['authenticated'] = True
-            return redirect(url_for('logged_in'))
+            flash(f"ログインできました。お帰りなさい、{session['username']}。",'alert-success')
+            return redirect(url_for('index'))
         else:
             flash('パスワードもしくはユーザーネームが間違っていたようです。','alert-danger')
             return render_template('login.html',form=form)
@@ -346,31 +353,28 @@ def signup():
             session['username'] = form.username.data
             session['updated'] = False
             session['authenticated'] = True
-            print(session)
-            return redirect(url_for('signed_up'))
+            flash(f"{session['username']}、登録できました！",'alert-success')
+            return redirect(url_for('index'))
         #send user back to signup page and display duplicate username error
         else:
             flash('ユーザーネームはすでに登録されている','alert-warning')
             return render_template('signup.html',form=form)
     return render_template('signup.html',form=form)
 
-@app.route('/signed_up')
-def signed_up():
-    return render_template('signed_up.html')
-@app.route('/friend_request_sent')
-def friend_request_sent():
-    return render_template('friend_request_sent.html')
-@app.route('/logged_in')
-def logged_in():
-    return render_template('logged_in.html')
+
 @app.route('/logout')
 def logout():
     session.clear()
-    return render_template('logout.html')
+    flash("ログアウトしました。",("alert-primary"))
+    return redirect(url_for('index'))
 
 @app.route('/game')
 def game():
     return render_template('game.html')
+
+@app.route('/info')
+def info():
+    return render_template('info.html')
 
 @app.errorhandler(404)
 def page_not_found(e):
