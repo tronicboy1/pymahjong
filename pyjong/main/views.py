@@ -1,4 +1,5 @@
 from flask import Blueprint,render_template,redirect,url_for,flash,session
+from flask_login import login_required
 from pyjong import db
 from pyjong.models import UserData
 from pyjong.main.forms import InviteFriend,FriendRequest,AcceptFriendRequest,JoinGame
@@ -116,10 +117,12 @@ def info():
     return render_template('info.html')
 
 @main_blueprint.route('/game',methods=['GET','POST'])
+@login_required
 def game():
     return render_template('game.html')
 
 @main_blueprint.route('/friends',methods=['GET','POST'])
+@login_required
 def friends():
     #function to generate friend lists for invite choice
     def add_friends_to_form(form_invite):

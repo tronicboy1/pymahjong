@@ -1,5 +1,6 @@
 from pyjong import app,db
 from flask import render_template,session,flash,redirect,url_for
+from flask_login import logout_user,login_required
 import datetime
 
 #create all db
@@ -18,7 +19,9 @@ def index():
         return render_template('home.html',date_now=date_now,time_now=time_now)
 
 @app.route('/logout')
+@login_required
 def logout():
+    logout_user()
     session.clear()
     flash("ログアウトしました。",("alert-primary"))
     return redirect(url_for('index'))
