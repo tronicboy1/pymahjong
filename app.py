@@ -1,6 +1,6 @@
 from pyjong import app,db
 from flask import render_template,session,flash,redirect,url_for
-from flask_login import logout_user,login_required
+from flask_login import logout_user,login_required,current_user
 import datetime
 
 #create all db
@@ -10,13 +10,11 @@ with app.app_context():
 
 @app.route('/',methods=['GET','POST'])
 def index():
-    try:
-        if session['authenticated']:
-            return redirect(url_for('main.friends'))
-    except:
-        date_now = datetime.date.today()
-        time_now = datetime.datetime.now().strftime('%H:%M:%S')
-        return render_template('home.html',date_now=date_now,time_now=time_now)
+    if current_user.is_authenticated:
+        return redirect(url_for('main.friends'))
+    date_now = datetime.date.today()
+    time_now = datetime.datetime.now().strftime('%H:%M:%S')
+    return render_template('home.html',date_now=date_now,time_now=time_now)
 
 @app.route('/logout')
 @login_required

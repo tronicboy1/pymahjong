@@ -139,10 +139,10 @@ def friends():
             form_add.select_friend.choices = [('no_friends','友達はまだいないようです')]
         return form_add
 
-    if session['authenticated']:
-        get_new_requests(session['username'])
-        get_invites(session['username'])
-        get_friends_list(session['username'])
+    #update information
+    get_new_requests(session['username'])
+    get_invites(session['username'])
+    get_friends_list(session['username'])
     #add choices to forms
     form_invite = InviteFriend()
     form_invite = add_friends_to_form(form_invite)

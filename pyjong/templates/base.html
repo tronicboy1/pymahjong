@@ -20,7 +20,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
-        {% if session['authenticated'] %}
+        {% if current_user.is_authenticated %}
         <li class="nav-item">
         <a class="nav-link active" href="{{url_for('logout')}}">ログアウト</a>
         </li>
