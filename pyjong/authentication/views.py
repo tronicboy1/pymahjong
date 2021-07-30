@@ -2,7 +2,7 @@ from flask import Blueprint,render_template,redirect,url_for,flash,session,abort
 from pyjong import db,bcrypt
 from pyjong.models import UserData
 from pyjong.authentication.forms import Login,SignUp
-from flask_login import login_user,login_required,logout_user
+from flask_login import login_user,login_required,logout_user,current_user
 import datetime
 
 authentication_blueprint = Blueprint('authentication',__name__,template_folder='templates/authentication')
@@ -52,15 +52,14 @@ def login():
         if user:
             if user.check_password(form.password.data):
                 login_user(user)
-                session['username'] = form.username.data
                 session['updated'] = False
                 next = request.args.get('next')
                 #check if user was redirected, and send them to the page they were trying to access before login
                 if next == None or not next[0] == '/':
-                    flash(f"ログインできました。お帰りなさい、{session['username']}。",'alert-success')
+                    flash(f"ログインできました。お帰りなさい、{current_user.username}。",'alert-success')
                     return redirect(url_for('index'))
                 else:
-                    flash(f"ログインできました。お帰りなさい、{session['username']}。",'alert-success')
+                    flash(f"ログインできました。お帰りなさい、{current_user.username}。",'alert-success')
                     return redirect(next)
         else:
             flash('パスワードもしくはユーザーネームが間違っていたようです。','alert-danger')
@@ -80,10 +79,9 @@ def signup():
             new_user = UserData(username=form.username.data,email_address=form.email_address.data,password=form.password.data,friends_list="[]",friend_requests="[]",invites="[]",kyoku_win_count=0,game_win_count=0,points=0)
             db.session.add(new_user)
             db.session.commit()
-            session['username'] = form.username.data
             session['updated'] = False
             login_user(new_user)
-            flash(f"{session['username']}、登録できました！",'alert-success')
+            flash(f"{current_user.username}、登録できました！",'alert-success')
             return redirect(url_for('index'))
         #send user back to signup page and display duplicate username error
         else:

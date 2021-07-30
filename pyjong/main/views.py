@@ -1,5 +1,5 @@
 from flask import Blueprint,render_template,redirect,url_for,flash,session
-from flask_login import login_required
+from flask_login import login_required,current_user
 from pyjong import db
 from pyjong.models import UserData
 from pyjong.main.forms import InviteFriend,FriendRequest,AcceptFriendRequest,JoinGame
@@ -140,9 +140,9 @@ def friends():
         return form_add
 
     #update information
-    get_new_requests(session['username'])
-    get_invites(session['username'])
-    get_friends_list(session['username'])
+    get_new_requests(current_user.username)
+    get_invites(current_user.username)
+    get_friends_list(current_user.username)
     #add choices to forms
     form_invite = InviteFriend()
     form_invite = add_friends_to_form(form_invite)
