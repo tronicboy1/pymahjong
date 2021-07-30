@@ -28,9 +28,9 @@ def add_friend(requested_username,requester_username):
     db.session.commit()
 
     ##check to see if written correctly
-    result1 = UserData.query.filter_by(username=requested_username).first()
-    result2 = UserData.query.filter_by(username=requester_username).first()
-    print(result1.friends_list,result2.friends_list)
+    # result1 = UserData.query.filter_by(username=requested_username).first()
+    # result2 = UserData.query.filter_by(username=requester_username).first()
+    # print(result1.friends_list,result2.friends_list)
 
 
 #adds new friend request to requested user from requesting user
@@ -56,14 +56,28 @@ def get_new_requests(session_username):
     current_usr = UserData.query.filter_by(username=session_username).first()
     new_requests_list = eval(current_usr.friend_requests)
 
-    if len(new_requests_list) > 0:
-        session['requests'] = new_requests_list
-        session['new_requests'] = True
-        current_usr.friend_requests = str([])
-        db.session.add(current_usr)
-        db.session.commit()
+    if session['updated'] == False:
+        if len(new_requests_list) > 0:
+            session['requests'] = new_requests_list
+            session['new_requests'] = True
+            current_usr.friend_requests = str([])
+            db.session.add(current_usr)
+            db.session.commit()
+            session['updated'] = True
+        else:
+            print('new requests set to false')
+            session['new_requests'] = False
+            session['updated'] = True
     else:
-        session['new_requests'] = False
+        if len(new_requests_list) > 0:
+            for request in new_requests_list:
+                session['requests'].append(request)
+            session['new_requests'] = True
+            current_usr.friend_requests = str([])
+            db.session.add(current_usr)
+            db.session.commit()
+        else:
+            pass
 
 #retrieve list of users friends
 def get_friends_list(session_username):
@@ -147,6 +161,7 @@ def friends():
     if form_add.validate_on_submit():
         for friend in form_add.select_friend.data:
             add_friend(requested_username=session['username'],requester_username=friend)
+            print('friend added')
         session['new_requests'] = False
         session['requests'] = []
         get_friends_list(session['username'])
