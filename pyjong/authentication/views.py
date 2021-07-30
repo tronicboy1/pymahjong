@@ -2,10 +2,12 @@ from flask import Blueprint,render_template,redirect,url_for,flash,session
 from pyjong import db
 from pyjong.models import UserData
 from pyjong.authentication.forms import Login,SignUp
+from flask_bcrypt import Bcrypt
 import datetime
 
 authentication_blueprint = Blueprint('authentication',__name__,template_folder='templates/authentication')
 
+bcrypt = Bcrypt()
 
 
 ############################################
@@ -26,7 +28,7 @@ def username_password_check(potential_username,input_password):
     result = UserData.query.filter_by(username=potential_username).all()
     if len(result) > 0:
         result = result[0]
-        if result.password == input_password:
+        if bcrypt.check_password_hash(result.password,input_password):
             return True
         else:
             return False
@@ -67,7 +69,7 @@ def signup():
         #check username to see if no duplicates in db
         if duplicate_username_check(form.username.data):
             #save data to database
-            new_user = UserData(username=form.username.data,email_address=form.email_address.data,password=form.password.data,friends_list="[]",friend_requests="[]",invites="[]",chat_id=None,kyoku_win_count=0,game_win_count=0,points=0)
+            new_user = UserData(username=form.username.data,email_address=form.email_address.data,password=bcrypt.generate_password_hash(password=form.password.data),friends_list="[]",friend_requests="[]",invites="[]",chat_id=None,kyoku_win_count=0,game_win_count=0,points=0)
             db.session.add(new_user)
             db.session.commit()
             session['username'] = form.username.data
