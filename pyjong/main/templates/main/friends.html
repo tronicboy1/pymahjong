@@ -35,11 +35,17 @@
 <div class="container py-3">
   <h3 class="pb-2">友達の情報</h3>
 {% if session['has_friends'] %}
-<ul>
+<ul class="list-group">
   {% for friend in session['friends'] %}
-  <li>{{friend}}</li>
+  <li class="list-group-item">
+    {{friend}}
+  </li>
   {% endfor %}
 </ul>
+
+
+
+
 
 {% else %}
 <p>現在、友達は追加していないようです。</p>
@@ -58,6 +64,19 @@
 {{form_req.submit(class="form-control")}}
 </div>
 </form>
+{% if session['has_friends'] %}
+<form class="p-2" action="" method="POST">
+<h5 class="pt-3">友達を削除：</h5>
+  <div class="py-2">
+    {{form_delete.hidden_tag()}}
+    {{form_delete.select_friend(class="form-select")}}
+    <div class="py-1">
+    {{form_delete.submit(class="btn btn-danger btn-sm")}}
+  </div>
+  </div>
+</form>
+{% else %}
+{% endif %}
 
 <p class="relative-bottom p-3 text-muted">注意：招待と友達リクエストはログアウトする時に消えるので、ログアウトする前にしっかり確認してくださいね。</p>
 
