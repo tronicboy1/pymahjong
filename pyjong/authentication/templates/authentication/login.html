@@ -13,7 +13,7 @@
   <div class="form-group col-md-6 py-2">
     <label for="exampleInputEmail1" class="form-label">ユーザーネーム：</label>
     {{form.username(class="form-control",id="exampleInputEmail1",placeholder="username123")}}
-    <div id="emailHelp" class="form-text p-2"><a href="{{url_for('signup')}}">新規登録はこちら</a></div>
+    <div id="emailHelp" class="form-text p-2"><a href="{{url_for('authentication.signup')}}">新規登録はこちら</a></div>
   </div>
   <div class="form-group col-md-6 py-2">
     <label for="exampleInputPassword1" class="form-label">パスワード：</label>

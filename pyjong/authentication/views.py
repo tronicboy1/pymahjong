@@ -1,7 +1,7 @@
-from flask import Blueprint,render_template,redirect,url_for
+from flask import Blueprint,render_template,redirect,url_for,flash,session
 from pyjong import db
 from pyjong.models import UserData
-from pyjong.authentication.forms import InviteFriend,FriendRequest,AcceptFriendRequest,JoinGame
+from pyjong.authentication.forms import Login,SignUp
 import datetime
 
 authentication_blueprint = Blueprint('authentication',__name__,template_folder='templates/authentication')

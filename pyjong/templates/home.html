@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container text-center bg-light">
+  <h1 class="px-3">PyJongへようこそ！</h1>
+</div>
+
+
+<div class="container p-3 text-left">
+  <p class="lead">今日の日付は：{{date_now}}</p>
+  <p class="lead">このページを開いた時の時間：{{time_now}}</p>
+</div>
+  <p class="text-center">
+  <a href="{{url_for('authentication.login')}}" class="btn btn-primary my-2 mx-1">ログインのページはこちら</a>
+  <a href="{{url_for('authentication.signup')}}" class="btn btn-secondary my-2 mx-1">新しいメンバーは新規登録へ</a>
+  </p>
+
+</div>
+
+{% endblock %}
