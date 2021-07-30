@@ -1,4 +1,4 @@
-from pyjong import app,db
+from pyjong import app,db,socketio
 from flask import render_template,session,flash,redirect,url_for
 from flask_login import logout_user,login_required,current_user
 import datetime
@@ -32,4 +32,4 @@ def page_not_found(e):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True)

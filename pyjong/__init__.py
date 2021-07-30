@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
+from flask_socketio import SocketIO
 
 #create login manager object
 login_manager= LoginManager()
@@ -34,6 +35,9 @@ Migrate(app,db)
 login_manager.init_app(app)
 #designate login managers page to be used
 login_manager.login_view = 'authentication.login'
+
+#add socket IO
+socketio = SocketIO(app)
 
 from pyjong.authentication.views import authentication_blueprint
 from pyjong.main.views import main_blueprint

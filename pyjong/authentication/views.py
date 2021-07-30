@@ -52,6 +52,7 @@ def login():
         if user:
             if user.check_password(form.password.data):
                 login_user(user)
+                session['username'] = form.username.data
                 session['updated'] = False
                 next = request.args.get('next')
                 #check if user was redirected, and send them to the page they were trying to access before login
@@ -80,6 +81,7 @@ def signup():
             db.session.add(new_user)
             db.session.commit()
             session['updated'] = False
+            session['username'] = form.username.data
             login_user(new_user)
             flash(f"{current_user.username}、登録できました！",'alert-success')
             return redirect(url_for('index'))
