@@ -5,23 +5,24 @@ from flask import session
 
     #information to join room will be held in session
     #function to join a room provided a users session data
-@socketio.on('join')
-def on_join(session):
-    username = session['username']
+@socketio.on('joined',namespace='main/game')
+def joined(message):
     room = session['room']
     join_room(room)
-    emit(username + 'がパーティーに入りました。',to=room)
+    print('room joined',username)
+    emit('msg',{'msg':session['username'] + 'がパーティーに入りました。'},room=room)
 
     #function to leave a room
-@socketio.on('leave')
-def on_leave(session):
-    username = session['username']
+@socketio.on('left',namespace='main/game')
+def left(message):
     room = session['room']
     leave_room(room)
-    emit(username + 'がパーティーから離れました。',to=room)
+    print('room left',username)
+    emit('msg',{'msg':session['username'] + 'がパーティーから離れました。',room=room)
 
 #send messages
-@socketio.on('text')
-def text(session,message):
+@socketio.on('text',namespace='main/game')
+def text(message):
     room = session['room']
-    emit('message',{'msg':session['username']+' : ' + message},room=room)
+    print('action')
+    emit('msg',{'msg':session['username']+' : ' + message['msg']},room=room)

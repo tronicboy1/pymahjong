@@ -132,6 +132,8 @@ def get_invites(session_username):
         current_usr.invites = str([])
         db.session.add(current_usr)
         db.session.commit()
+    elif session['has_new_invites']:
+        pass
     else:
         session['has_new_invites'] = False
 
@@ -194,6 +196,11 @@ def game():
     form = InviteFriend()
     form = add_friends_to_form(form)
 
+    if session['in_room']:
+        name = session['username']
+        room = session['room']
+        return render_template('game.html',form=form,name=name,room=room)
+
     #validation check
     if form.validate_on_submit():
         send_invite(session_username=current_user.username,invited_username=form.select_friend.data,room=form.room_name.data)
@@ -220,11 +227,13 @@ def friends():
     accept_invite_form = AcceptInvite()
     accept_invite_form = add_invites_to_form(accept_invite_form)
 
+
     #check all forms for positive return
     if accept_invite_form.validate_on_submit():
-        print(accept_invite_form.select_friend.data)
         session['room'] = accept_invite_form.select_friend.data
-        redirect(url_for('main.game'))
+        session['in_room'] = True
+        flash(f"{session['room']}に入りました！","alert-success")
+        return redirect(url_for('main.game'))
     if form_delete.validate_on_submit():
         delete_friend(requested_username=form_delete.select_friend.data,requester_username=current_user.username)
         flash("友達を削除しました。",'alert-success')
