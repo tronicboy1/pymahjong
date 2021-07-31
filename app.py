@@ -32,4 +32,5 @@ def page_not_found(e):
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    #socketio.run(app, debug=True)
+    app.run(debug=True)

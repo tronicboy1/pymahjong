@@ -52,8 +52,11 @@ def login():
         if user:
             if user.check_password(form.password.data):
                 login_user(user)
+                #update session info for use with other request checks
                 session['username'] = form.username.data
                 session['updated'] = False
+                session['in_room'] = False
+                session['has_new_invites'] = False
                 next = request.args.get('next')
                 #check if user was redirected, and send them to the page they were trying to access before login
                 if next == None or not next[0] == '/':
@@ -80,8 +83,11 @@ def signup():
             new_user = UserData(username=form.username.data,email_address=form.email_address.data,password=form.password.data,friends_list="[]",friend_requests="[]",invites="[]",kyoku_win_count=0,game_win_count=0,points=0)
             db.session.add(new_user)
             db.session.commit()
+            #update session info for use with other request checks
             session['updated'] = False
             session['username'] = form.username.data
+            session['in_room'] = False
+            session['has_new_invites'] = False
             login_user(new_user)
             flash(f"{current_user.username}、登録できました！",'alert-success')
             return redirect(url_for('index'))

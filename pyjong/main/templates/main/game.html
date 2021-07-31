@@ -2,11 +2,31 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="">
+<div class="container">
   <h1>Welcome to PyMahJong!</h1>
   <p>The Date is: {{date_now}}</p>
   <p>Time at the loading of this page: {{time_now}}</p>
 </div>
+
+{% if session['has_friends'] %}
+{% if session['in_room'] == False %}
+<div class="container">
+  <h3>友達をパーティーへ誘おう！</h3>
+  <form class="" action="" method="POST">
+    {{form.hidden_tag()}}
+    {{form.select_friend.label}}{{form.select_friend}}
+    {{form.room_name.label}}{{form.room_name}}
+    {{form.submit}}
+
+
+  </form>
+</div>
+{% endif %}
+<div class="container py2">
+  <p>誘える友達がいないようです。</p>
+
+</div>
+{% endif %}
 
 <form action="" method="POST">
       <input type="text" class="username" placeholder="User Name"/>
@@ -16,32 +36,39 @@
 <!-- Jquery and socket.js scripts -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
-<script type="text/javascript">
+<script type="text/javascript" charset="utf-8">
 
-var socket = io.connect('http://' + document.domain + ':' + location.port);
+var socket;
+          $(document).ready(function(){
+              socket = io.connect('http://' + document.domain + ':' + location.port + '/main/game');
+              socket.on('connect', function() {
+                  socket.emit('joined', {});
+              });
+              socket.on('status', function(data) {
+                  $('#chat').val($('#chat').val() + '<' + data.msg + '>\n');
+                  $('#chat').scrollTop($('#chat')[0].scrollHeight);
+              });
+              socket.on('message', function(data) {
+                  $('#chat').val($('#chat').val() + data.msg + '\n');
+                  $('#chat').scrollTop($('#chat')[0].scrollHeight);
+              });
+              $('#text').keypress(function(e) {
+                  var code = e.keyCode || e.which;
+                  if (code == 13) {
+                      text = $('#text').val();
+                      $('#text').val('');
+                      socket.emit('text', {msg: text});
+                  }
+              });
+          });
+          function leave_room() {
+              socket.emit('left', {}, function() {
+                  socket.disconnect();
 
-     socket.on( 'connect', function() {
-       socket.emit( 'my event', {
-         data: 'User Connected'
-       } )
-       var form = $( 'form' ).on( 'submit', function( e ) {
-         e.preventDefault()
-         let user_name = $( 'input.username' ).val()
-         let user_input = $( 'input.message' ).val()
-         socket.emit( 'my event', {
-           user_name : user_name,
-           message : user_input
-         } )
-         $( 'input.message' ).val( '' ).focus()
-       } )
-     } )
-     socket.on( 'my response', function( msg ) {
-       console.log( msg )
-       if( typeof msg.user_name !== 'undefined' ) {
-         $( 'h3' ).remove()
-         $( 'div.message_holder' ).append( '<div><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div>' )
-       }
-     })
+                  // go back to the login page
+                  window.location.href = "{{ url_for('index') }}";
+              });
+          }
 
 
 

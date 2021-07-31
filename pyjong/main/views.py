@@ -2,7 +2,7 @@ from flask import Blueprint,render_template,redirect,url_for,flash,session
 from flask_login import login_required,current_user
 from pyjong import db
 from pyjong.models import UserData
-from pyjong.main.forms import FriendRequest,AcceptFriendRequest,DeleteFriend
+from pyjong.main.forms import FriendRequest,AcceptFriendRequest,DeleteFriend,InviteFriend,AcceptInvite
 import datetime
 
 main_blueprint = Blueprint('main',__name__,template_folder='templates/main')
@@ -120,7 +120,13 @@ def get_friends_list(session_username):
 def get_invites(session_username):
     current_usr = UserData.query.filter_by(username=session_username).first()
     invites = eval(current_usr.invites)
-    if len(invites) > 0:
+    if session['has_new_invites'] and len(invites) > 0:
+        for invite in invites:
+            session['invites'].append(invite)
+        current_usr.invites = str([])
+        db.session.add(current_usr)
+        db.session.commit()
+    elif len(invites) > 0 and session['has_new_invites'] == False:
         session['has_new_invites'] = True
         session['invites'] = invites
         current_usr.invites = str([])
@@ -129,16 +135,52 @@ def get_invites(session_username):
     else:
         session['has_new_invites'] = False
 
-def send_invite(session_username,invited_username):
+#invites will include senders name and room name '['username','room']'
+def send_invite(session_username,invited_username,room):
     user = UserData.query.filter_by(username=invited_username).first()
     invites = eval(user.invites)
-    invites.append(session_username)
+    invites.append((session_username,room))
     user.invites = str(invites)
     db.session.add(user)
     db.session.commit()
 
 #########################################################
 ##########################################################
+
+##########FORM FUNCTIONS
+#function to generate friend lists for invite choice
+def add_friends_to_form(form):
+    if len(session['friends']) > 0:
+        form.select_friend.choices = [(usr,usr) for usr in session['friends']]
+        session['has_friends'] = True
+    else:
+        session['has_friends'] = False
+    return form
+#function to generate friend lists for invite choice
+def add_friends_to_form(form):
+    if len(session['friends']) > 0:
+        form.select_friend.choices = [(usr,usr) for usr in session['friends']]
+        session['has_friends'] = True
+    else:
+        session['has_friends'] = False
+    return form
+#function to add friend requests to form
+def add_friend_requests_to_form(form):
+    if session['new_requests']:
+        form.select_friend.choices = [(usr,usr) for usr in session['requests']]
+    else:
+        form.select_friend.choices = [('no_friends','友達はまだいないようです')]
+    return form
+def add_invites_to_form(form):
+    if session['has_new_invites']:
+        form.select_friend.choices = [(room,usr) for usr,room in session['invites']]
+    else:
+        pass
+    return form
+
+#######################################################
+
+#####ROUTE FUNCTIONS
 
 @main_blueprint.route('/info')
 def info():
@@ -147,26 +189,23 @@ def info():
 @main_blueprint.route('/game',methods=['GET','POST'])
 @login_required
 def game():
-    return render_template('game.html')
+
+    #forms
+    form = InviteFriend()
+    form = add_friends_to_form(form)
+
+    #validation check
+    if form.validate_on_submit():
+        send_invite(session_username=current_user.username,invited_username=form.select_friend.data,room=form.room_name.data)
+        session['room'] = form.room_name.data
+        flash("招待状を送りました！",'alert-success')
+        return redirect(url_for('main.game'))
+
+    return render_template('game.html',form=form)
 
 @main_blueprint.route('/friends',methods=['GET','POST'])
 @login_required
 def friends():
-    #function to generate friend lists for invite choice
-    def add_friends_to_form(form_invite):
-        if len(session['friends']) > 0:
-            form_invite.select_friend.choices = [(usr,usr) for usr in session['friends']]
-            session['has_friends'] = True
-        else:
-            session['has_friends'] = False
-        return form_invite
-    #function to add friend requests to form
-    def add_friend_requests_to_form(form_add):
-        if session['new_requests']:
-            form_add.select_friend.choices = [(usr,usr) for usr in session['requests']]
-        else:
-            form_add.select_friend.choices = [('no_friends','友達はまだいないようです')]
-        return form_add
 
     #update information
     get_new_requests(current_user.username)
@@ -178,24 +217,30 @@ def friends():
     form_req = FriendRequest()
     form_add = AcceptFriendRequest()
     form_add = add_friend_requests_to_form(form_add)
+    accept_invite_form = AcceptInvite()
+    accept_invite_form = add_invites_to_form(accept_invite_form)
 
     #check all forms for positive return
+    if accept_invite_form.validate_on_submit():
+        print(accept_invite_form.select_friend.data)
+        session['room'] = accept_invite_form.select_friend.data
+        redirect(url_for('main.game'))
     if form_delete.validate_on_submit():
         delete_friend(requested_username=form_delete.select_friend.data,requester_username=current_user.username)
+        flash("友達を削除しました。",'alert-success')
+        return redirect(url_for('main.friends'))
     if form_req.validate_on_submit():
         if send_request(requester_username=current_user.username,requested_username=form_req.username.data):
             flash(f'{form_req.username.data}にリクエストを送りました！','alert-success')
-            return render_template('friends.html',form_delete=form_delete,form_add=form_add,form_req=form_req)
+            return redirect(url_for('main.friends'))
         else:
             flash('入力に問題があるようです。すでにリクエストを送ったか、ユーザーネームが間違っていないかご確認ください。','alert-warning')
-            return render_template('friends.html',form_delete=form_delete,form_add=form_add,form_req=form_req)
+            return redirect(url_for('main.friends'))
     if form_add.validate_on_submit():
         for friend in form_add.select_friend.data:
             add_friend(requested_username=current_user.username,requester_username=friend)
-            print('friend added')
         session['new_requests'] = False
         session['requests'] = []
-        get_friends_list(current_user.username)
         flash('友達を追加しました！','alert-success')
-        return render_template('friends.html',form_delete=form_delete,form_add=form_add,form_req=form_req)
-    return render_template('friends.html',form_delete=form_delete,form_add=form_add,form_req=form_req)
+        return redirect(url_for('main.friends'))
+    return render_template('friends.html',form_delete=form_delete,form_add=form_add,form_req=form_req,accept_invite_form=accept_invite_form)

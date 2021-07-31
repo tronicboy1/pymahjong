@@ -3,8 +3,9 @@ from wtforms import StringField,SubmitField,PasswordField,SelectField,RadioField
 from wtforms.validators import DataRequired,Regexp,Email,EqualTo,InputRequired
 
 class InviteFriend(FlaskForm):
-    select_friend = SelectField("承諾したいリクエストを選んでください")
-    invite = SubmitField("パーティーへ招待する")
+    select_friend = SelectField("招待する友達",validators=[InputRequired()])
+    room_name = TextField("パーティー名：",validators=[InputRequired(),Regexp('^\w+$',message="英数字のみ入力可能")])
+    submit = SubmitField("パーティーへ招待する")
 
 #form for users to send friend requests
 class FriendRequest(FlaskForm):
@@ -20,3 +21,7 @@ class AcceptFriendRequest(FlaskForm):
 class DeleteFriend(FlaskForm):
     select_friend = SelectField("承諾したいリクエストを選んでください")
     submit = SubmitField("削除")
+
+class AcceptInvite(FlaskForm):
+    select_friend = SelectField("承諾したい招待を選んでください")
+    submit = SubmitField("パーティーに入る")

@@ -26,7 +26,11 @@
 <div class="container py-3">
   <h3 class="pb-2">友達からの招待</h3>
   {% if  session['has_new_invites'] %}
-
+  <form class="" action="" method="POST">
+  {{accept_invite_form.hidden_tag()}}
+  {{accept_invite_form.select_friend.label}}{{accept_invite_form.select_friend}}
+  {{accept_invite_form.submit}}
+  </form>
   {% else %}
   <p>新しい招待が来ていません。</p>
 {% endif %}
