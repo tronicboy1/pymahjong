@@ -1,11 +1,6 @@
-<!DOCTYPE html>
- <html lang="en" dir="ltr">
+{% extends "base.html" %}
 
-
-<head>
-  <title>Game Chat</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js" integrity="sha512-PU5S6BA03fRv1Q5fpwXjg5nlRrgdoguZ74urFInkbABMCENyx5oP3hrDzYMMPh3qdLdknIvrGj3yqZ4JuU7Nag==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+{% block content %}
 
           <script type="text/javascript" charset="utf-8">
               var socket;
@@ -16,7 +11,7 @@
                       console.log('connected');
                   });
                   socket.on('status', function(data) {
-                      $('#chat').val($('#chat').val() + '<' + data.msg + '>\n');
+                      $('#chat').val($('#chat').val() + '・' + data.msg + '\n');
                       $('#chat').scrollTop($('#chat')[0].scrollHeight);
                       console.log('status func')
                   });
@@ -47,10 +42,22 @@
               }
           </script>
       </head>
-      <body>
-          <h1>Flask-SocketIO-Chat: {{ session['room'] }}</h1>
-          <textarea id="chat" cols="80" rows="20"></textarea><br><br>
-          <input id="text" size="80" placeholder="Enter your message here"><br><br>
-          <a href="#" onclick="leave_room();">Leave this room</a>
-      </body>
-  </html>
+        <div class="container py-3">
+          <h1>PyJongチャットルーム</h1>
+          <h5 class="pt-1">ルーム名： {{ session['room'] }}</h5>
+        </div>
+        <div class="form-floating px-5">
+          <div class="pt-2">
+            <textarea class="form-control" style="height: 300px" id="chat" rows="20"></textarea>
+          </div>
+          <div class="pt-2 pb-5">
+            <input class="form-control" id="text" placeholder="エンターキーを押して送信">
+          </div>
+          <div class="float-end">
+            <button type="button" onclick="leave_room();" class="btn btn-outline-warning">チャットルームを大会する</button>
+          </div>
+
+
+        </div>
+
+{% endblock %}
