@@ -3,7 +3,8 @@
 {% block content %}
 
 {% if session['in_room'] == True %}
-<!-- MahJong -->
+
+<!-- Game script -->
 
 
 
@@ -11,12 +12,11 @@
 
 
 
-
-<!-- Chat room  -->
+<!-- Chat room　script  -->
           <script type="text/javascript" charset="utf-8">
               var socket;
               $(document).ready(function(){
-                  socket = io.connect('http://127.0.0.1:5000/main/game');
+                  socket = io.connect('http://' + document.domain + ':' + location.port + '/main/game');
                   socket.on('connect', function() {
                       socket.emit('joined', {});
                       console.log('connected');
@@ -31,6 +31,11 @@
                       $('#chat').scrollTop($('#chat')[0].scrollHeight);
                       console.log('message func')
                   });
+                  socket.on('gameupdate', function(data) {
+                      $('#game').val($('#game').val() + data.msg + '\n');
+                      $('#game').scrollTop($('#game')[0].scrollHeight);
+                      console.log('game message func')
+                  });
                   $('#text').keypress(function(e) {
                       var code = e.keyCode || e.which;
                       console.log('keypress')
@@ -42,6 +47,26 @@
 
                       }
                   });
+                  $('#gamecontrol').keypress(function(e) {
+                      var code = e.keyCode || e.which;
+                      console.log('keypress')
+                      if (code == 13) {
+                          text = $('#text').val();
+                          $('#text').val('');
+                          socket.emit('text', {msg: text});
+                          console.log('emit text',text)
+
+                      }
+                  });
+                  $('#gamestart').on('click', function() {
+                    socket.emit('start');
+                    console.log('gamestart')
+                  });
+                  $('#gamestart2').on('click', function() {
+                    socket.emit('stop');
+                    console.log('stop')
+                  });
+
               });
               function leave_room() {
                   socket.emit('left', {}, function() {
@@ -52,11 +77,50 @@
                   });
               }
           </script>
+
+
+
+
+
+
+
+
+
+
+
       </head>
         <div class="container py-3">
-          <h1>PyJongチャットルーム</h1>
+          <h1>PyJongルーム</h1>
           <h5 class="pt-1">ルーム名： {{ session['room'] }}</h5>
         </div>
+
+<!-- MahJong -->
+<div class="container">
+<h3><strong>Game</strong></h3>
+<div class="float-end">
+  <button type="button" id="gamestart" class="btn btn-outline-primary">ゲームをスタート</button>
+</div>
+</div>
+
+<div class="container pt-2">
+  <textarea class="form-control" style="height: 300px" id="game" rows="20"></textarea>
+</div>
+
+<div class="form-floating px-5">
+
+  <div class="pt-2 pb-5 px-5">
+    <input class="form-control" id="gamecontrol" placeholder="エンターキーを押して送信">
+  </div>
+  <div class="float-end">
+    <button type="button" id="gamestart2" class="btn btn-outline-primary">ゲームをスタート</button>
+  </div>
+</div>
+
+
+
+
+
+<!-- Chat box -->
         <div class="form-floating px-5">
           <div class="pt-2">
             <textarea class="form-control" style="height: 300px" id="chat" rows="20"></textarea>

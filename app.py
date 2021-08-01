@@ -3,6 +3,7 @@ from pyjong import app,db,socketio
 from flask import render_template,session,flash,redirect,url_for
 from flask_login import logout_user,login_required,current_user
 import datetime
+import os
 
 #create all db
 #with app.app_context is necessary when importing alchemy db
@@ -30,6 +31,7 @@ def logout():
 def page_not_found(e):
     return render_template('404.html'), 404
 
+print(os.path.dirname(__file__))
 
 if __name__ == '__main__':
     socketio.run(app,debug=True)

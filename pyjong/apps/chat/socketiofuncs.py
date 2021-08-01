@@ -2,6 +2,7 @@ from flask_socketio import join_room,leave_room,emit
 from pyjong import socketio
 from flask_login import current_user
 from flask import session
+from pyjong.apps.mahjong.yama import Yama
 
 #information to join room will be held in session
 #function to join a room provided a users session data
@@ -28,3 +29,13 @@ def left(message):
     leave_room(room)
     print('left room')
     emit('status', {'msg': session.get('username') + ' has left the room.'}, room=room)
+
+
+
+@socketio.on('start',namespace='/main/game')
+def startgame():
+    yama = Yama()
+    print(yama.all_yama[0][0][0].id)
+    hai = yama.all_yama[0][0][0].id
+
+    emit('gameupdate',{'msg':str(hai)})
