@@ -1,4 +1,7 @@
+from pyjong.apps.mahjong.yama import Hai
+from PIL import Image,ImageDraw,ImageFont
 import copy
+
 
 class Player():
 

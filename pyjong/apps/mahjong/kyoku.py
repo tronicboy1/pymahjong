@@ -4,6 +4,9 @@ import time
 import os
 from pyjong.apps.mahjong.yama import Yama
 from pyjong.apps.socketioapps.mahjongsocketio import room_dict
+from flask_socketio import emit
+from flask import session
+
 
 class Kyoku():
 
@@ -49,7 +52,6 @@ class Kyoku():
             self.turn += 1
 
     def board_gui(self,player_turn=False,clear_mochihai=False): #add feature to rotate pic for player2 in future
-        clear_output() #clear previous output
         if player_turn: #only paste can sutehai if player turn
             try:
                 self.board_pic.paste(self.current_player.can_sutehai_pic_gen(),(50,520))

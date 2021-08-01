@@ -23,7 +23,7 @@ def startgame():
         game.create_players(session['username'])
         game.oya_gime()
         room_dict[session['room']] = [game,'']
-        room_dict[session['room']][0].kyoku_start()
+        room_dict[session['room']][0].kyoku.kyoku_start()
         #kyoku.game will set index 1 value of room dict to define what the next input will be
 
 
@@ -36,7 +36,7 @@ def gamecheck():
 
 @socketio.on('gamecontrol',namespace='/main/game')
 def gamecontrol(choice):
-    choice = choice.upper()
+    choice = choice['msg'].upper()
     print(choice)
     #check what the next input type will be
     if room_dict[session['room']][1] == 'kyokustart_yesno':

@@ -108,14 +108,12 @@ class Game():
         self.oya = 0
         saikoro_result = random.randint(1,6)
         emit('gameupdate',{'msg':f'{saikoro_result}が出ました！'})
-        time.sleep(2)
         for n in range(0,saikoro_result):
             if self.oya == 3:
                 self.oya = 0
             else:
                 self.oya += 1
         emit('gameupdate',{'msg':f'{self.player_dict[self.oya].name}が親になりました！'})
-        time.sleep(2)
 
     def oya_koutai(self):
         if self.oya == 3:

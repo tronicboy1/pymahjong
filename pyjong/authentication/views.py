@@ -58,6 +58,7 @@ def login():
                 session['updated'] = False
                 session['in_room'] = False
                 session['has_new_invites'] = False
+                session['players'] = 0
                 next = request.args.get('next')
                 #check if user was redirected, and send them to the page they were trying to access before login
                 if next == None or not next[0] == '/':
@@ -89,6 +90,7 @@ def signup():
             session['username'] = form.username.data
             session['in_room'] = False
             session['has_new_invites'] = False
+            session['players'] = 0
             login_user(new_user)
             flash(f"{current_user.username}、登録できました！",'alert-success')
             return redirect(url_for('index'))
