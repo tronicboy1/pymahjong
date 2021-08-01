@@ -3,6 +3,7 @@ from PIL import Image,ImageDraw,ImageFont
 import time
 import os
 from pyjong.apps.mahjong.yama import Yama
+from pyjong.apps.socketioapps.mahjongsocketio import room_dict
 
 class Kyoku():
 
@@ -52,10 +53,24 @@ class Kyoku():
         if player_turn: #only paste can sutehai if player turn
             try:
                 self.board_pic.paste(self.current_player.can_sutehai_pic_gen(),(50,520))
+
+                ########FOR DEBUGGING
+                for hai in self.current_player.can_sutehai:
+                    emit('gameupdate',{'msg':hai})
+                ###################################
+
+
+
             except:
                 pass
             try:
                 self.board_pic.paste(self.current_player.mochihai.pic,(500,520))
+
+                ###########debugging##########
+                emit('gameupdate',{'msg':f"もち牌：{self.current_player.mochihai}"})
+                ##################
+
+
             except:
                 pass
 
@@ -98,13 +113,13 @@ class Kyoku():
             self.current_player.refresh_can_sutehai_list()
             self.board_pic.paste(self.current_player.can_sutehai_pic_gen(),(50,520))
 
-        self.board_pic.resize((300,300)).show()
+        return self.board_pic.resize((300,300))
 
     def simple_hai_displayer(self):
-        print(f'{self.current_player.name}の手牌：')
+        emit('gameupdate',{'msg':f'{self.current_player.name}の手牌：'})
         self.current_player.can_sutehai_pic_gen()
-        print(f'持ち牌：')
-        self.current_player.mochihai.pic.resize((300,300)).show()
+        emit('gameupdate',{'msg':'持ち牌：'})
+        return self.current_player.mochihai.pic.resize((300,300))
 
     def refresh_hai_remaining(self):
         self.hai_remaining = self.yama.yama_hai_count()
@@ -137,22 +152,13 @@ class Kyoku():
 
     #have the oya roll dice to decide which yama to take from
     def saikoro_furi(self):
-        if self.current_player.is_computer == True:
-            print(f'親の{self.current_player.name}がサイコロを振ります。')
-            saikoro_result = random.randint(1,6)
-            time.sleep(1)
-            print(f'{saikoro_result}が出ました！')
-            return saikoro_result
-        else:
-            input(f'親の{self.current_player.name}がサイコロを振ります。\nEnterキーを押して振ってください。')
-            saikoro_result = random.randint(1,6)
-            time.sleep(1)
-            print(f'{saikoro_result}が出ました！')
-            return saikoro_result
+        saikoro_result = random.randint(1,6)
+        emit('gameupdate',{'msg':f'親の{self.current_player.name}がサイコロを振りました。\n{saikoro_result}が出ました！'})
+        return saikoro_result
+
 
     def tehai_tori(self):
         saikoro_result = self.saikoro_furi()
-        time.sleep(1)
 
         #move the current yama around the amount of times the saikoro says
         for i in range(0,saikoro_result+1):
@@ -204,24 +210,11 @@ class Kyoku():
             if self.current_player.mochihai in self.current_player.machihai:
                 self.current_player.ron(self.current_player.mochihai)
             if self.kyoku_on == True:
-                player_input = ''
-                while player_input not in ('Y','N'):
-                    player_input = input('持ち牌を手牌に入れますか？（YもしくはN)').upper()
-                if player_input == 'Y':
-                    self.current_player.swap_hai()
-                    self.current_player.tehai.sort()
-                    self.board_gui(True,clear_mochihai=True)
-                    self.current_player.tenpai_check()
-                    sutehai = self.current_player.kawa[-1]
-                    self.pon_kan_chi_check(sutehai)
-                    self.next_player()
-                else:
-                    self.current_player.kawa.append(self.current_player.mochihai)
-                    self.current_player.mochihai = None
-                    self.board_gui(clear_mochihai=True)
-                    sutehai = self.current_player.kawa[-1]
-                    self.pon_kan_chi_check(sutehai)
-                    self.next_player()
+                #break here to wait for user input
+                emit('gameupdate',{'msg':'持ち牌を手牌に入れますか？（YもしくはN)'})
+                #set room dict index1 value to type of next input
+                room_dict[session['room']][1] = 'kyokustart_yesno'
+
         elif self.current_player.is_computer == True:
             self.current_player.swap_hai()
             self.current_player.tenpai_check()
@@ -229,11 +222,32 @@ class Kyoku():
             self.pon_kan_chi_check(sutehai)
             self.next_player()
 
-        self.turn_count += 1
+            self.turn_count += 1
 
         #start kyoku loop:
-        while self.kyoku_on == True and self.hai_remaining > 0:
-            self.player_turn()
+        # while self.kyoku_on == True and self.hai_remaining > 0:
+        #     self.player_turn()
+
+    def kyoku_start_non_computer(self,choice):
+        choice = choice.upper()
+        if choice == 'Y':
+            self.current_player.swap_hai()
+            self.current_player.tehai.sort()
+            self.board_gui(True,clear_mochihai=True)
+            self.current_player.tenpai_check()
+            sutehai = self.current_player.kawa[-1]
+            self.pon_kan_chi_check(sutehai)
+            self.next_player()
+        else:
+            self.current_player.kawa.append(self.current_player.mochihai)
+            self.current_player.mochihai = None
+            self.board_gui(clear_mochihai=True)
+            sutehai = self.current_player.kawa[-1]
+            self.pon_kan_chi_check(sutehai)
+            self.next_player()
+        self.turn_count += 1
+
+
 
     def player_turn(self):
         if self.turn_count < 4:
@@ -258,24 +272,11 @@ class Kyoku():
                 self.board_gui(clear_mochihai=True)
                 self.next_player()
             else:
-                player_input = ''
-                while player_input not in ('Y','N'):
-                    player_input = input('持ち牌を手牌に入れますか？（YもしくはN)').upper()
-                if player_input == 'Y':
-                    self.current_player.swap_hai()
-                    self.board_gui(False,True)
-                    self.current_player.tenpai_check()
-                    sutehai = self.current_player.kawa[-1]
-                    self.pon_kan_chi_check(sutehai)
-                    self.next_player()
-                else:
-                    self.current_player.kawa.append(self.current_player.mochihai)
-                    self.current_player.mochihai = None
-                    self.board_gui(clear_mochihai=True)
-                    self.current_player.tenpai_check()
-                    sutehai = self.current_player.kawa[-1]
-                    self.pon_kan_chi_check(sutehai)
-                    self.next_player()
+                emit('gameupdate',{'msg':'持ち牌を手牌に入れますか？（YもしくはN)'})
+                #set room dict index1 value to type of next input
+                room_dict[session['room']][1] = 'kyoku_yesno'
+
+
         elif self.current_player.is_computer == True:
             if self.current_player.mochihai in self.current_player.machihai:
                 if self.current_player.ron(self.current_player.mochihai):
@@ -296,6 +297,24 @@ class Kyoku():
                 self.pon_kan_chi_check(sutehai)
                 self.next_player()
 
+            self.turn_count += 1
+
+    def player_turn_input(self,choice):
+        if player_input == 'Y':
+            self.current_player.swap_hai()
+            self.board_gui(False,True)
+            self.current_player.tenpai_check()
+            sutehai = self.current_player.kawa[-1]
+            self.pon_kan_chi_check(sutehai)
+            self.next_player()
+        else:
+            self.current_player.kawa.append(self.current_player.mochihai)
+            self.current_player.mochihai = None
+            self.board_gui(clear_mochihai=True)
+            self.current_player.tenpai_check()
+            sutehai = self.current_player.kawa[-1]
+            self.pon_kan_chi_check(sutehai)
+            self.next_player()
         self.turn_count += 1
 
 

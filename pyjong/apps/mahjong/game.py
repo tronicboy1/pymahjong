@@ -3,6 +3,7 @@ import random
 from flask_socketio import emit
 from pyjong.apps.mahjong.player import Player
 from pyjong.apps.mahjong.kyoku import Kyoku
+from pyjong.apps.socketioapps.mahjongsocketio import room_dict
 
 class Game():
 
@@ -113,7 +114,7 @@ class Game():
                 self.oya = 0
             else:
                 self.oya += 1
-        emit('gameupdate',{'msg':f'f'{self.player_dict[self.oya].name}が親になりました！''})
+        emit('gameupdate',{'msg':f'{self.player_dict[self.oya].name}が親になりました！'})
         time.sleep(2)
 
     def oya_koutai(self):
