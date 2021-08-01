@@ -7,6 +7,9 @@ import datetime
 
 main_blueprint = Blueprint('main',__name__,template_folder='templates/main')
 
+#initialise socketiofunctions
+from pyjong.apps.chat import socketiofuncs
+
 #################################################
 #########DB FUNCTIONS##########################
 #################################################
@@ -205,6 +208,7 @@ def game():
     if form.validate_on_submit():
         send_invite(session_username=current_user.username,invited_username=form.select_friend.data,room=form.room_name.data)
         session['room'] = form.room_name.data
+        session['in_room'] = True
         flash("招待状を送りました！",'alert-success')
         return redirect(url_for('main.game'))
 

@@ -2,6 +2,7 @@
 
 {% block content %}
 
+{% if session['in_room'] == True %}
           <script type="text/javascript" charset="utf-8">
               var socket;
               $(document).ready(function(){
@@ -56,8 +57,27 @@
           <div class="float-end">
             <button type="button" onclick="leave_room();" class="btn btn-outline-warning">チャットルームを大会する</button>
           </div>
-
-
         </div>
+{% else %}
+
+{% if session['has_friends'] %}
+
+<div class="container">
+  <h1>友達を誘ってチャットを始めましょう！</h1>
+  <form class="" action="" method="POST">
+  {{form.hidden_tag()}}
+  {{form.select_friend.label}}{{form.select_friend}}
+  {{form.room_name.label}}{{form.room_name}}
+  {{form.submit}}
+  </form>
+</div>
+
+{% else %}
+
+{% endif %}
+{% endif %}
+
+
+
 
 {% endblock %}

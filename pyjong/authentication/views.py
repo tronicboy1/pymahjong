@@ -7,7 +7,7 @@ import datetime
 
 authentication_blueprint = Blueprint('authentication',__name__,template_folder='templates/authentication')
 
-from pyjong.apps.chat import chat
+
 
 
 ############################################
