@@ -51,9 +51,9 @@
                       var code = e.keyCode || e.which;
                       console.log('keypress')
                       if (code == 13) {
-                          text = $('#text').val();
-                          $('#text').val('');
-                          socket.emit('text', {msg: text});
+                          text = $('#gamecontrol').val();
+                          $('#gamecontrol').val('');
+                          socket.emit('gamecontrol', {msg: text});
                           console.log('emit text',text)
 
                       }
@@ -63,8 +63,8 @@
                     console.log('gamestart')
                   });
                   $('#gamestart2').on('click', function() {
-                    socket.emit('stop');
-                    console.log('stop')
+                    socket.emit('gamecheck');
+                    console.log('gamecheck')
                   });
 
               });

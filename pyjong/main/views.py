@@ -8,7 +8,7 @@ import datetime
 main_blueprint = Blueprint('main',__name__,template_folder='templates/main')
 
 #initialise socketiofunctions
-from pyjong.apps.chat import socketiofuncs
+from pyjong.apps.socketioapps import chat,mahjongsocketio
 
 #################################################
 #########DB FUNCTIONS##########################

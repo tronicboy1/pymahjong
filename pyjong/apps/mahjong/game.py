@@ -2,6 +2,7 @@ import math
 import random
 from flask_socketio import emit
 from pyjong.apps.mahjong.player import Player
+from pyjong.apps.mahjong.kyoku import Kyoku
 
 class Game():
 
@@ -10,6 +11,7 @@ class Game():
         self.kazamuki = 0
         self.game_on = True
         self.kyoku_suu = 0
+        self.kyoku = None
 
         emit('gameupdate',{'msg':'ようこそ、麻雀Deluxeへ'})
         #players_input = ''
@@ -17,9 +19,9 @@ class Game():
             #players_input = input('プレーヤー数を入力してください。\n（"1"もしくは"2"）:')
         self.players = 0 #{'1':0,'2':1}[players_input]
 
-    def create_players(self):
+    def create_players(self,player1_name):
         if self.players == 0:
-            self.player1 = Player(input('プレーヤー１の名前を入力してください。'),is_computer=False)
+            self.player1 = Player(player1_name,is_computer=False)
             self.player2 = Player('Computer 1')
             self.player3 = Player('Computer 2')
             self.player4 = Player('Computer 3')
@@ -30,6 +32,9 @@ class Game():
             self.player4 = Player('Computer 2')
 
         self.player_dict = {0:self.player1,1:self.player2,2:self.player3,3:self.player4}
+
+        self.kyoku = Kyoku(self.player1,self.player2,self.player3,self.player4)
+
 
     def end_kyoku_check(self):
         if kyoku.winner == None:

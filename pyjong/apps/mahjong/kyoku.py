@@ -1,6 +1,8 @@
 import random
 from PIL import Image,ImageDraw,ImageFont
 import time
+import os
+from pyjong.apps.mahjong.yama import Yama
 
 class Kyoku():
 
@@ -11,7 +13,10 @@ class Kyoku():
         self.player3 = player3
         self.player4 = player4
         self.player_dict = {0:self.player1,1:self.player2,2:self.player3,3:self.player4}
-        self.bakaze = {0:Image.open('ton.jpg'),1:Image.open('nan.jpg'),2:Image.open('sha.jpg'),3:Image.open('pe.jpg')}[bakaze] #{0:ton,1:nan,2:sha,3:pe}
+
+        basedir = os.path.abspath(os.path.dirname(__file__))
+        basedir = basedir + '/static/'
+        self.bakaze = {0:Image.open(basedir+'ton.jpg'),1:Image.open(basedir+'nan.jpg'),2:Image.open(basedir+'sha.jpg'),3:Image.open(basedir+'pe.jpg')}[bakaze] #{0:ton,1:nan,2:sha,3:pe}
         if oya == 3:
             self.turn = 0
         else:
@@ -28,7 +33,7 @@ class Kyoku():
         self.kyoku_on = True #use this to end kyoku when winner is declared
         self.winner = None
         self.board_pic = Image.new('RGB',(600,600),(31,61,12))
-        self.senbou = Image.open('senbou.jpeg').reduce(3)
+        self.senbou = Image.open(basedir+'senbou.jpeg').reduce(3)
         self.riichi_turn_count = 0
         self.turn_count = 0
 
