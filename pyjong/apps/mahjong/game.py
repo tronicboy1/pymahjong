@@ -300,64 +300,64 @@ class Game():
             for hai in winner.tehai: #uradora check
                 if hai in ura_plus_one:
                     han += 1
-                    print('裏ドラ！')
+                    emit('gameupdate',{'msg':'裏ドラ！'})
             if winner.is_ippatu and monzen: #riichi ippatu check
                 han += 1
-                print('リーチ一発！')
+                emit('gameupdate',{'msg':'リーチ一発！'})
         if winner.is_tumo_agari and monzen: #monzen tumo check
             han += 1
-            print('門前ツモ！')
+            emit('gameupdate',{'msg':'門前ツモ！'})
         for yaku_hai in (Hai(0,bakaze),Hai(0,4),Hai(0,5),Hai(0,6)): #yakuhai check
             for mentu in winner.mentuhai:
                 if yaku_hai in mentu:
                     han += 1
-                    print('役牌！')
+                    emit('gameupdate',{'msg':'役牌！'})
         if len([x for x in winner.tehai if x[0] != 0 and x[1] in (0,8)]) == 0: #tanyao
             han += 1
-            print('タンヤオ！')
+            emit('gameupdate',{'msg':'タンヤオ！'})
         if len(winner.machihai) >= 2:
             if winner.machihai[0][1]+2 == winner.machihai[1][1] and monzen: #pinfu check
                 han += 1
-                print('ピンフ！')
+                emit('gameupdate',{'msg':'ピンフ！'})
         for mentu in winner.mentuhai: #ippeikou check
             if mentu[0][1]+2 == mentu[2][1]:
                 if {me:winner.mentuhai.count(me) for me in winner.mentuhai}[mentu] == 2 and monzen:
                     han += 1
-                    print('イッペイコウ！')
+                    emit('gameupdate',{'msg':'イッペイコウ！'})
                     break
         if hai_remaining == 0 and winner.is_tumo_agari: #haitei check
             han += 1
-            print('ハイテイアガリ！')
+            emit('gameupdate',{'msg':'ハイテイアガリ！'})
         if hai_remaining == 0 and winner.is_tumo_agari == False:
             han += 1
-            print('ホウテイロンアガリ！')
+            emit('gameupdate',{'msg':'ホウテイロンアガリ！'})
         if winner.is_rinshan:
             han += 1
-            print('リンシャンカイホウ！')
+            emit('gameupdate',{'msg':'リンシャンカイホウ！'})
         if winner.is_chankan:
             han += 1
-            print('チャンカン！')
+            emit('gameupdate',{'msg':'チャンカン！'})
         if winner.double_riichi:
             han += 1
-            print('ダブルリーチ！')
+            emit('gameupdate',{'msg':'ダブルリーチ！'})
         if is_chitoitu_agari(winner):
             han += 2
-            print('チートイツ！')
+            emit('gameupdate',{'msg':'チートイツ！'})
         if is_ikkituukan(winner):
             if monzen:
                 han += 2
             else:
                 han += 1
-            print('一気通貫！')
+            emit('gameupdate',{'msg':'一気通貫！'})
         if sanshokudoujun_check(winner):
-            print('三色同順！')
+            emit('gameupdate',{'msg':'三色同順！'})
             if monzen:
                 han += 2
             else:
                 han += 1
         if sanshokudoukou_check(winner):
             if monzen:
-                print('三色同刻！')
+                emit('gameupdate',{'msg':'三色同刻！'})
                 han += 2
         sanankou_set = set() # sanankou check
         for mentu in winner.mentuhai:
@@ -365,14 +365,14 @@ class Game():
                 sanankou_set.add(mentu[0][0])
         if len(sanankou_set) == 3:
             han += 2
-            print('三暗刻！')
+            emit('gameupdate',{'msg':'三暗刻！'})
         toitoi_list_count = 0 # toitoi check
         for mentu in winner.mentuhai:
             if mentu[0][0] != 0 and mentu[0] == mentu [2]:
                 toitoi_list_count += 1
         if toitoi_list_count == 4:
             han += 2
-            print('三色同刻！')
+            emit('gameupdate',{'msg':'三色同刻！'})
         del toitoi_list_count
         chanta_count = 0 #chanta check
         for mentu in winner.mentuhai:
@@ -384,11 +384,11 @@ class Game():
                     han += 2
                 else:
                     han += 1
-                print('混全帯么九！')
+                emit('gameupdate',{'msg':'混全帯么九！'})
         del chanta_count
         if len(winner.kan_hai) == 3:
             han += 2
-            print('三槓子！')
+            emit('gameupdate',{'msg':'三槓子！'})
         ryanpeikou_count = 0
         for mentu in winner.mentuhai: #ryanpeikou check
             if mentu[0][1]+2 == mentu[2][1]:
@@ -396,7 +396,7 @@ class Game():
                     ryanpeikou_count += 1
         if ryanpeikou_count == 2:
             han += 3
-            print('二盃口！')
+            emit('gameupdate',{'msg':'二盃口！'})
         del ryanpeikou_count
         junchan_count = 0 #junchan check
         for hai in winner.tehai:
@@ -407,7 +407,7 @@ class Game():
                 han += 3
             else:
                 han += 2
-            print('ジュンチャン')
+            emit('gameupdate',{'msg':'ジュンチャン'})
         del junchan_count
         #honitu check
         honitu = True
@@ -422,7 +422,7 @@ class Game():
                 han += 3
             else:
                 han += 2
-            print('混一色！')
+            emit('gameupdate',{'msg':'混一色！'})
         del honitu
 
         if winner.atama_hai[0][0] == 0 and winner.atama_hai[0][1] in (4,5,6): #shousangen check
@@ -432,7 +432,7 @@ class Game():
                     sangenhai_count += 1
             if sangenhai_count == 2:
                 han += 4
-                print('小三元！')
+                emit('gameupdate',{'msg':'小三元！'})
             del sangenhai_count
         is_honroutou = False #honroutou check
         for hai in winner.tehai:
@@ -443,7 +443,7 @@ class Game():
                 break
         if is_honroutou:
             han += 4
-            print('混老頭！')
+            emit('gameupdate',{'msg':'混老頭！'})
         del is_honroutou
         is_chinitu = True #chinitucheck
         for hai in winner.tehai:
@@ -457,7 +457,7 @@ class Game():
                 han += 6
             else:
                 han += 5
-            print('清一色！')
+            emit('gameupdate',{'msg':'清一色！'})
         del is_chinitu
         is_suuankou = False #suuankou check
         for mentu in winner.mentuhai:
@@ -467,7 +467,7 @@ class Game():
                 is_suuankou = False
         if is_suuankou and monzen:
             han = 13
-            print('四暗刻！！')
+            emit('gameupdate',{'msg':'四暗刻！！'})
         del is_suuankou
         sangenmentu_count = 0 #daisangen check
         for mentu in winner.mentuhai:
@@ -475,21 +475,21 @@ class Game():
                 sangenmentu_count += 1
         if sangenmentu_count == 3:
             han = 13
-            print('大三元！！')
+            emit('gameupdate',{'msg':'大三元！！'})
         del sangenmentu_count
         if is_kokushimusou(winner) and monzen: #kokushimusou check
             han = 13
-            print('国士無双！！')
+            emit('gameupdate',{'msg':'国士無双！！'})
         shousuushii_hai_count = 0 #shousuushii check/daisuushii check
         for hai in winner.tehai:
             if hai[0] == 0 and hai[1] in (0,1,2,3):
                 shousuushii_hai_count += 1
         if shousuushii_hai_count == 11:
             han = 13
-            print('小四喜！！')
+            emit('gameupdate',{'msg':'小四喜！！'})
         elif shousuushii_hai_count == 12:
             han = 13
-            print('大四喜！！')
+            emit('gameupdate',{'msg':'大四喜！！'})
         del shousuushii_hai_count
         is_ryuuiisou = False #is ryuuissou check
         for hai in winner.tehai:
@@ -500,7 +500,7 @@ class Game():
                 break
         if is_ryuuiisou and Hai(0,5) in winner.tehai:
             han = 13
-            print('緑一色！！')
+            emit('gameupdate',{'緑一色！！'})
         del is_ryuuiisou
         is_tuuiisou = False #tuuiisou check
         for hai in winner.tehai:
@@ -511,7 +511,7 @@ class Game():
                 break
         if is_tuuiisou:
             han = 13
-            print('字一色！！')
+            emit('gameupdate',{'msg':'字一色！！'})
         del is_tuuiisou
         is_chinroutou = False #chinroutou check
         for hai in winner.tehai:
@@ -522,11 +522,11 @@ class Game():
                 break
         if is_chinroutou:
             han = 13
-            print('清老頭！！')
+            emit('gameupdate',{'msg':'清老頭！！'})
         del is_chinroutou
         if len(winner.kan_hai) == 4: #suukantu check
             han = 13
-            print('四槓子！！')
+            emit('gameupdate',{'msg':'四槓子！！'})
         chuurenpoutou_hai = [Hai(3,0),Hai(3,0),Hai(3,0),Hai(3,1),Hai(3,2),Hai(3,3),Hai(3,4),Hai(3,5),Hai(3,6),Hai(3,7),Hai(3,8),Hai(3,8),Hai(3,8)]
         for hai in winner.tehai:
             if hai in chuurenpoutou_hai:
@@ -534,7 +534,7 @@ class Game():
             elif len(chuurenpoutou_hai) == 0:
                 if hai[0] == 3:
                     han = 13
-                    print('九蓮宝燈')
+                    emit('gameupdate',{'msg':'九蓮宝燈'})
         del chuurenpoutou_hai
         if round_count < 4 and monzen:
             no_kanchipon = False
@@ -546,24 +546,24 @@ class Game():
                     break
             if oya == winner:
                 han = 13
-                print('天和！！')
+                emit('gameupdate',{'msg':'天和！！'})
             elif no_kanchipon:
                 han = 13
-                print('地和！！')
+                emit('gameupdate',{'msg':'地和！！'})
         #set han to 13 if over 13
-        print(f'{fu}符の{han}翻！')
+        emit('gameupdate',{'msg':f'{fu}符の{han}翻！'})
 
         if han > 13:
             han = 13
-            print('数え役満！')
+            emit('gameupdate',{'msg':'数え役満！'})
         elif han >= 11:
-            print('三倍満！')
+            emit('gameupdate',{'msg':'三倍満！'})
         elif han >= 8:
-            print('倍満！')
+            emit('gameupdate',{'msg':'倍満！'})
         elif han >= 6:
-            print('跳満！')
+            emit('gameupdate',{'msg':'跳満！'})
         elif han >= 3:
-            print('満願！')
+            emit('gameupdate',{'msg':'満願！'})
 
         #calculate score
         if winner == oya:
@@ -583,19 +583,20 @@ class Game():
             self.kyoku_suu += 1
 
     def kyoku_summary(self):
-        print(f'{self.player1.name}:{self.player1.balance}点')
-        print(f'{self.player2.name}:{self.player2.balance}点')
-        print(f'{self.player3.name}:{self.player3.balance}点')
-        print(f'{self.player4.name}:{self.player4.balance}点')
+        emit('gameupdate',{'msg':f'{self.player1.name}:{self.player1.balance}点'})
+        emit('gameupdate',{'msg':f'{self.player2.name}:{self.player2.balance}点'})
+        emit('gameupdate',{'msg':f'{self.player3.name}:{self.player3.balance}点'})
+        emit('gameupdate',{'msg':f'{self.player4.name}:{self.player4.balance}点'})
 
         if self.game_on:
-            player_input = ''
-            while player_input not in ('Y','N'):
-                player_input = input('続けて新しい局に進みますか？(YもしくはN)').upper()
-            if player_input == 'N':
-                self.game_on = False
-            else:
-                self.clear_players()
+            emit('gameupdate',{'msg':'続けて新しい局に進みますか？(YもしくはN)'})
+
+    def kyoku_summary_choice(self,choice):
+        choice = choice.upper()
+        if choice == 'N':
+            self.game_on = False
+        else:
+            self.clear_players()
 
     def clear_players(self):
         for player in self.player_dict.values():
