@@ -56,7 +56,6 @@ def login():
                 #update session info for use with other request checks
                 session['username'] = form.username.data
                 session['updated'] = False
-                session['room'] = 'room'
                 session['in_room'] = False
                 session['has_new_invites'] = False
                 next = request.args.get('next')
