@@ -38,7 +38,7 @@ class Game():
 
     def end_kyoku_check(self):
         if kyoku.winner == None:
-            print('流局！')
+            emit('gameupdate',{'msg':'流局！'})
             tenpatteru_list = []
             for player in self.player_dict.values(): #add players who are tenpatteru into tenpatteru list
                 if player.is_tenpatteru:
@@ -46,7 +46,7 @@ class Game():
                 else:
                     pass
             if len(tenpatteru_list) == 0:
-                print('ノーテン！')
+                emit('gameupdate',{'msg':'ノーテン！'})
             elif len(tenpatteru_list) == 1:
                 tenpatteru_list[0].add_funds(3000)
                 for player in self.player_dict.values():
@@ -106,14 +106,14 @@ class Game():
     def oya_gime(self):
         self.oya = 0
         saikoro_result = random.randint(1,6)
-        print(f'{saikoro_result}が出ました！')
+        emit('gameupdate',{'msg':f'{saikoro_result}が出ました！'})
         time.sleep(2)
         for n in range(0,saikoro_result):
             if self.oya == 3:
                 self.oya = 0
             else:
                 self.oya += 1
-        print(f'{self.player_dict[self.oya].name}が親になりました！')
+        emit('gameupdate',{'msg':f'f'{self.player_dict[self.oya].name}が親になりました！''})
         time.sleep(2)
 
     def oya_koutai(self):
@@ -121,7 +121,7 @@ class Game():
             self.oya = 0
         else:
             self.oya += 1
-        print(f'{self.player_dict[self.oya].name}が新しい親！')
+        emit('gameupdate',{'msg':f'{self.player_dict[self.oya].name}が新しい親！'})
 
     def tensuu_calc(self,winner,bakaze,oya,dora,uradora,hai_remaining,round_count):
 
@@ -283,10 +283,10 @@ class Game():
         for hai in winner.tehai: #dora check
             if hai in dora_plus_one:
                 han += 1
-                print('ドラ！')
+                emit('gameupdate',{'msg':'ドラ！'})
         if winner.is_riichi:
             han += 1
-            print('リーチ！')
+            emit('gameupdate',{'msg':'リーチ！'})
             ura_plus_one = []
             for hai in uradora:
                 if hai.id == (0,6):

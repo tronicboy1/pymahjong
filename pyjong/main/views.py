@@ -2,8 +2,9 @@ from flask import Blueprint,render_template,redirect,url_for,flash,session
 from flask_login import login_required,current_user
 from pyjong import db
 from pyjong.models import UserData
-from pyjong.main.forms import FriendRequest,AcceptFriendRequest,DeleteFriend,InviteFriend,AcceptInvite
+from pyjong.main.forms import FriendRequest,AcceptFriendRequest,DeleteFriend,InviteFriend,AcceptInvite,PlaySolo
 import datetime
+from time import time
 
 main_blueprint = Blueprint('main',__name__,template_folder='templates/main')
 
@@ -198,6 +199,7 @@ def game():
     #forms
     form = InviteFriend()
     form = add_friends_to_form(form)
+    solo_form = PlaySolo()
 
     if session['in_room']:
         name = session['username']
@@ -211,8 +213,14 @@ def game():
         session['in_room'] = True
         flash("招待状を送りました！",'alert-success')
         return redirect(url_for('main.game'))
+    #setup solo room
+    if solo_form.validate_on_submit():
+        session['room'] = str(int(time()))
+        session['players'] = 1
+        session['in_room'] = True
+        return redirect(url_for('main.game'))
 
-    return render_template('game.html',form=form)
+    return render_template('game.html',form=form,solo_form=solo_form)
 
 @main_blueprint.route('/friends',methods=['GET','POST'])
 @login_required

@@ -7,6 +7,10 @@ class InviteFriend(FlaskForm):
     room_name = TextField("パーティー名：",validators=[InputRequired(),Regexp('^\w+$',message="英数字のみ入力可能")])
     submit = SubmitField("パーティーへ招待する")
 
+#form to start solo played
+class PlaySolo(FlaskForm):
+    submit = SubmitField("一人で麻雀を始める")
+
 #form for users to send friend requests
 class FriendRequest(FlaskForm):
     username = StringField('追加したいユーザーネーム：',validators=[InputRequired(),Regexp('^\w+$',message='英数字のみ入力可能')])

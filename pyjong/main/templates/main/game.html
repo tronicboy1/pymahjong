@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{% if session['in_room'] == True %}
+
 
 <!-- Game script -->
 
@@ -58,6 +58,10 @@
 
                       }
                   });
+                  $('#startsolo').on('click', function() {
+                    socket.emit('startsolo');
+                    console.log('startsolo')
+                  });
                   $('#gamestart').on('click', function() {
                     socket.emit('start');
                     console.log('gamestart')
@@ -85,14 +89,14 @@
 
 
 
+{% if session['in_room'] == True %}
 
 
-
-      </head>
-        <div class="container py-3">
-          <h1>PyJongルーム</h1>
-          <h5 class="pt-1">ルーム名： {{ session['room'] }}</h5>
-        </div>
+</head>
+<div class="container py-3">
+<h1>PyJongルーム</h1>
+<h5 class="pt-1">ルーム名： {{ session['room'] }}</h5>
+</div>
 
 <!-- MahJong -->
 <div class="container">
@@ -119,7 +123,7 @@
 
 
 
-
+{% if session['players'] != 1 %}
 <!-- Chat box -->
         <div class="form-floating px-5">
           <div class="pt-2">
@@ -134,16 +138,42 @@
         </div>
 {% else %}
 
+{% endif %}
+
+
+<!-- Room creation -->
+{% else %}
+
 {% if session['has_friends'] %}
 
 <div class="container">
-  <h1>友達を誘ってチャットを始めましょう！</h1>
+  <h1 class="">友達を誘ってチャットを始めましょう！</h1>
   <form class="" action="" method="POST">
+    <div class="form-floating px-5">
+
   {{form.hidden_tag()}}
-  {{form.select_friend.label}}{{form.select_friend}}
-  {{form.room_name.label}}{{form.room_name}}
-  {{form.submit}}
+  <div class="py-2">
+  {{form.select_friend.label(class="form-label")}}
+  {{form.select_friend(class="form-select")}}
+</div>
+<div class="py-2">
+  {{form.room_name.label(class="form-label")}}
+  {{form.room_name(class="form-control")}}
+
+</div>
+  {{form.submit(class="btn btn-outline-primary")}}
+
+</div>
   </form>
+  <div class="container px-5">
+  <p class="text-muted pt-3">もしくは</p>
+  <div class="py-2">
+    <form class="" action="" method="POST">
+      {{solo_form.hidden_tag()}}
+      {{solo_form.submit(class="btn btn-outline-secondary")}}
+    </form>
+  </div>
+  </div>
 </div>
 
 {% else %}

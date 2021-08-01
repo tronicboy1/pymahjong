@@ -8,9 +8,9 @@ from flask import session
 @socketio.on('joined', namespace='/main/game')
 def joined(message):
     room = session['room']
-    print('joined')
-    join_room(room)
-    emit('status', {'msg': session['username'] + 'がチャットルームに入りました'}, room=room)
+    if session['players'] != 1:
+        join_room(room)
+        emit('status', {'msg': session['username'] + 'がチャットルームに入りました'}, room=room)
 
 
 @socketio.on('text', namespace='/main/game')
@@ -22,9 +22,7 @@ def text(message):
 
 @socketio.on('left', namespace='/main/game')
 def left(message):
-    """Sent by clients when they leave a room.
-    A status message is broadcast to all people in the room."""
     room = session['room']
-    leave_room(room)
-    print('left room')
-    emit('status', {'msg': session.get('username') + ' has left the room.'}, room=room)
+    if session['players'] != 1:
+        leave_room(room)
+        emit('status', {'msg': session.get('username') + ' has left the room.'}, room=room)
