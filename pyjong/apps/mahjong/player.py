@@ -258,7 +258,7 @@ class Player():
         if self.is_computer == False:
             #ask user if they will pon, pass to pon_user_input
             print('pon check')
-            emit('gameupdate',{'msg':f'{pon_hai}をポンしますか？\nYもしくはNを入力してください。'})
+            emit('gameupdate',{'msg':f'{self.name}、{pon_hai}をポンしますか？\nYもしくはNを入力してください。'})
             room_dict[session['room']][1] = 'pon_yesno'
 
         else:
@@ -289,7 +289,7 @@ class Player():
             pass
         elif self.is_computer == False:
             print('chi check')
-            emit('gameupdate',{'msg':f'{chi_hai}をポンしますか？\nYもしくはNを入力してください。'})
+            emit('gameupdate',{'msg':f'{self.name}、{chi_hai}をチーしますか？\nYもしくはNを入力してください。'})
             room_dict[session['room']][1] = 'chi_yesno'
 
 
