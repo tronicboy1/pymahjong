@@ -6,5 +6,5 @@ An online Mahjong Application using SocketIO to allow communication between serv
 
 
 Sources：
-I relieved heavily on Miguel Grinbergs Flask-SocketIO Chat model to get myself going and used his templates for Javascript.
+I relied heavily on Miguel Grinbergs Flask-SocketIO Chat model to get myself going and used his templates for Javascript.
 Thank you Miguel！
