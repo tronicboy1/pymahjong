@@ -14,6 +14,7 @@ class Game():
         self.kyoku_suu = 0
         self.kyoku = None
 
+
         emit('gameupdate',{'msg':'ようこそ、麻雀Deluxeへ'})
         #players_input = ''
         #while players_input not in ('1','2'):
@@ -35,6 +36,7 @@ class Game():
         self.player_dict = {0:self.player1,1:self.player2,2:self.player3,3:self.player4}
 
         self.kyoku = Kyoku(self.player1,self.player2,self.player3,self.player4)
+
 
 
     def end_kyoku_check(self):

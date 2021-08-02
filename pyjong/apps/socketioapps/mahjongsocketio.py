@@ -15,6 +15,18 @@ from pyjong.apps.mahjong.yama import Yama
 from pyjong.apps.mahjong.game import Game
 
 
+
+#################################################
+###MAHJONG FUNCTIONS
+#################################################
+def cycle_to_human():
+    while room_dict[session['room']][0].kyoku.current_player.is_computer:
+        room_dict[session['room']][0].kyoku.player_turn()
+    room_dict[session['room']][0].kyoku.player_turn()
+
+
+
+
 @socketio.on('start',namespace='/main/game')
 def startgame():
     global room_dict
@@ -41,5 +53,21 @@ def gamecontrol(choice):
     #check what the next input type will be
     if room_dict[session['room']][1] == 'kyokustart_yesno':
         room_dict[session['room']][0].kyoku.kyoku_start_non_computer(choice)
+        cycle_to_human()
+        print('socketio kyoku start yes no')
+    #condition for asking to get rid of a hai and accept mochihai
     elif room_dict[session['room']][1] == 'kyoku_yesno':
         room_dict[session['room']][0].kyoku.player_turn_input(choice)
+        cycle_to_human()
+        print('socketio yesno executed')
+    #condition for asking which hai to throw into kawa
+    elif room_dict[session['room']][1] == 'sutehai':
+        if choice.isdigit():
+            room_dict[session['room']][0].kyoku.current_player.sutehai_user_input(choice)
+            room_dict[session['room']][0].kyoku.after_player_sutehai()
+            cycle_to_human()
+        else:
+            emit('gameupdate',{'msg':'不適切な入力がありました。'})
+
+
+    print(room_dict[session['room']][0].kyoku.current_player.name)

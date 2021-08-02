@@ -12,6 +12,7 @@ class Kyoku():
 
     def __init__(self,player1,player2,player3,player4,bakaze=0,oya=0):
 
+
         self.player1 = player1
         self.player2 = player2
         self.player3 = player3
@@ -53,26 +54,22 @@ class Kyoku():
 
     def board_gui(self,player_turn=False,clear_mochihai=False): #add feature to rotate pic for player2 in future
         if player_turn: #only paste can sutehai if player turn
+            ########FOR DEBUGGING
+            print('gui execution')
+            self.current_player.refresh_can_sutehai_list()
+            print(self.current_player.can_sutehai)
+            for hai in self.current_player.can_sutehai:
+                print(hai)
+                emit('gameupdate',{'msg':str(hai)})
+
+            emit('gameupdate',{'msg':f"もち牌：{self.current_player.mochihai}"})
+            ###################################
             try:
                 self.board_pic.paste(self.current_player.can_sutehai_pic_gen(),(50,520))
-
-                ########FOR DEBUGGING
-                for hai in self.current_player.can_sutehai:
-                    emit('gameupdate',{'msg':hai})
-                ###################################
-
-
-
             except:
                 pass
             try:
                 self.board_pic.paste(self.current_player.mochihai.pic,(500,520))
-
-                ###########debugging##########
-                emit('gameupdate',{'msg':f"もち牌：{self.current_player.mochihai}"})
-                ##################
-
-
             except:
                 pass
 
@@ -233,9 +230,11 @@ class Kyoku():
     def kyoku_start_non_computer(self,choice):
         choice = choice.upper()
         if choice == 'Y':
-            self.current_player.swap_hai()
+            self.current_player.tehai.append(self.current_player.mochihai)
+            self.current_player.mochihai = None
             self.current_player.tehai.sort()
             self.board_gui(True,clear_mochihai=True)
+            ####Sutehai func here
             self.current_player.tenpai_check()
             sutehai = self.current_player.kawa[-1]
             self.pon_kan_chi_check(sutehai)
@@ -302,22 +301,25 @@ class Kyoku():
             self.turn_count += 1
 
     def player_turn_input(self,choice):
-        if player_input == 'Y':
-            self.current_player.swap_hai()
+        if choice == 'Y':
+            self.current_player.tehai.append(self.current_player.mochihai)
+            self.current_player.mochihai = None
             self.board_gui(False,True)
-            self.current_player.tenpai_check()
-            sutehai = self.current_player.kawa[-1]
-            self.pon_kan_chi_check(sutehai)
-            self.next_player()
+            #sutehai func here
+            self.current_player.sutehai()
+
         else:
             self.current_player.kawa.append(self.current_player.mochihai)
             self.current_player.mochihai = None
             self.board_gui(clear_mochihai=True)
-            self.current_player.tenpai_check()
-            sutehai = self.current_player.kawa[-1]
-            self.pon_kan_chi_check(sutehai)
-            self.next_player()
+            
         self.turn_count += 1
+
+    def after_player_sutehai():
+        self.current_player.tenpai_check()
+        sutehai = self.current_player.kawa[-1]
+        self.pon_kan_chi_check(sutehai)
+        self.next_player()
 
 
     def pon_kan_chi_check(self,sutehai):

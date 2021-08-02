@@ -1,6 +1,11 @@
 from pyjong.apps.mahjong.yama import Hai
+from pyjong.apps.socketioapps.mahjongsocketio import room_dict
 from PIL import Image,ImageDraw,ImageFont
+from flask import session
+from flask_socketio import emit
 import copy
+import os
+import random
 
 
 class Player():
@@ -56,19 +61,25 @@ class Player():
         self.is_monzen = True
         self.is_ippatu = True
 
+    def sort_tehai(self):
+        self.tehai.sort()
+
     def add_funds(self,amount):
         self.balance += amount
+        emit('gameupdate',{'msg':f'{self.name}が{amount}ポイントを懐に入れました！\nポイント合計：{self.balance}'})
         print(f'{self.name}が{amount}ポイントを懐に入れました！\nポイント合計：{self.balance}')
 
     def remove_funds(self,amount):
         self.balance -= amount
+        emit('gameupdate',{'msg':f'{self.name}の懐から{amount}ポイントがなくなった！\nポイント合計：{self.balance}'})
         print(f'{self.name}の懐から{amount}ポイントがなくなった！\nポイント合計：{self.balance}')
 
     def can_sutehai_pic_gen(self):
         self.refresh_can_sutehai_list()
         can_sutehai_pic = Image.new('RGB',(390,70),(31,61,12)) #make white BG
         draw = ImageDraw.Draw(can_sutehai_pic) #create editable
-        font = ImageFont.truetype('Arial.ttf',12) #create font for list marking
+        basedir = os.path.abspath(os.path.dirname(__file__))
+        font = ImageFont.truetype(basedir+'/static/'+'Arial.ttf',12) #create font for list marking
         for n,x in enumerate((0,30,60,90,120,150,180,210,240,270,300,330,360)): #length of 13 at max
             draw.text((x+10,51),'{}'.format(n),(255,255,255),font=font)#text at bottom of image
         i = 0
@@ -142,27 +153,18 @@ class Player():
                 self.can_sutehai.append(hai)
         self.can_sutehai.sort()
 
-    def sutehai(self):
+    def sutehai(self,choice=None):
         #refresh can sutehai list
         self.refresh_can_sutehai_list()
         if self.is_computer == False:
-            self.can_sutehai_pic_gen().show()
+            self.can_sutehai_pic_gen()
             input_range = ['{}'.format(x) for x in range(0,len(self.can_sutehai))]
-            #print hai that can be discarded here:
-
-            user_input = ''
-            while user_input not in input_range:
-                user_input = input(f'捨て牌を入力してください。')
-            sutehai_location = (int(user_input))
-            sutehai = self.can_sutehai[sutehai_location]
-            self.kawa.append(sutehai)
-            self.tehai.remove(sutehai)
-            self.kawa_pic_gen()
-            kyoku.board_gui()
-            print(f'{sutehai}を川に捨てました！')
-            time.sleep(1)
+            #emit user choice and pass off to sutehai_user_input
+            emit('gameupdate',{'msg':f'{self.name}、捨て牌を入力してください。'})
+            room_dict[session['room']][1] = 'sutehai'
 
         else:
+            #to be used in func below to set pairs
             sutehai = None
             #try to have the computer be smart about only throwing non mentu hai into the kawa
             non_mentu_hai_count = {hai:self.non_mentu_hai.count(hai) for hai in self.non_mentu_hai}
@@ -178,16 +180,28 @@ class Player():
             self.kawa.append(sutehai)
             self.tehai.remove(sutehai)
             self.kawa_pic_gen()
-            kyoku.board_gui()
+            emit('gameupdate',{'msg':f'{self.name}が{sutehai}を川に捨てました！'})
             print(f'{self.name}が{sutehai}を川に捨てました！')
-            time.sleep(2)
+
+    def sutehai_user_input(self,choice):
+        sutehai_location = (int(user_input))
+        sutehai = self.can_sutehai[sutehai_location]
+        self.kawa.append(sutehai)
+        self.tehai.remove(sutehai)
+        self.kawa_pic_gen()
+        emit('gameupdate',{'msg':f'{sutehai}を川に捨てました！'})
+        print(f'{sutehai}を川に捨てました！')
+
+
+
+
 
     def ron(self,ron_hai,is_ron=False):
         #must add differences for ron and tumo
         can_ron = False
         if len(self.kanchipon_list_gen()) == 0 and self.is_riichi:
             can_ron = True
-        elif kyoku.hai_remaining == 0:
+        elif room_dict[session['room']][0].kyoku.hai_remaining == 0:
             can_ron = True
         else:
             can_ron = self.can_ron_check(ron_hai)
@@ -203,23 +217,25 @@ class Player():
                 while user_input not in ('Y','N'):
                     user_input = input(f'{ron_hai}{text[0]}？\nYもしくはNを入力してください。').upper()
                 if user_input == 'Y':
+                    emit('gameupdate',{'msg':f'{ron_hai}{text[1]}'})
                     print(f'{ron_hai}{text[1]}')
                     self.tehai.append(ron_hai)
                     if is_ron == False:
                         self.is_tumo_agari = True
-                    kyoku.winner = kyoku.current_player
-                    kyoku.kyoku_on = False
+                    room_dict[session['room']][0].kyoku.winner = room_dict[session['room']][0].kyoku.current_player
+                    room_dict[session['room']][0].kyoku.kyoku_on = False
                     self.mentu_check()
                     return True #return true for use with monzen check
                 else:
                     return False
             else:
                 self.tehai.append(ron_hai)
+                emit('gameupdate',{'msg':f'{self.name}が{ron_hai}{text[1]}'})
                 print(f'{self.name}が{ron_hai}{text[1]}')
                 if is_ron == False:
                     self.is_tumo_agari = True
-                kyoku.winner = kyoku.current_player
-                kyoku.kyoku_on = False
+                room_dict[session['room']][0].kyoku.winner = room_dict[session['room']][0].kyoku.current_player
+                room_dict[session['room']][0].kyoku.kyoku_on = False
                 self.mentu_check()
                 return True
 
@@ -244,10 +260,10 @@ class Player():
             elif random.randint(0,7) == 0:
                 self.tehai.append(pon_hai)
                 self.is_monzen = False
+                emit('gameupdate',{'msg':f'{self.name}が{pon_hai}をポンしました！'})
                 print(f'{self.name}が{pon_hai}をポンしました！')
                 self.tenpai_check(not_turn=True)
                 self.sutehai()
-                time.sleep(3)
 
 
     def chi(self,chi_hai):
@@ -276,9 +292,9 @@ class Player():
                 for mentu in self.mentuhai: #add chi mentu into chi hai
                     if chi_hai in mentu:
                         self.chi_hai.extend(mentu)
+                emit('gameupdate',{'msg':f'{self.name}が{chi_hai}をチーしました！'})
                 print(f'{self.name}が{chi_hai}をチーしました！')
                 self.sutehai()
-                time.sleep(3)
 
     def kan(self,kan_hai):
         if kan_hai in self.pon_hai:
@@ -288,6 +304,7 @@ class Player():
             while user_input not in ('Y','N'):
                 user_input = input(f'{kan_hai}をカンしますか？\nYもしくはNを入力してください。').upper()
             if user_input == 'Y':
+                emit('gameupdate',{'msg':f'{kan_hai}をカンしました！'})
                 print(f'{kan_hai}をカンしました！')
                 self.kan_hai.append(kan_hai)
                 self.tenpai_check(not_turn=True)
@@ -297,9 +314,9 @@ class Player():
                 return False
         else:
             self.kan_hai.append(kan_hai)
+            emit('gameupdate',{'msg':f'{self.name}が{kan_hai}をカンしました！'})
             print(f'{self.name}が{kan_hai}をカンしました！')
             self.tenpai_check(not_turn=True)
-            time.sleep(3)
             return True
 
     def mochihai_kan(self,mochihai):
@@ -307,6 +324,7 @@ class Player():
         while user_input not in ('Y','N'):
             user_input = input(f'持ち牌の{mochihai}をカンしますか？\nYもしくはNを入力してください。').upper()
         if user_input == 'Y':
+            emit('gameupdate',{'msg':f'{mochihai}をカンしました！'})
             print(f'{mochihai}をカンしました！')
             self.kan_hai.append(mochihai)
             self.tenpai_check(not_turn=True)
@@ -323,9 +341,6 @@ class Player():
         return False
 
 
-
-    def sort_tehai(self):
-        self.tehai.sort()
 
     def ascending_mentu_finder(self,hai_list):
         sequence_hai = []
@@ -498,15 +513,17 @@ class Player():
                     player_input = input('リーチしますか？（Y/N）').upper()
                 if player_input == 'Y':
                     self.is_riichi = True
-                    if kyoku.turn_count <= 4:
+                    if room_dict[session['room']][0].kyoku.turn_count <= 4:
                         self.double_riichi = True
+                    emit('gameupdate',{'msg':f'{self.name}はリーチしました！'})
                     print(f'{self.name}はリーチしました！')
                 else:
                     self.is_riichi = False
             elif self.is_computer == True and self.balance > 1000 and len(self.chi_hai) == 0 and len(self.pon_hai) == 0:
                 self.is_riichi = True
-                if kyoku.turn_count <= 4:
+                if room_dict[session['room']][0].kyoku.turn_count <= 4:
                         self.double_riichi = True
+                emit('gameupdate',{'msg':f'{self.name}はリーチしました！'})
                 print(f'{self.name}はリーチしました！')
 
 
