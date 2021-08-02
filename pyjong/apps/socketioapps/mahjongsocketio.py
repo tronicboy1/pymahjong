@@ -97,6 +97,9 @@ def gamecontrol(choice):
         if choice in ('Y','N'):
             if choice == 'Y':
                 room_dict[session['room']][0].kyoku.current_player.kan_user_input()
+                room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.player_dict[room_dict[session['room']][0].kyoku.ponkanchi_start_player]
+                room_dict[session['room']][1] = 'cycle'
+                cycle_to_human()
             else:
                 room_dict[session['room']][0].kyoku.current_player.tenpai_check()
                 room_dict[session['room']][0].kyoku.pon_kan_chi_check_sutehai = self.current_player.kawa[-1]
@@ -115,6 +118,7 @@ def gamecontrol(choice):
                 room_dict[session['room']][0].kyoku.board_gui(False,True)
                 emit('gameupdate',{'msg':'{}、捨て牌を入力してください。'.format(room_dict[session['room']][0].kyoku.current_player.name)})
                 room_dict[session['room']][1] = 'pon_sutehai'
+                print('pon choice yes')
 
             else:
                 room_dict[session['room']][0].kyoku.after_player_pon()
@@ -127,8 +131,7 @@ def gamecontrol(choice):
         if choice.isdigit():
             #check to make sure input is in valid range
             if choice < len(room_dict[session['room']][0].kyoku.current_player.can_sutehai):
-                room_dict[session['room']][0].kyoku.current_player.pon_user_input(choice)
-                room_dict[session['room']][0].kyoku.after_player_chi()
+                room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.player_dict[room_dict[session['room']][0].kyoku.ponkanchi_start_player]
                 room_dict[session['room']][1] = 'cycle'
                 cycle_to_human()
         else:
@@ -154,8 +157,7 @@ def gamecontrol(choice):
         if choice.isdigit():
             #check to make sure input is in valid range
             if choice < len(room_dict[session['room']][0].kyoku.current_player.can_sutehai):
-                room_dict[session['room']][0].kyoku.current_player.chi_user_input(choice)
-                room_dict[session['room']][0].kyoku.after_player_chi()
+                room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.player_dict[room_dict[session['room']][0].kyoku.ponkanchi_start_player]
                 room_dict[session['room']][1] = 'cycle'
                 cycle_to_human()
         else:

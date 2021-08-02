@@ -52,13 +52,13 @@ class Kyoku():
         else:
             self.current_player = self.player_dict[self.turn]
             self.turn += 1
+        print('next player executed',self.current_player.name)
 
     def board_gui(self,player_turn=False,clear_mochihai=False): #add feature to rotate pic for player2 in future
         if player_turn: #only paste can sutehai if player turn
             ########FOR DEBUGGING
             print('hai in tehai:',len(self.current_player.tehai))
             self.current_player.refresh_can_sutehai_list()
-            print(self.current_player.can_sutehai)
             for i,hai in enumerate(self.current_player.can_sutehai):
                 print(i,hai)
                 emit('gameupdate',{'msg':f'{i}:{hai}'})
@@ -310,6 +310,7 @@ class Kyoku():
 
         else:
             self.current_player.kawa.append(self.current_player.mochihai)
+            emit('gameupdate',{'msg':f'{self.current_player.name}が{self.current_player.mochihai}を川に捨てました！'})
             self.current_player.mochihai = None
             self.board_gui(clear_mochihai=True)
             self.next_player()
@@ -350,18 +351,23 @@ class Kyoku():
                 if self.current_player.ron(self.pon_kan_chi_check_sutehai,True):
                     self.current_player = self.player_dict[start_player]
             #check if the next player can chi previous player's sutehai
-            if room_dict[session['room']][2] == 0 and room_dict[session['room']][1] == 'cycle':
+            print('chi check')
+            if room_dict[session['room']][2] == 0:
                 if self.pon_kan_chi_check_sutehai in self.current_player.can_chi_hai and self.current_player.is_riichi == False:
                     self.current_player.chi(self.pon_kan_chi_check_sutehai)
+                    #break if current user is not a computer to wait for input
+                    if self.current_player.is_computer == False:
+                        break
             #check for possible kan
-            if self.pon_kan_chi_check_sutehai in self.current_player.can_kan_hai and self.current_player.is_riichi == False and room_dict[session['room']][1] == 'cycle':
+            print('kan check')
+            if self.pon_kan_chi_check_sutehai in self.current_player.can_kan_hai and self.current_player.is_riichi == False:
                 if self.current_player.kan(self.pon_kan_chi_check_sutehai):
                     self.new_dora()
                     self.current_player.is_monzen = False
                     self.current_player.mochihai = self.wanpai[0].pop(0)
                     self.current_player.tenpai_check(not_turn=True)
                     self.player_turn()
-
+                    break
                     #Will figure out an implementation of chankan check later
                     # n = 0 #chankan check
                     # while n<3:
@@ -371,10 +377,18 @@ class Kyoku():
                     #         if self.current_player.ron(sutehai,True):
                     #             self.current_player.is_chankan = True
             #check for possible pon
-            elif self.pon_kan_chi_check_sutehai in self.current_player.can_pon_hai and self.current_player.is_riichi == False and room_dict[session['room']][1] == 'cycle':
+            print('pon check')
+            if self.pon_kan_chi_check_sutehai in self.current_player.can_pon_hai and self.current_player.is_riichi == False:
                 self.current_player.pon(self.pon_kan_chi_check_sutehai)
+                #break if current user is not a computer to wait for input
+                if self.current_player.is_computer == False:
+                    break
+
+            #add 1 to iteration key
             room_dict[session['room']][2] +=1
+
         #set next player to go back to start
+        # check if key was changed before changing player
         if room_dict[session['room']][1] == 'cycle':
             self.next_player()
 

@@ -203,6 +203,10 @@ class Player():
 
 
     def ron(self,ron_hai,is_ron=False):
+        if self.is_ron == False:
+            text = ('ツモりますか','をツモった！')
+        else:
+            text = ('ロンしますか','をロンした！')
         #must add differences for ron and tumo
         self.can_ron = False
         self.is_ron = is_ron
@@ -260,6 +264,7 @@ class Player():
             print('pon check')
             emit('gameupdate',{'msg':f'{self.name}、{pon_hai}をポンしますか？\nYもしくはNを入力してください。'})
             room_dict[session['room']][1] = 'pon_yesno'
+
 
         else:
             if self.is_tenpatteru == True:
