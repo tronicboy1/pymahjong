@@ -141,6 +141,7 @@ def gamecontrol(choice):
             choice = int(choice)
             #check to make sure input is in valid range
             if choice < len(room_dict[session['room']][0].kyoku.current_player.can_sutehai):
+                room_dict[session['room']][0].kyoku.current_player.pon_user_input(choice)
                 room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.player_dict[room_dict[session['room']][0].kyoku.ponkanchi_start_player]
                 room_dict[session['room']][1] = 'cycle'
                 cycle_to_human()
