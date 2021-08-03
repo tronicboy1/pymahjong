@@ -15,6 +15,14 @@ class Hai:
         self.japanese_zoku_yomi = {0:'',1:'ソウ',2:'ピン',3:'ワン'}
         self.pic = Image.open(basedir + '/static/'+'{},{}.jpg'.format(zoku,value))
         self.pic = self.pic.resize((60,100))
+        def pic_corner_round(img):
+            rounded_rect = Image.new('L',img.size,'black')
+            draw = ImageDraw.Draw(rounded_rect)
+            draw.rounded_rectangle((0,0,img.size[0],img.size[1]),radius=20,fill='white')
+            img.putalpha(rounded_rect)
+            return img
+        self.pic = pic_corner_round(self.pic)
+
 
         self.zoku = zoku
 
