@@ -6,6 +6,8 @@ from pyjong.apps.mahjong.yama import Yama
 from pyjong.apps.socketioapps.mahjongsocketio import room_dict
 from flask_socketio import emit
 from flask import session
+import base64
+
 
 
 class Kyoku():
@@ -113,7 +115,18 @@ class Kyoku():
             self.current_player.refresh_can_sutehai_list()
             self.board_pic.paste(self.current_player.can_sutehai_pic_gen(),(50,520))
 
-        return self.board_pic.resize((300,300))
+        ####################################
+        ####Emit board gui
+        ##################################
+
+        file_name = os.path.join(os.path.abspath(os.path.dirname(__file__)),'static','gui',(session['room']+'.jpg'))
+        self.board_pic.resize((300,300))
+        self.board_pic.save(file_name)
+        with open(file_name,'rb') as f:
+            encoded_gui = base64.b64encode(f.read())
+            emit('board_gui',encoded_gui,broadcast=True)
+            f.close()
+
 
     def simple_hai_displayer(self):
         emit('gameupdate',{'msg':f'{self.current_player.name}の手牌：'})

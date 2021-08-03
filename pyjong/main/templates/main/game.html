@@ -3,92 +3,6 @@
 {% block content %}
 
 
-
-<!-- Game script -->
-
-
-
-
-
-
-
-<!-- Chat room　script  -->
-          <script type="text/javascript" charset="utf-8">
-              var socket;
-              $(document).ready(function(){
-                  socket = io.connect('http://' + document.domain + ':' + location.port + '/main/game');
-                  socket.on('connect', function() {
-                      socket.emit('joined', {});
-                      console.log('connected');
-                  });
-                  socket.on('status', function(data) {
-                      $('#chat').val($('#chat').val() + '・' + data.msg + '\n');
-                      $('#chat').scrollTop($('#chat')[0].scrollHeight);
-                      console.log('status func')
-                  });
-                  socket.on('message', function(data) {
-                      $('#chat').val($('#chat').val() + data.msg + '\n');
-                      $('#chat').scrollTop($('#chat')[0].scrollHeight);
-                      console.log('message func')
-                  });
-                  socket.on('gameupdate', function(data) {
-                      $('#game').val($('#game').val() + data.msg + '\n');
-                      $('#game').scrollTop($('#game')[0].scrollHeight);
-                      console.log('game message func')
-                  });
-                  $('#text').keypress(function(e) {
-                      var code = e.keyCode || e.which;
-                      console.log('keypress')
-                      if (code == 13) {
-                          text = $('#text').val();
-                          $('#text').val('');
-                          socket.emit('text', {msg: text});
-                          console.log('emit text',text)
-
-                      }
-                  });
-                  $('#gamecontrol').keypress(function(e) {
-                      var code = e.keyCode || e.which;
-                      console.log('keypress')
-                      if (code == 13) {
-                          text = $('#gamecontrol').val();
-                          $('#gamecontrol').val('');
-                          socket.emit('gamecontrol', {msg: text});
-                          console.log('emit text',text)
-
-                      }
-                  });
-                  $('#startsolo').on('click', function() {
-                    socket.emit('startsolo');
-                    console.log('startsolo')
-                  });
-                  $('#gamestart').on('click', function() {
-                    socket.emit('start');
-                    console.log('gamestart')
-                  });
-                  $('#gamestart2').on('click', function() {
-                    socket.emit('gamecheck');
-                    console.log('gamecheck')
-                  });
-
-              });
-              function leave_room() {
-                  socket.emit('left', {}, function() {
-                      socket.disconnect();
-
-                      // go back to the friends page
-                      window.location.href = "{{ url_for('main.friends') }}";
-                  });
-              }
-          </script>
-
-
-
-
-
-
-
-
 {% if session['in_room'] == True %}
 
 
@@ -104,6 +18,10 @@
 <div class="float-end">
   <button type="button" id="gamestart" class="btn btn-outline-primary">ゲームをスタート</button>
 </div>
+</div>
+
+<div class="" id="display">
+  <canvas id="guiimg" width="300" height="300"></canvas>
 </div>
 
 <div class="container pt-2">
@@ -182,6 +100,96 @@
 {% endif %}
 
 
+<!-- Chat room/game　script  -->
+          <script type="text/javascript" charset="utf-8">
+              var socket;
+
+              $(document).ready(function(){
+                  socket = io.connect('http://' + document.domain + ':' + location.port + '/main/game');
+                  socket.on('connect', function() {
+                      socket.emit('joined', {});
+                      console.log('connected');
+                  });
+                  socket.on('status', function(data) {
+                      $('#chat').val($('#chat').val() + '・' + data.msg + '\n');
+                      $('#chat').scrollTop($('#chat')[0].scrollHeight);
+                      console.log('status func')
+                  });
+                  socket.on('message', function(data) {
+                      $('#chat').val($('#chat').val() + data.msg + '\n');
+                      $('#chat').scrollTop($('#chat')[0].scrollHeight);
+                      console.log('message func')
+                  });
+                  socket.on('gameupdate', function(data) {
+                      $('#game').val($('#game').val() + data.msg + '\n');
+                      $('#game').scrollTop($('#game')[0].scrollHeight);
+                      console.log('game message func')
+                  });
+                  window.addEventListener('DOMContentLoaded', (event) => {
+                    console.log('DOM fully loaded and parsed');
+                  });
+                  socket.on("board_gui",function(data){
+                    var canvas = document.getElementById("guiimg");
+                    var ctx = canvas.getContext("2d");
+                    console.log('image received')
+                    var img = new Image();
+                    img.onload = start;
+                    img.src = 'data:image/jpeg;base64' + data.buffer;
+                    function start(){
+                      ctx.drawImage(img,0,0);
+                    };
+
+                      // document.getElementById("guiimg").src = "data:image/jpeg;base64," + data.buffer;
+                      console.log('image received')
+                    });
+                  $('#text').keypress(function(e) {
+                      var code = e.keyCode || e.which;
+                      console.log('keypress')
+                      if (code == 13) {
+                          text = $('#text').val();
+                          $('#text').val('');
+                          socket.emit('text', {msg: text});
+                          console.log('emit text',text)
+
+                      }
+                  });
+                  $('#gamecontrol').keypress(function(e) {
+                      var code = e.keyCode || e.which;
+                      console.log('keypress')
+                      if (code == 13) {
+                          text = $('#gamecontrol').val();
+                          $('#gamecontrol').val('');
+                          socket.emit('gamecontrol', {msg: text});
+                          console.log('emit text',text)
+
+                      }
+                  });
+                  $('#startsolo').on('click', function() {
+                    socket.emit('startsolo');
+                    console.log('startsolo')
+                  });
+                  $('#gamestart').on('click', function() {
+                    socket.emit('start');
+                    console.log('gamestart')
+                  });
+                  $('#gamestart2').on('click', function() {
+                    socket.emit('gamecheck');
+                    console.log('gamecheck')
+                  });
+
+
+
+              });
+              function leave_room() {
+                  socket.emit('left', {}, function() {
+                      socket.disconnect();
+
+                      // go back to the friends page
+                      window.location.href = "{{ url_for('main.friends') }}";
+                  });
+              }
+
+          </script>
 
 
 {% endblock %}
