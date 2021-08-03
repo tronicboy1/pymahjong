@@ -283,7 +283,7 @@ class Player():
         self.is_monzen = False
         self.tenpai_check(not_turn=True)
         for mentu in self.mentuhai: #add pon mentu into pon hai
-            if pon_hai in mentu:
+            if room_dict[session['room']][0].kyoku.pon_kan_chi_check_sutehai in mentu:
                 self.pon_hai.extend(mentu)
 
 
@@ -318,7 +318,7 @@ class Player():
         self.is_monzen = False
         self.tenpai_check(not_turn=True)
         for mentu in self.mentuhai: #add chi mentu into chi hai
-            if chi_hai in mentu:
+            if room_dict[session['room']][0].kyoku.pon_kan_chi_check_sutehai in mentu:
                 self.chi_hai.extend(mentu)
 
 
@@ -753,7 +753,7 @@ class Player():
                     ron_new_mentu.remove(hai)
         ron_mentuhai.append(ron_new_mentu)
 
-        for yaku_hai in (Hai(0,game.kazamuki),Hai(0,4),Hai(0,5),Hai(0,6)): #yakuhai check
+        for yaku_hai in (Hai(0,room_dict[session['room']][0].kazamuki),Hai(0,4),Hai(0,5),Hai(0,6)): #yakuhai check
             for mentu in ron_mentuhai:
                 if yaku_hai in mentu:
                     return True
