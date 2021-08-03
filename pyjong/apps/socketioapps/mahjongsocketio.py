@@ -78,10 +78,14 @@ def gamecontrol(choice):
     #condition for asking which hai to throw into kawa
     elif room_dict[session['room']][1] == 'sutehai':
         if choice.isdigit():
-            room_dict[session['room']][0].kyoku.current_player.sutehai_user_input(choice)
-            room_dict[session['room']][0].kyoku.after_player_sutehai()
-            room_dict[session['room']][1] = 'cycle'
-            cycle_to_human()
+            #convert choice to integer
+            choice = int(choice)
+            #check to make sure input is in valid range
+            if choice < len(room_dict[session['room']][0].kyoku.current_player.can_sutehai):
+                room_dict[session['room']][0].kyoku.current_player.sutehai_user_input(choice)
+                room_dict[session['room']][0].kyoku.after_player_sutehai()
+                room_dict[session['room']][1] = 'cycle'
+                cycle_to_human()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'})
     #condition for ron atama_check
@@ -133,6 +137,8 @@ def gamecontrol(choice):
     #accept user sutehai choice after chi
     elif room_dict[session['room']][1] == 'pon_sutehai':
         if choice.isdigit():
+            #convert choice to integer
+            choice = int(choice)
             #check to make sure input is in valid range
             if choice < len(room_dict[session['room']][0].kyoku.current_player.can_sutehai):
                 room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.player_dict[room_dict[session['room']][0].kyoku.ponkanchi_start_player]
@@ -159,6 +165,7 @@ def gamecontrol(choice):
     #accept user sutehai choice after chi
     elif room_dict[session['room']][1] == 'chi_sutehai':
         if choice.isdigit():
+            choice = int(choice)
             #check to make sure input is in valid range
             if choice < len(room_dict[session['room']][0].kyoku.current_player.can_sutehai):
                 room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.player_dict[room_dict[session['room']][0].kyoku.ponkanchi_start_player]
