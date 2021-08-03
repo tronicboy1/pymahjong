@@ -120,12 +120,20 @@ class Kyoku():
         ##################################
 
         file_name = os.path.join(os.path.abspath(os.path.dirname(__file__)),'static','gui',(session['room']+'.jpg'))
-        self.board_pic.resize((300,300))
+        self.board_pic.resize((600,600))
         self.board_pic.save(file_name)
+        # with open(file_name,'rb') as f:
+        #     encoded_gui = base64.b64encode(f.read())
+        #     emit('board_gui',{'img':encoded_gui},broadcast=True,namespace='/main/game')
+        #     f.close()
+        #     print('img sent')
         with open(file_name,'rb') as f:
-            encoded_gui = base64.b64encode(f.read())
-            emit('board_gui',encoded_gui,broadcast=True)
+            gui_binary = f.read()
+            print(gui_binary)
+            emit('board_gui',{'img':gui_binary},broadcast=True)
             f.close()
+
+        ##############################
 
 
     def simple_hai_displayer(self):

@@ -20,8 +20,8 @@
 </div>
 </div>
 
-<div class="" id="display">
-  <canvas id="guiimg" width="300" height="300"></canvas>
+<div class="px-5" id="display">
+<img id="guiimg" src="" alt="" width="300" height="300">
 </div>
 
 <div class="container pt-2">
@@ -125,23 +125,15 @@
                       $('#game').scrollTop($('#game')[0].scrollHeight);
                       console.log('game message func')
                   });
-                  window.addEventListener('DOMContentLoaded', (event) => {
-                    console.log('DOM fully loaded and parsed');
+                  socket.on('board_gui', function(data) {
+                    var arrayBufferView = new Uint8Array( data.img );
+                    var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
+                    var urlCreator = window.URL || window.webkitURL;
+                    var imageUrl = urlCreator.createObjectURL( blob );
+                    var image_id = document.getElementById('guiimg');
+                    image_id.src = imageUrl;
                   });
-                  socket.on("board_gui",function(data){
-                    var canvas = document.getElementById("guiimg");
-                    var ctx = canvas.getContext("2d");
-                    console.log('image received')
-                    var img = new Image();
-                    img.onload = start;
-                    img.src = 'data:image/jpeg;base64' + data.buffer;
-                    function start(){
-                      ctx.drawImage(img,0,0);
-                    };
-
-                      // document.getElementById("guiimg").src = "data:image/jpeg;base64," + data.buffer;
-                      console.log('image received')
-                    });
+                
                   $('#text').keypress(function(e) {
                       var code = e.keyCode || e.which;
                       console.log('keypress')
