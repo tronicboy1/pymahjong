@@ -82,20 +82,21 @@ class Player():
 
     def can_sutehai_pic_gen(self):
         self.refresh_can_sutehai_list()
-        can_sutehai_pic = Image.new('RGB',(390,70),(31,61,12)) #make white BG
+        #adjust size to be same as hai pic
+        can_sutehai_pic = Image.new('RGB',(840,120),(31,61,12)) #make green BG
         draw = ImageDraw.Draw(can_sutehai_pic) #create editable
         basedir = os.path.abspath(os.path.dirname(__file__))
-        font = ImageFont.truetype(basedir+'/static/'+'Arial.ttf',12) #create font for list marking
-        for n,x in enumerate((0,30,60,90,120,150,180,210,240,270,300,330,360)): #length of 13 at max
-            draw.text((x+10,51),'{}'.format(n),(255,255,255),font=font)#text at bottom of image
+        font = ImageFont.truetype(basedir+'/static/'+'Arial.ttf',20) #create font for list marking
+        for n,x in enumerate([x*60 for x in range(0,14)]): #length of 14 at max
+            draw.text((x+20,101),'{}'.format(n),(255,255,255),font=font)#text at bottom of image
         i = 0
-        for x in (0,30,60,90,120,150,180,210,240,270,300,330,360):#paste all the hai that are not pon chi kan
+        for x in [x*60 for x in range(0,13)]:#paste all the hai that are not pon chi kan
             if i > len(self.can_sutehai)-1:
                 break
             else:
                 can_sutehai_pic.paste(self.can_sutehai[i].pic,(x,0))
                 i += 1
-        return can_sutehai_pic #display kawa
+        return can_sutehai_pic.resize((int(can_sutehai_pic.size[0]*.75),int(can_sutehai_pic.size[1]*.75))) #display kawa
 
     def kanchipon_list_gen(self):
         kanchipon_list = []
@@ -120,9 +121,10 @@ class Player():
                 if i > len(kanchipon_list)-1:
                     break
                 else:
-                    im.paste(kanchipon_list[i].pic,(x,0))
+                    im.paste(kanchipon_list[i].pic.resize((30,50)),(x,0))
                     i += 1
             return im.resize((int(im.size[0]*.75),int(im.size[1]*.75)))
+
         else:
             pass
 
@@ -135,7 +137,9 @@ class Player():
                 if i > (len(self.kawa)-1): #stop printing hai when at end of kawa length
                     break
                 else:
-                    kawa_pic.paste(self.kawa[i].pic,(x,y))
+                    paste_pic = self.kawa[i].pic
+                    paste_pic = paste_pic.resize((30,50))
+                    kawa_pic.paste(paste_pic,(x,y))
                     i += 1
         return kawa_pic
 

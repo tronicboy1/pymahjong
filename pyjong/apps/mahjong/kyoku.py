@@ -39,13 +39,13 @@ class Kyoku():
         self.hai_remaining = 0
         self.kyoku_on = True #use this to end kyoku when winner is declared
         self.winner = None
-        self.board_pic = Image.new('RGB',(600,600),(31,61,12))
+        self.board_pic = Image.new('RGB',(1000,600),(31,61,12))
         self.senbou = Image.open(basedir+'senbou.jpeg').reduce(3)
         self.riichi_turn_count = 0
         self.turn_count = 0
         self.ponkanchi_start_player = 0
 
-        self.board_pic.paste(self.bakaze.resize((30,30)),(285,285))
+        self.board_pic.paste(self.bakaze.resize((30,50)),(485,250))
 
     def next_player(self):
         if self.turn == 3:
@@ -68,17 +68,17 @@ class Kyoku():
             emit('gameupdate',{'msg':f"もち牌：{self.current_player.mochihai}"})
             ###################################
             try:
-                self.board_pic.paste(self.current_player.can_sutehai_pic_gen(),(50,520))
+                self.board_pic.paste(self.current_player.can_sutehai_pic_gen(),(100,500))
             except:
                 pass
             try:
-                self.board_pic.paste(self.current_player.mochihai.pic,(500,520))
+                self.board_pic.paste(self.current_player.mochihai.pic,(800,480))
             except:
                 pass
 
          #paste new kawa after players finish
         if self.current_player == self.player1:
-            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((135,150)),(233,360))
+            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)),(433,300))
             try:
                 self.board_pic.paste(self.current_player.kanchipon_pic_gen(),(10,470))
             except:
@@ -86,7 +86,7 @@ class Kyoku():
             if self.current_player.is_riichi:
                 self.board_pic.paste(self.senbou,(250,340))
         elif self.current_player == self.player2:
-            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((135,150)).rotate(90,expand=True),(420,233))
+            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)).rotate(90,expand=True),(780,120))
             try:
                 self.board_pic.paste(self.current_player.kanchipon_pic_gen().rotate(90,expand=True),(550,450))
             except:
@@ -111,9 +111,9 @@ class Kyoku():
                 self.board_pic.paste(self.senbou.rotate(270,expand=True),(170,250))
 
         if clear_mochihai:
-            self.board_pic.paste(Image.new('RGB',(30,50),(31,61,12)),(500,520))
+            self.board_pic.paste(Image.new('RGB',(60,100),(31,61,12)),(800,480))
             self.current_player.refresh_can_sutehai_list()
-            self.board_pic.paste(self.current_player.can_sutehai_pic_gen(),(50,520))
+            self.board_pic.paste(self.current_player.can_sutehai_pic_gen(),(100,500))
 
         ####################################
         ####Emit board gui
@@ -129,7 +129,6 @@ class Kyoku():
         #     print('img sent')
         with open(file_name,'rb') as f:
             gui_binary = f.read()
-            print(gui_binary)
             emit('board_gui',{'img':gui_binary},broadcast=True)
             f.close()
 

@@ -13,7 +13,7 @@
 </div>
 
 <!-- MahJong -->
-<div class="container">
+<div class="container py-2">
 <h3><strong>Game</strong></h3>
 <div class="float-end">
   <button type="button" id="gamestart" class="btn btn-outline-primary">ゲームをスタート</button>
@@ -21,7 +21,7 @@
 </div>
 
 <div class="px-5" id="display">
-<img id="guiimg" src="" alt="" width="300" height="300">
+<img id="guiimg" src="" alt="" width="500" height="300" class="img-fluid rounded mx-auto d-block">
 </div>
 
 <div class="container pt-2">
@@ -133,7 +133,7 @@
                     var image_id = document.getElementById('guiimg');
                     image_id.src = imageUrl;
                   });
-                
+
                   $('#text').keypress(function(e) {
                       var code = e.keyCode || e.which;
                       console.log('keypress')

@@ -14,7 +14,7 @@ class Hai:
         self.japanese_value = {0:'イー',1:'リャン',2:'サン',3:'スー',4:'ウー',5:'ロー',6:'チー',7:'バー',8:'キュー'}
         self.japanese_zoku_yomi = {0:'',1:'ソウ',2:'ピン',3:'ワン'}
         self.pic = Image.open(basedir + '/static/'+'{},{}.jpg'.format(zoku,value))
-        self.pic = self.pic.resize((30,50))
+        self.pic = self.pic.resize((60,100))
 
         self.zoku = zoku
 
