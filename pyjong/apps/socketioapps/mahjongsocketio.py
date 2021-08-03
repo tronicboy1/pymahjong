@@ -54,23 +54,27 @@ def gamecontrol(choice):
     print(choice)
     #check what the next input type will be
     if room_dict[session['room']][1] == 'kyokustart_yesno':
-        if choice == 'Y':
-            room_dict[session['room']][0].kyoku.kyoku_start_non_computer(choice)
+        if choice in ('Y','N'):
+            if choice == 'Y':
+                room_dict[session['room']][0].kyoku.kyoku_start_non_computer(choice)
+            else:
+                room_dict[session['room']][0].kyoku.kyoku_start_non_computer(choice)
+                #'cycle' added to prevent false input and stop cycler for kan chi pon check
+                room_dict[session['room']][1] = 'cycle'
+                cycle_to_human()
         else:
-            room_dict[session['room']][0].kyoku.kyoku_start_non_computer(choice)
-            #'cycle' added to prevent false input and stop cycler for kan chi pon check
-            room_dict[session['room']][1] = 'cycle'
-            cycle_to_human()
-        print('socketio kyoku start yes no')
+            emit('gameupdate',{'msg':'不適切な入力がありました。'})
     #condition for asking to get rid of a hai and accept mochihai
     elif room_dict[session['room']][1] == 'kyoku_yesno':
-        if choice == 'Y':
-            room_dict[session['room']][0].kyoku.player_turn_input(choice)
+        if choice in ('Y','N'):
+            if choice == 'Y':
+                room_dict[session['room']][0].kyoku.player_turn_input(choice)
+            else:
+                room_dict[session['room']][0].kyoku.player_turn_input(choice)
+                room_dict[session['room']][1] = 'cycle'
+                cycle_to_human()
         else:
-            room_dict[session['room']][0].kyoku.player_turn_input(choice)
-            room_dict[session['room']][1] = 'cycle'
-            cycle_to_human()
-        print('socketio yesno executed')
+            emit('gameupdate',{'msg':'不適切な入力がありました。'})
     #condition for asking which hai to throw into kawa
     elif room_dict[session['room']][1] == 'sutehai':
         if choice.isdigit():
