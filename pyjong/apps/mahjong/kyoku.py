@@ -45,7 +45,7 @@ class Kyoku():
         self.turn_count = 0
         self.ponkanchi_start_player = 0
 
-        self.board_pic.paste(self.bakaze.resize((30,50)),(485,250))
+        self.board_pic.paste(self.bakaze.resize((30,50)),(485,245))
 
     def next_player(self):
         if self.turn == 3:
@@ -78,7 +78,7 @@ class Kyoku():
 
          #paste new kawa after players finish
         if self.current_player == self.player1:
-            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)),(433,300))
+            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)),(400,300))
             try:
                 self.board_pic.paste(self.current_player.kanchipon_pic_gen(),(10,470))
             except:
@@ -86,7 +86,7 @@ class Kyoku():
             if self.current_player.is_riichi:
                 self.board_pic.paste(self.senbou,(250,340))
         elif self.current_player == self.player2:
-            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)).rotate(90,expand=True),(780,120))
+            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)).rotate(90,expand=True),(500,120))
             try:
                 self.board_pic.paste(self.current_player.kanchipon_pic_gen().rotate(90,expand=True),(550,450))
             except:
