@@ -45,7 +45,7 @@ class Kyoku():
         self.turn_count = 0
         self.ponkanchi_start_player = 0
 
-        self.board_pic.paste(self.bakaze.resize((30,50)),(485,245))
+        self.board_pic.paste(self.bakaze.resize((30,50)),(485,275))
 
     def next_player(self):
         if self.turn == 3:
@@ -57,65 +57,75 @@ class Kyoku():
         print('next player executed',self.current_player.name)
 
     def board_gui(self,player_turn=False,clear_mochihai=False): #add feature to rotate pic for player2 in future
-        if player_turn: #only paste can sutehai if player turn
-            ########FOR DEBUGGING
-            print('hai in tehai:',len(self.current_player.tehai))
+        def send_tehai():
             self.current_player.refresh_can_sutehai_list()
-            for i,hai in enumerate(self.current_player.can_sutehai):
-                print(i,hai)
-                emit('gameupdate',{'msg':f'{i}:{hai}'})
-
-            emit('gameupdate',{'msg':f"もち牌：{self.current_player.mochihai}"})
-            ###################################
-            #send image to tehai
             byte_arr = io.BytesIO()
             self.current_player.can_sutehai_pic_gen().save(byte_arr,format='jpeg')
             byte_arr = byte_arr.getvalue()
             emit('tehaiimg',{'img':byte_arr},broadcast=True,namespace='/main/game')
 
+        if player_turn: #only paste can sutehai if player turn
+            ########FOR DEBUGGING
+            # print('hai in tehai:',len(self.current_player.tehai))
+            # self.current_player.refresh_can_sutehai_list()
+            # for i,hai in enumerate(self.current_player.can_sutehai):
+            #     print(i,hai)
+            #     emit('gameupdate',{'msg':f'{i}:{hai}'})
+            #
+            # emit('gameupdate',{'msg':f"もち牌：{self.current_player.mochihai}"})
+            ###################################
+            #send image to tehai
+            send_tehai()
+
             try:
+                #send mochihai if mochihai object is not None
                 self.board_pic.paste(self.current_player.mochihai.pic,(800,480))
             except:
+                #send white slate if mochihai object is None
                 pass
+
+            #update kawa pics
 
          #paste new kawa after players finish
         if self.current_player == self.player1:
-            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)),(400,300))
+
+            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)),(420,390))
             try:
-                self.board_pic.paste(self.current_player.kanchipon_pic_gen(),(10,470))
+                self.board_pic.paste(self.current_player.kanchipon_pic_gen(),(10,540))
             except:
                 pass
             if self.current_player.is_riichi:
-                self.board_pic.paste(self.senbou,(250,340))
+                self.board_pic.paste(self.senbou,(450,350))
         elif self.current_player == self.player2:
-            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)).rotate(90,expand=True),(500,120))
+            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)).rotate(90,expand=True),(790,200))
             try:
                 self.board_pic.paste(self.current_player.kanchipon_pic_gen().rotate(90,expand=True),(550,450))
             except:
                 pass
             if self.current_player.is_riichi:
-                self.board_pic.paste(self.senbou.rotate(90,expand=True),(400,250))
+                self.board_pic.paste(self.senbou.rotate(90,expand=True),(510,270))
         elif self.current_player == self.player3:
-            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((135,150)).rotate(180,expand=True),(233,0))
+
+            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)).rotate(180,expand=True),(420,10))
             try:
-                self.board_pic.paste(self.current_player.kanchipon_pic_gen().rotate(180,expand=True),(500,10))
+                self.board_pic.paste(self.current_player.kanchipon_pic_gen().rotate(180,expand=True),(900,10))
             except:
                 pass
             if self.current_player.is_riichi:
-                self.board_pic.paste(self.senbou.rotate(180,expand=True),(250,170))
+                self.board_pic.paste(self.senbou.rotate(180,expand=True),(450,270))
         elif self.current_player == self.player4:
-            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((135,150)).rotate(270,expand=True),(0,233))
+
+            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)).rotate(270,expand=True),(10,200))
             try:
-                self.board_pic.paste(self.current_player.kanchipon_pic_gen().rotate(270,expand=True),(10,40))
+                self.board_pic.paste(self.current_player.kanchipon_pic_gen().rotate(270,expand=True),(10,65))
             except:
                 pass
             if self.current_player.is_riichi:
-                self.board_pic.paste(self.senbou.rotate(270,expand=True),(170,250))
+                self.board_pic.paste(self.senbou.rotate(270,expand=True),(340,270))
 
         if clear_mochihai:
             self.board_pic.paste(Image.new('RGB',(60,100),(31,61,12)),(800,480))
-            self.current_player.refresh_can_sutehai_list()
-            self.board_pic.paste(self.current_player.can_sutehai_pic_gen(),(100,500))
+            send_tehai()
 
         ####################################
         ####Emit board gui
@@ -222,12 +232,11 @@ class Kyoku():
         if self.current_player.is_computer == False:
             self.board_gui(player_turn=True)
             if self.current_player.mochihai in self.current_player.can_kan_hai:
-                if self.current_player.mochihai_kan(self.current_player.mochihai):
-                    self.current_player.mochihai = self.yama_manager()
-                    self.current_player.tenpai_check(not_turn=True)
-                    if self.current_player.mochihai in self.current_player.machihai:
-                        if self.current_player.ron(self.current_player.mochihai,is_ron=False):
-                            self.current_player.is_rinshan = True
+                #break here to wait for user input
+                emit('gameupdate',{'msg':'持ち牌をカンしますか？（YもしくはN)'})
+                #set room dict index1 value to type of next input
+                room_dict[session['room']][1] = 'mochihai_kan_yesno'
+
             if self.current_player.mochihai in self.current_player.machihai:
                 self.current_player.ron(self.current_player.mochihai)
             if self.kyoku_on == True:
@@ -239,6 +248,7 @@ class Kyoku():
         elif self.current_player.is_computer == True:
             self.current_player.swap_hai()
             self.current_player.tenpai_check()
+            self.board_gui()
             sutehai = self.current_player.kawa[-1]
             #set key to 'cycle' before pon kan chi check, will be changed to other key if player action is necesary
             room_dict[session['room']][1] = 'cycle'
@@ -252,6 +262,21 @@ class Kyoku():
         #start kyoku loop:
         # while self.kyoku_on == True and self.hai_remaining > 0:
         #     self.player_turn()
+    def after_mochihai_kan(self):
+        emit('gameupdate',{'msg':f'{self.current_player.mochihai}をカンしました！'})
+        print(f'{self.current_player.mochihai}をカンしました！')
+        self.kan_hai.append(self.current_player.mochihai)
+        self.current_player.mochihai = None
+        self.tenpai_check(not_turn=True)
+        self.current_player.mochihai = self.yama_manager()
+        self.current_player.tenpai_check(not_turn=True)
+        if self.current_player.mochihai in self.current_player.machihai:
+            self.possible_rinshan = True
+            self.current_player.ron(self.current_player.mochihai,is_ron=False)
+        else:
+            self.player_turn()
+
+
 
     def kyoku_start_non_computer(self,choice):
         if choice == 'Y':
@@ -290,8 +315,8 @@ class Kyoku():
             if self.current_player.mochihai in self.current_player.machihai:
                 self.current_player.ron(self.current_player.mochihai)
             elif self.current_player.mochihai in self.current_player.can_kan_hai:
-                if self.current_player.kan(self.current_player.mochihai):
-                    self.player_turn()
+                self.current_player.kan(self.current_player.mochihai)
+
             elif self.current_player.is_riichi == True:
                 self.current_player.is_ippatu = False
                 self.current_player.kawa.append(self.current_player.mochihai)
@@ -331,6 +356,7 @@ class Kyoku():
             else:
                 self.current_player.swap_hai()
                 self.current_player.tenpai_check()
+                self.board_gui()
                 sutehai = self.current_player.kawa[-1]
                 #set key to 'cycle' before pon kan chi check, will be changed to other key if player action is necesary
                 room_dict[session['room']][1] = 'cycle'

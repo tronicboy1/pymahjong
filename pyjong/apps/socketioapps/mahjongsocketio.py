@@ -123,6 +123,11 @@ def gamecontrol(choice):
             if choice == 'Y':
                 #run sutehai func but redirect to 'pon_sutehai'
                 room_dict[session['room']][0].kyoku.current_player.tehai.append(room_dict[session['room']][0].kyoku.pon_kan_chi_check_sutehai)
+                room_dict[session['room']][0].kyoku.current_player.is_monzen = False
+                room_dict[session['room']][0].kyoku.current_player.tenpai_check(not_turn=True)
+                for mentu in room_dict[session['room']][0].kyoku.current_player.mentuhai: #add pon mentu into pon hai
+                    if room_dict[session['room']][0].kyoku.pon_kan_chi_check_sutehai in mentu:
+                        room_dict[session['room']][0].kyoku.current_player.pon_hai.extend(mentu)
                 room_dict[session['room']][0].kyoku.board_gui(False,True)
                 emit('gameupdate',{'msg':'{}、捨て牌を入力してください。'.format(room_dict[session['room']][0].kyoku.current_player.name)})
                 room_dict[session['room']][1] = 'pon_sutehai'
@@ -184,4 +189,12 @@ def gamecontrol(choice):
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'})
 
-    print(room_dict[session['room']][0].kyoku.current_player.name)
+    #user input for mochihai kan
+    elif room_dict[session['room']][1] == 'mochihai_kan_yesno':
+        if choice in ('Y','N'):
+            if choice == 'Y':
+                room_dict[session['room']][0].kyoku.after_mochihai_kan()
+            else:
+                cycle_to_human()
+        else:
+            emit('gameupdate',{'msg':'不適切な入力がありました。'})

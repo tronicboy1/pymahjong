@@ -252,8 +252,10 @@ class Player():
             emit('gameupdate',{'msg':f'{self.ron_hai}{text[1]}'})
             print(f'{self.ron_hai} ron')
             self.tehai.append(ron_hai)
-            if is_ron == False:
+            if self.is_ron == False:
                 self.is_tumo_agari = True
+            if self.possible_rinshan:
+                self.is_rinshan = True
             room_dict[session['room']][0].kyoku.winner = room_dict[session['room']][0].kyoku.current_player
             room_dict[session['room']][0].kyoku.kyoku_on = False
             self.mentu_check()
@@ -266,6 +268,8 @@ class Player():
 
     def pon(self,pon_hai):
         if self.is_computer == False:
+            #save possible pon hai
+            self.possible_pon_hai = pon_hai
             #ask user if they will pon, pass to pon_user_input
             print('pon check')
             emit('gameupdate',{'msg':f'{self.name}、{pon_hai}をポンしますか？\nYもしくはNを入力してください。'})
@@ -286,11 +290,7 @@ class Player():
     #only executed when player inputs yes
     def pon_user_input(self,choice):
         self.sutehai_user_input(choice)
-        self.is_monzen = False
-        self.tenpai_check(not_turn=True)
-        for mentu in self.mentuhai: #add pon mentu into pon hai
-            if room_dict[session['room']][0].kyoku.pon_kan_chi_check_sutehai in mentu:
-                self.pon_hai.extend(mentu)
+        
 
 
 
@@ -332,6 +332,7 @@ class Player():
         if kan_hai in self.pon_hai:
             return False
         if self.is_computer == False:
+            self.temp_kan_hai = kan_hai
             emit('gameupdate',{'msg':f'{kan_hai}をカンしますか？\nYもしくはNを入力してください。'})
             room_dict[session['room']][1] = 'kan_yesno'
 
@@ -343,9 +344,9 @@ class Player():
             return True
 
     def kan_user_input(self):
-        emit('gameupdate',{'msg':f'{kan_hai}をカンしました！'})
-        print(f'{kan_hai} user kan')
-        self.kan_hai.append(kan_hai)
+        emit('gameupdate',{'msg':f'{self.temp_kan_hai}をカンしました！'})
+        print(f'{self.temp_kan_hai} user kan')
+        self.kan_hai.append(self.temp_kan_hai)
         self.tenpai_check(not_turn=True)
         #add new dora
         room_dict[session['room']][0].kyoku.new_dora()
