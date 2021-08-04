@@ -41,6 +41,8 @@ socketio = SocketIO(app)
 
 from pyjong.authentication.views import authentication_blueprint
 from pyjong.main.views import main_blueprint
+from pyjong.error_handler.errors import error_pages
 
 app.register_blueprint(authentication_blueprint,url_prefix='/authentication')
 app.register_blueprint(main_blueprint,url_prefix='/main')
+app.register_blueprint(error_pages,url_prefix='/error/')
