@@ -15,7 +15,7 @@
 <!-- MahJong -->
 <div class="container py-2">
 <h3><strong>Game</strong></h3>
-<div class="float-end">
+<div class="float-end"　id="gamestart-btn">
   <button type="button" id="gamestart" class="btn btn-outline-primary">ゲームをスタート</button>
 </div>
 </div>
@@ -178,11 +178,8 @@
                   });
                   $('#gamestart').on('click', function() {
                     socket.emit('start');
+                    $('#gamestart').hide();
                     console.log('gamestart')
-                  });
-                  $('#gamestart2').on('click', function() {
-                    socket.emit('gamecheck');
-                    console.log('gamecheck')
                   });
 
 
