@@ -84,20 +84,20 @@ class Player():
     def can_sutehai_pic_gen(self):
         self.refresh_can_sutehai_list()
         #adjust size to be same as hai pic
-        can_sutehai_pic = Image.new('RGB',(840,120),(31,61,12)) #make green BG
+        can_sutehai_pic = Image.new('RGB',(850,130),(31,61,12)) #make green BG
         draw = ImageDraw.Draw(can_sutehai_pic) #create editable
         basedir = os.path.abspath(os.path.dirname(__file__))
         font = ImageFont.truetype(basedir+'/static/'+'Arial.ttf',20) #create font for list marking
         for n,x in enumerate([x*60 for x in range(0,14)]): #length of 14 at max
-            draw.text((x+20,101),'{}'.format(n),(255,255,255),font=font)#text at bottom of image
+            draw.text((x+20,106),'{}'.format(n),(255,255,255),font=font)#text at bottom of image
         i = 0
         for x in [x*60 for x in range(0,14)]:#paste all the hai that are not pon chi kan
             if i > len(self.can_sutehai)-1:
                 break
             else:
-                can_sutehai_pic.paste(self.can_sutehai[i].pic,(x,0))
+                can_sutehai_pic.paste(self.can_sutehai[i].pic,(x+5,5))
                 i += 1
-        
+
         return can_sutehai_pic.resize((int(can_sutehai_pic.size[0]*.75),int(can_sutehai_pic.size[1]*.75))) #display kawa
 
     def kanchipon_list_gen(self):
