@@ -90,7 +90,7 @@ class Player():
         for n,x in enumerate([x*60 for x in range(0,14)]): #length of 14 at max
             draw.text((x+20,101),'{}'.format(n),(255,255,255),font=font)#text at bottom of image
         i = 0
-        for x in [x*60 for x in range(0,13)]:#paste all the hai that are not pon chi kan
+        for x in [x*60 for x in range(0,14)]:#paste all the hai that are not pon chi kan
             if i > len(self.can_sutehai)-1:
                 break
             else:
@@ -546,23 +546,26 @@ class Player():
 
         if self.is_tenpatteru == True and not_turn == False and self.is_riichi == False:
             if self.is_computer == False and self.balance > 1000 and len(self.chi_hai) == 0 and len(self.pon_hai) == 0:
-                player_input = ''
-                while player_input not in ['Y','N']:
-                    player_input = input('リーチしますか？（Y/N）').upper()
-                if player_input == 'Y':
-                    self.is_riichi = True
-                    if room_dict[session['room']][0].kyoku.turn_count <= 4:
-                        self.double_riichi = True
-                    emit('gameupdate',{'msg':f'{self.name}はリーチしました！'})
-                    print(f'{self.name}はリーチしました！')
-                else:
-                    self.is_riichi = False
+                emit('gameupdate',{'msg':f'{self.name}、リーチしますか？'})
+                room_dict[session['room']][1] = 'riichi_yesno'
+
             elif self.is_computer == True and self.balance > 1000 and len(self.chi_hai) == 0 and len(self.pon_hai) == 0:
                 self.is_riichi = True
                 if room_dict[session['room']][0].kyoku.turn_count <= 4:
                         self.double_riichi = True
                 emit('gameupdate',{'msg':f'{self.name}はリーチしました！'})
                 print(f'{self.name}はリーチしました！')
+
+    def player_riichi_input(self,player_input):
+        if player_input == 'Y':
+            self.is_riichi = True
+            if room_dict[session['room']][0].kyoku.turn_count <= 4:
+                self.double_riichi = True
+            emit('gameupdate',{'msg':f'{self.name}はリーチしました！'})
+            print(f'{self.name} riichi')
+        else:
+            self.is_riichi = False
+
 
 
     def atama_check(self,hai_list):

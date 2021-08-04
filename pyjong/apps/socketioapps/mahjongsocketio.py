@@ -175,5 +175,13 @@ def gamecontrol(choice):
                 cycle_to_human()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'})
+    #user input for riichi
+    elif room_dict[session['room']][1] == 'riichi_yesno':
+        if choice in ('Y','N'):
+            room_dict[session['room']][0].kyoku.current_player.player_riichi_input(choice)
+            room_dict[session['room']][0].kyoku.after_tenpai_check()
+            cycle_to_human()
+        else:
+            emit('gameupdate',{'msg':'不適切な入力がありました。'})
 
     print(room_dict[session['room']][0].kyoku.current_player.name)

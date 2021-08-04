@@ -365,11 +365,22 @@ class Kyoku():
         self.current_player.tenpai_check()
         sutehai = self.current_player.kawa[-1]
         #set key to 'cycle' before pon kan chi check, will be changed to other key if player action is necesary
+        if room_dict[session['room']][1] != 'riichi_yesno':
+            room_dict[session['room']][1] = 'cycle'
+            self.start_pon_kan_chi(sutehai)
+        #do not go to next player unless in 'cycle', stop for user input
+        if room_dict[session['room']][1] == 'cycle':
+            self.next_player()
+
+    def after_tenpai_check(self):
+        sutehai = self.current_player.kawa[-1]
+        #set key to 'cycle' before pon kan chi check, will be changed to other key if player action is necesary
         room_dict[session['room']][1] = 'cycle'
         self.start_pon_kan_chi(sutehai)
         #do not go to next player unless in 'cycle', stop for user input
         if room_dict[session['room']][1] == 'cycle':
             self.next_player()
+
 
 
 
