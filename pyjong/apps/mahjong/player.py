@@ -6,6 +6,7 @@ from flask_socketio import emit
 import copy
 import os
 import random
+import io
 
 
 class Player():
@@ -96,6 +97,7 @@ class Player():
             else:
                 can_sutehai_pic.paste(self.can_sutehai[i].pic,(x,0))
                 i += 1
+        
         return can_sutehai_pic.resize((int(can_sutehai_pic.size[0]*.75),int(can_sutehai_pic.size[1]*.75))) #display kawa
 
     def kanchipon_list_gen(self):

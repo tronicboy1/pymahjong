@@ -20,8 +20,16 @@
 </div>
 </div>
 
-<div class="px-5" id="display">
+<div class="container px-5">
+
+
+<div class="" id="display">
 <img id="guiimg" src="" alt="" width="500" height="300" class="img-fluid rounded mx-auto d-block">
+<h3 class="py-2">手配：</h3>
+<div class="py-2">
+<img id="tehaiimg" src="" alt="" width="420" height="60" class="img-fluid rounded mx-auto d-block">
+</div>
+</div>
 </div>
 
 <div class="container pt-2">
@@ -129,6 +137,16 @@
                     var imageUrl = urlCreator.createObjectURL( blob );
                     var image_id = document.getElementById('guiimg');
                     image_id.src = imageUrl;
+                    console.log('board image received')
+                  });
+                  socket.on('tehaiimg', function(data) {
+                    var arrayBufferView = new Uint8Array( data.img );
+                    var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
+                    var urlCreator = window.URL || window.webkitURL;
+                    var imageUrl = urlCreator.createObjectURL( blob );
+                    var image_id = document.getElementById('tehaiimg');
+                    image_id.src = imageUrl;
+                    console.log('tehai image received')
                   });
 
                   $('#text').keypress(function(e) {

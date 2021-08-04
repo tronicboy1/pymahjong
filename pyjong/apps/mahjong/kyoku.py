@@ -6,7 +6,7 @@ from pyjong.apps.mahjong.yama import Yama
 from pyjong.apps.socketioapps.mahjongsocketio import room_dict
 from flask_socketio import emit
 from flask import session
-import base64
+import io
 
 
 
@@ -67,10 +67,12 @@ class Kyoku():
 
             emit('gameupdate',{'msg':f"もち牌：{self.current_player.mochihai}"})
             ###################################
-            try:
-                self.board_pic.paste(self.current_player.can_sutehai_pic_gen(),(100,500))
-            except:
-                pass
+            #send image to tehai
+            byte_arr = io.BytesIO()
+            self.current_player.can_sutehai_pic_gen().save(byte_arr,format='jpeg')
+            byte_arr = byte_arr.getvalue()
+            emit('tehaiimg',{'img':byte_arr},broadcast=True,namespace='/main/game')
+
             try:
                 self.board_pic.paste(self.current_player.mochihai.pic,(800,480))
             except:
@@ -119,18 +121,17 @@ class Kyoku():
         ####Emit board gui
         ##################################
 
-        file_name = os.path.join(os.path.abspath(os.path.dirname(__file__)),'static','gui',(session['room']+'.jpg'))
-        self.board_pic.resize((600,600))
-        self.board_pic.save(file_name)
+        # file_name = os.path.join(os.path.abspath(os.path.dirname(__file__)),'static','gui',(session['room']+'.jpg'))
+        # self.board_pic.resize((600,600))
+        # self.board_pic.save(file_name)
         # with open(file_name,'rb') as f:
-        #     encoded_gui = base64.b64encode(f.read())
-        #     emit('board_gui',{'img':encoded_gui},broadcast=True,namespace='/main/game')
+        #     gui_binary = f.read()
+        #     emit('board_gui',{'img':gui_binary},broadcast=True,namespace='/main/game')
         #     f.close()
-        #     print('img sent')
-        with open(file_name,'rb') as f:
-            gui_binary = f.read()
-            emit('board_gui',{'img':gui_binary},broadcast=True)
-            f.close()
+        byte_arr = io.BytesIO()
+        self.board_pic.save(byte_arr,format='jpeg')
+        byte_arr = byte_arr.getvalue()
+        emit('board_gui',{'img':byte_arr},broadcast=True,namespace='/main/game')
 
         ##############################
 
