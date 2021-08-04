@@ -99,11 +99,11 @@ class Kyoku():
         elif self.current_player == self.player2:
             self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)).rotate(90,expand=True),(790,200))
             try:
-                self.board_pic.paste(self.current_player.kanchipon_pic_gen().rotate(90,expand=True),(550,450))
+                self.board_pic.paste(self.current_player.kanchipon_pic_gen().rotate(90,expand=True),(890,450))
             except:
                 pass
             if self.current_player.is_riichi:
-                self.board_pic.paste(self.senbou.rotate(90,expand=True),(510,270))
+                self.board_pic.paste(self.senbou.rotate(90,expand=True),(750,270))
         elif self.current_player == self.player3:
 
             self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)).rotate(180,expand=True),(420,10))
