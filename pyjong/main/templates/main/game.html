@@ -25,8 +25,8 @@
 
 <div class="" id="display">
 <img id="guiimg" src="" alt="" class="img-fluid rounded mx-auto d-block">
-<h3 class="py-2">手配：</h3>
-<div class="py-2">
+<h5 id="tehai-text" class="pt-2">手配：</h5>
+<div class="py-1">
 <img id="tehaiimg" src="" alt="" class="img-fluid rounded mx-auto d-block">
 </div>
 </div>
@@ -109,6 +109,7 @@
 <!-- Chat room/game　script  -->
           <script type="text/javascript" charset="utf-8">
               var socket;
+              $('#tehai-text').hide()
 
               $(document).ready(function(){
                   socket = io.connect('http://' + document.domain + ':' + location.port + '/main/game');
@@ -179,6 +180,7 @@
                   $('#gamestart').on('click', function() {
                     socket.emit('start');
                     $('#gamestart').hide();
+                    $('#tehai-text').show()
                     console.log('gamestart')
                   });
 

@@ -4,6 +4,7 @@ from flask_socketio import emit
 from pyjong.apps.mahjong.player import Player
 from pyjong.apps.mahjong.kyoku import Kyoku
 from pyjong.apps.socketioapps.mahjongsocketio import room_dict
+from flask import session
 
 class Game():
 
@@ -40,6 +41,8 @@ class Game():
 
 
     def end_kyoku_check(self):
+        #link kyoku back to room_dict kyoku
+        self.kyoku = room_dict[session['room']][0].kyoku
         if kyoku.winner == None:
             emit('gameupdate',{'msg':'流局！'})
             tenpatteru_list = []

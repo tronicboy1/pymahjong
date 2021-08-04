@@ -366,6 +366,13 @@ class Kyoku():
                     self.next_player()
 
             self.turn_count += 1
+            #check if game on and hai in yama
+            if self.kyoku_on != True or self.hai_remaining == 0:
+                room_dict[session['room']][0].end_kyoku_check()
+
+                room_dict[session['room']][0].kyoku_suu_change()
+
+                room_dict[session['room']][0].kyoku_summary()
 
     def player_turn_input(self,choice):
         if choice == 'Y':
@@ -423,21 +430,27 @@ class Kyoku():
     def start_pon_kan_chi(self,sutehai):
         print('start_pon_kan_chi')
         self.pon_kan_chi_check_sutehai = sutehai
-        self.ponkanchi_start_player = int(self.turn)
+        #use int function to deep copy turn count
+        if self.turn == 0:
+            self.ponkanchi_start_player = self.player4
+        else:
+            self.ponkanchi_start_player = self.player_dict[(self.turn-1)]
+        #iteration count for pon kan chi check
         room_dict[session['room']][2] = 0
+        print('\nponkanchi start player:',self.ponkanchi_start_player.name)
         self.pon_kan_chi_check()
 
 
     def pon_kan_chi_check(self):
         #add key 'cycle' check to stop pon_kan_chi_check when user input is necessary
         while room_dict[session['room']][2]<3 and room_dict[session['room']][1] == 'cycle':
+            print('\nponkanchi start player:',self.ponkanchi_start_player.name)
             self.next_player()
             print('cycling pon kan chi check. player:',self.current_player.name)
             if self.pon_kan_chi_check_sutehai in self.current_player.machihai:
                 if self.current_player.ron(self.pon_kan_chi_check_sutehai,True):
-                    self.current_player = self.player_dict[start_player]
+                    self.current_player = self.ponkanchi_start_player
             #check if the next player can chi previous player's sutehai
-            print('chi check')
             if room_dict[session['room']][2] == 0:
                 if self.pon_kan_chi_check_sutehai in self.current_player.can_chi_hai and self.current_player.is_riichi == False:
                     self.current_player.chi(self.pon_kan_chi_check_sutehai)
@@ -445,7 +458,6 @@ class Kyoku():
                     if self.current_player.is_computer == False:
                         break
             #check for possible kan
-            print('kan check')
             if self.pon_kan_chi_check_sutehai in self.current_player.can_kan_hai and self.current_player.is_riichi == False:
                 if self.current_player.kan(self.pon_kan_chi_check_sutehai):
                     self.new_dora()
@@ -463,7 +475,6 @@ class Kyoku():
                     #         if self.current_player.ron(sutehai,True):
                     #             self.current_player.is_chankan = True
             #check for possible pon
-            print('pon check')
             if self.pon_kan_chi_check_sutehai in self.current_player.can_pon_hai and self.current_player.is_riichi == False:
                 self.current_player.pon(self.pon_kan_chi_check_sutehai)
                 #break if current user is not a computer to wait for input

@@ -281,6 +281,8 @@ class Player():
                 pass
             elif random.randint(0,7) == 0:
                 self.tehai.append(pon_hai)
+                #remove hai from other players kawa
+                room_dict[session['room']][0].kyoku.ponkanchi_start_player.kawa.pop(-1)
                 self.is_monzen = False
                 emit('gameupdate',{'msg':f'{self.name}が{pon_hai}をポンしました！'})
                 print(f'{self.name}が{pon_hai}をポンしました！')
@@ -290,7 +292,7 @@ class Player():
     #only executed when player inputs yes
     def pon_user_input(self,choice):
         self.sutehai_user_input(choice)
-        
+
 
 
 
@@ -309,6 +311,8 @@ class Player():
                 pass
             elif random.randint(0,7) == 0:
                 self.tehai.append(chi_hai)
+                #remove hai from other players kawa
+                room_dict[session['room']][0].kyoku.ponkanchi_start_player.kawa.pop(-1)
                 self.is_monzen = False
                 self.tenpai_check(not_turn=True)
                 for mentu in self.mentuhai: #add chi mentu into chi hai
@@ -347,6 +351,8 @@ class Player():
         emit('gameupdate',{'msg':f'{self.temp_kan_hai}をカンしました！'})
         print(f'{self.temp_kan_hai} user kan')
         self.kan_hai.append(self.temp_kan_hai)
+        #remove hai from other players kawa
+        room_dict[session['room']][0].kyoku.ponkanchi_start_player.kawa.pop(-1)
         self.tenpai_check(not_turn=True)
         #add new dora
         room_dict[session['room']][0].kyoku.new_dora()
@@ -559,16 +565,12 @@ class Player():
                 emit('gameupdate',{'msg':f'{self.name}はリーチしました！'})
                 print(f'{self.name}はリーチしました！')
 
-    def player_riichi_input(self,player_input):
-        if player_input == 'Y':
-            self.is_riichi = True
-            if room_dict[session['room']][0].kyoku.turn_count <= 4:
-                self.double_riichi = True
-            emit('gameupdate',{'msg':f'{self.name}はリーチしました！'})
-            print(f'{self.name} riichi')
-        else:
-            self.is_riichi = False
-
+    def player_riichi_input(self):
+        self.is_riichi = True
+        if room_dict[session['room']][0].kyoku.turn_count <= 4:
+            self.double_riichi = True
+        emit('gameupdate',{'msg':f'{self.name}はリーチしました！'})
+        print(f'{self.name} riichi')
 
 
     def atama_check(self,hai_list):
@@ -727,11 +729,11 @@ class Player():
             for hai in ron_tehai:
                 if hai[0] == a[0] and hai[1] == 8 and a[1]+1 == hai[1] and b[1]+2 == hai[1] and c:
                     return True
-                elif hai[0] == a[0] and a[1] == 0 and hai[0] == winner.tehai[2][0]:
+                elif hai[0] == a[0] and a[1] == 0 and hai[0] == self.tehai[2][0]:
                     c = True
                     b = a
                     a = hai
-                elif hai[0] == a[0] and hai[1] == a[1]+1 and hai[0] == winner.tehai[2][0]:
+                elif hai[0] == a[0] and hai[1] == a[1]+1 and hai[0] == self.tehai[2][0]:
                     b = a
                     a = hai
                 else:

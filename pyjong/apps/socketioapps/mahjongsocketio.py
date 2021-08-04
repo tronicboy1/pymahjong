@@ -24,6 +24,7 @@ def cycle_to_human():
     #while room_dict[session['room']][0].kyoku.current_player.is_computer:
     while room_dict[session['room']][1] == 'cycle':
         room_dict[session['room']][0].kyoku.player_turn()
+
     #room_dict[session['room']][0].kyoku.player_turn()
 
 
@@ -83,9 +84,14 @@ def gamecontrol(choice):
             #check to make sure input is in valid range
             if choice < len(room_dict[session['room']][0].kyoku.current_player.can_sutehai):
                 room_dict[session['room']][0].kyoku.current_player.sutehai_user_input(choice)
-                room_dict[session['room']][0].kyoku.after_player_sutehai()
-                room_dict[session['room']][1] = 'cycle'
-                cycle_to_human()
+                room_dict[session['room']][0].kyoku.current_player.tenpai_check()
+
+                #do nothing if riichi check is necessary
+                if room_dict[session['room']][1] == 'riichi_yesno':
+                    pass
+                else:
+                    room_dict[session['room']][0].kyoku.after_tenpai_check()
+                    cycle_to_human()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'})
     #condition for ron atama_check
@@ -93,10 +99,13 @@ def gamecontrol(choice):
         if choice in ('Y','N'):
             if choice == 'Y':
                 room_dict[session['room']][0].kyoku.current_player.ron_input(choice)
-                #Game ends here so should run some sort of function to record score and start new kyoku
+                #kyoku ends here so run end kyoku shori
+                room_dict[session['room']][0].end_kyoku_check()
+                room_dict[session['room']][0].kyoku_suu_change()
+                room_dict[session['room']][0].kyoku_summary()
             else:
-                room_dict[session['room']][0].kyoku.after_player_ron_check()
                 room_dict[session['room']][1] = 'cycle'
+                room_dict[session['room']][0].kyoku.after_player_ron_check()
                 cycle_to_human()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'})
@@ -104,6 +113,8 @@ def gamecontrol(choice):
     elif room_dict[session['room']][1] == 'kan_yesno':
         if choice in ('Y','N'):
             if choice == 'Y':
+                #remove pon hai from other player's kawa
+                room_dict[session['room']][0].kyoku.ponkanchi_start_player.kawa.pop(-1)
                 room_dict[session['room']][0].kyoku.current_player.kan_user_input()
                 room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.player_dict[room_dict[session['room']][0].kyoku.ponkanchi_start_player]
                 room_dict[session['room']][1] = 'cycle'
@@ -111,8 +122,8 @@ def gamecontrol(choice):
             else:
                 room_dict[session['room']][0].kyoku.current_player.tenpai_check()
                 room_dict[session['room']][0].kyoku.pon_kan_chi_check_sutehai = self.current_player.kawa[-1]
-                room_dict[session['room']][0].kyoku.after_player_kan()
                 room_dict[session['room']][1] = 'cycle'
+                room_dict[session['room']][0].kyoku.after_player_kan()
                 cycle_to_human()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'})
@@ -123,6 +134,8 @@ def gamecontrol(choice):
             if choice == 'Y':
                 #run sutehai func but redirect to 'pon_sutehai'
                 room_dict[session['room']][0].kyoku.current_player.tehai.append(room_dict[session['room']][0].kyoku.pon_kan_chi_check_sutehai)
+                #remove pon hai from other player's kawa
+                room_dict[session['room']][0].kyoku.ponkanchi_start_player.kawa.pop(-1)
                 room_dict[session['room']][0].kyoku.current_player.is_monzen = False
                 room_dict[session['room']][0].kyoku.current_player.tenpai_check(not_turn=True)
                 for mentu in room_dict[session['room']][0].kyoku.current_player.mentuhai: #add pon mentu into pon hai
@@ -134,8 +147,8 @@ def gamecontrol(choice):
                 print('pon choice yes')
 
             else:
-                room_dict[session['room']][0].kyoku.after_player_pon()
                 room_dict[session['room']][1] = 'cycle'
+                room_dict[session['room']][0].kyoku.after_player_pon()
                 cycle_to_human()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'})
@@ -147,7 +160,7 @@ def gamecontrol(choice):
             #check to make sure input is in valid range
             if choice < len(room_dict[session['room']][0].kyoku.current_player.can_sutehai):
                 room_dict[session['room']][0].kyoku.current_player.pon_user_input(choice)
-                room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.player_dict[room_dict[session['room']][0].kyoku.ponkanchi_start_player]
+                room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.ponkanchi_start_player
                 room_dict[session['room']][1] = 'cycle'
                 cycle_to_human()
         else:
@@ -158,13 +171,21 @@ def gamecontrol(choice):
             if choice == 'Y':
                 #add sutehai to tehai and redirect to 'chi_sutehai'
                 room_dict[session['room']][0].kyoku.current_player.tehai.append(room_dict[session['room']][0].kyoku.pon_kan_chi_check_sutehai)
+                #add chihai to player chihai list
+                room_dict[session['room']][0].kyoku.current_player.tenpai_check(not_turn=True)
+                for mentu in room_dict[session['room']][0].kyoku.current_player.mentuhai: #add chi mentu into chi hai
+                    if chi_hai in mentu:
+                        room_dict[session['room']][0].kyoku.current_player.chi_hai.extend(mentu)
+
+                #remove hai from other player's kawa
+                room_dict[session['room']][0].kyoku.ponkanchi_start_player.kawa.pop(-1)
                 room_dict[session['room']][0].kyoku.board_gui(False,True)
                 emit('gameupdate',{'msg':'{}、捨て牌を入力してください。'.format(room_dict[session['room']][0].kyoku.current_player.name)})
                 room_dict[session['room']][1] = 'chi_sutehai'
 
             else:
-                room_dict[session['room']][0].kyoku.after_player_chi()
                 room_dict[session['room']][1] = 'cycle'
+                room_dict[session['room']][0].kyoku.after_player_chi()
                 cycle_to_human()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'})
@@ -175,17 +196,23 @@ def gamecontrol(choice):
             #check to make sure input is in valid range
             if choice < len(room_dict[session['room']][0].kyoku.current_player.can_sutehai):
                 room_dict[session['room']][0].kyoku.current_player.chi_user_input(choice)
-                room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.player_dict[room_dict[session['room']][0].kyoku.ponkanchi_start_player]
+                room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.ponkanchi_start_player
                 room_dict[session['room']][1] = 'cycle'
                 cycle_to_human()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'})
     #user input for riichi
     elif room_dict[session['room']][1] == 'riichi_yesno':
+        print('riichi input:',choice)
         if choice in ('Y','N'):
-            room_dict[session['room']][0].kyoku.current_player.player_riichi_input(choice)
-            room_dict[session['room']][0].kyoku.after_tenpai_check()
-            cycle_to_human()
+            if choice == 'Y':
+                room_dict[session['room']][0].kyoku.current_player.player_riichi_input()
+                room_dict[session['room']][0].kyoku.after_tenpai_check()
+                cycle_to_human()
+            else:
+                room_dict[session['room']][0].kyoku.after_tenpai_check()
+                if room_dict[session['room']][1] == 'cycle':
+                    cycle_to_human()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'})
 
