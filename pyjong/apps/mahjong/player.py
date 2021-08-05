@@ -327,9 +327,10 @@ class Player():
         self.sutehai_user_input(choice)
         self.is_monzen = False
         self.tenpai_check(not_turn=True)
-        for mentu in self.mentuhai: #add chi mentu into chi hai
-            if room_dict[session['room']][0].kyoku.pon_kan_chi_check_sutehai in mentu:
-                self.chi_hai.extend(mentu)
+        #adding chi hai to chi hai list is done in socketio app
+        # for mentu in self.mentuhai: #add chi mentu into chi hai
+        #     if room_dict[session['room']][0].kyoku.pon_kan_chi_check_sutehai in mentu:
+        #         self.chi_hai.extend(mentu)
 
 
     def kan(self,kan_hai):

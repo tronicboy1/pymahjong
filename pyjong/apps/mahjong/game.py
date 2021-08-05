@@ -17,7 +17,7 @@ class Game():
         self.kyoku = None
 
 
-        emit('gameupdate',{'msg':'ようこそ、麻雀Deluxeへ'})
+        emit('gameupdate',{'msg':'ようこそ、Pyjongへ'})
         #players_input = ''
         #while players_input not in ('1','2'):
             #players_input = input('プレーヤー数を入力してください。\n（"1"もしくは"2"）:')

@@ -68,7 +68,7 @@ class Kyoku():
             ########FOR DEBUGGING
             # print('hai in tehai:',len(self.current_player.tehai))
             # self.current_player.refresh_can_sutehai_list()
-            # for i,hai in enumerate(self.current_player.can_sutehai):
+            # for i,hai in enumerate(self.current_player.chihai):
             #     print(i,hai)
             #     emit('gameupdate',{'msg':f'{i}:{hai}'})
             #
