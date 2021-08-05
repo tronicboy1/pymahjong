@@ -35,10 +35,10 @@ def startgame():
     global room_dict
     if session['players'] == 1:
         game = Game()
-        game.create_players(session['username'])
-        game.oya_gime()
         room_dict[session['room']] = [game,'',0]
+        room_dict[session['room']][0].create_players(players=1,player1_name=session['username'])
         room_dict[session['room']][0].kyoku.kyoku_start()
+        cycle_to_human()
         #kyoku.game will set index 1 value of room dict to define what the next input will be
         #index2 will be used for iterations
 
@@ -109,6 +109,20 @@ def gamecontrol(choice):
                 cycle_to_human()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'})
+    #condition to staaart new kyoku
+    elif room_dict[session['room']][1] == 'newkyoku_yesno':
+            if choice in ('Y','N'):
+                if choice == 'Y':
+                    room_dict[session['room']][0].kyoku_summary_choice('Y')
+                    room_dict[session['room']][0].kyoku_suu_change()
+                    room_dict[session['room']][0].kyoku.kyoku_start()
+                    cycle_to_human()
+                else:
+                    pass
+                    #will add features to store game data to database here
+
+            else:
+                emit('gameupdate',{'msg':'不適切な入力がありました。'})
     #condition for turn after kan draw
     elif room_dict[session['room']][1] == 'kan_yesno':
         if choice in ('Y','N'):
@@ -124,7 +138,7 @@ def gamecontrol(choice):
                 cycle_to_human()
             else:
                 room_dict[session['room']][0].kyoku.current_player.tenpai_check()
-                room_dict[session['room']][0].kyoku.pon_kan_chi_check_sutehai = self.current_player.kawa[-1]
+                room_dict[session['room']][0].kyoku.pon_kan_chi_check_sutehai = room_dict[session['room']][0].kyoku.current_player.kawa[-1]
                 room_dict[session['room']][1] = 'cycle'
                 room_dict[session['room']][0].kyoku.after_player_kan()
                 #cycle to next player once more to avoid bug where player turn repeats

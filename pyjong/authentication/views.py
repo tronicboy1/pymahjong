@@ -58,7 +58,7 @@ def login():
                 session['updated'] = False
                 session['in_room'] = False
                 session['has_new_invites'] = False
-                session['players'] = 0
+                session['players'] = 1
                 next = request.args.get('next')
                 #check if user was redirected, and send them to the page they were trying to access before login
                 if next == None or not next[0] == '/':

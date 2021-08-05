@@ -21,23 +21,27 @@ class Game():
         #players_input = ''
         #while players_input not in ('1','2'):
             #players_input = input('プレーヤー数を入力してください。\n（"1"もしくは"2"）:')
-        self.players = 0 #{'1':0,'2':1}[players_input]
 
-    def create_players(self,player1_name):
-        if self.players == 0:
+
+    def create_players(self,players,player1_name,player3_name=None):
+        if players == 1:
             self.player1 = Player(player1_name,is_computer=False)
             self.player2 = Player('Computer 1')
             self.player3 = Player('Computer 2')
             self.player4 = Player('Computer 3')
-        elif self.players == 1:
-            self.player1 = Player(input('プレーヤー１の名前を入力してください。'),is_computer=False)
-            self.player2 = Player(input('プレーヤー１の名前を入力してください。'),is_computer=False)
-            self.player3 = Player('Computer 1')
+        elif players == 2:
+            self.player1 = Player(player1_name,is_computer=False)
+            self.player2 = Player('Computer 1')
+            self.player3 = Player(player3_name,is_computer=False)
             self.player4 = Player('Computer 2')
+
+        
 
         self.player_dict = {0:self.player1,1:self.player2,2:self.player3,3:self.player4}
 
-        self.kyoku = Kyoku(self.player1,self.player2,self.player3,self.player4)
+        self.oya_gime()
+
+        self.kyoku = Kyoku(self.player1,self.player2,self.player3,self.player4,bakaze=self.kazamuki,oya=self.oya)
 
 
 
@@ -597,6 +601,7 @@ class Game():
 
         if self.game_on:
             emit('gameupdate',{'msg':'続けて新しい局に進みますか？(YもしくはN)'})
+            room_dict[session['room']][1] = 'newkyoku_yesno'
 
     def kyoku_summary_choice(self,choice):
         choice = choice.upper()
@@ -608,3 +613,6 @@ class Game():
     def clear_players(self):
         for player in self.player_dict.values():
             player.clear()
+        #reset kyoku here
+        self.oya_gime()
+        self.kyoku = Kyoku(self.player1,self.player2,self.player3,self.player4,bakaze=self.kazamuki,oya=self.oya)

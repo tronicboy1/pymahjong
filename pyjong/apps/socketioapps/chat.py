@@ -7,8 +7,9 @@ from flask import session
 #function to join a room provided a users session data
 @socketio.on('joined', namespace='/main/game')
 def joined(message):
-    room = session['room']
-    if session['players'] != 1:
+
+    if session['players'] == 2:
+        room = session['room']
         join_room(room)
         emit('status', {'msg': session['username'] + 'がチャットルームに入りました'}, room=room)
 
@@ -22,7 +23,8 @@ def text(message):
 
 @socketio.on('left', namespace='/main/game')
 def left(message):
-    room = session['room']
-    if session['players'] != 1:
+
+    if session['players'] == 2:
+        room = session['room']
         leave_room(room)
         emit('status', {'msg': session.get('username') + ' has left the room.'}, room=room)

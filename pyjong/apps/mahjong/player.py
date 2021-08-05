@@ -40,6 +40,7 @@ class Player():
         self.can_ron = False
         self.is_ron = False
         self.ron_hai = None
+        self.possible_rinshan = False
 
     def clear(self):
         self.tehai.clear()

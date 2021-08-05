@@ -196,6 +196,7 @@ def info():
 @login_required
 def game():
 
+    print(session['players'])
     #forms
     form = InviteFriend()
     form = add_friends_to_form(form)
@@ -211,6 +212,7 @@ def game():
         send_invite(session_username=current_user.username,invited_username=form.select_friend.data,room=form.room_name.data)
         session['room'] = form.room_name.data
         session['in_room'] = True
+        session['players'] = 2
         flash("招待状を送りました！",'alert-success')
         return redirect(url_for('main.game'))
     #setup solo room

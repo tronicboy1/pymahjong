@@ -77,23 +77,28 @@
 
 
 
-{% if session['players'] != 1 %}
+{% if session['players'] == 2 %}
 <!-- Chat box -->
-        <div class="form-floating px-5">
+<div class="container pb-5">
+        <div class="form-floating px-2">
           <div class="pt-2">
             <textarea class="form-control" style="height: 300px" id="chat" rows="20"></textarea>
           </div>
-          <div class="pt-2 pb-5">
+          <div class="pt-2 pb-2">
             <input class="form-control" id="text" placeholder="エンターキーを押して送信">
           </div>
           <div class="float-end">
-            <button type="button" onclick="leave_room();" class="btn btn-outline-warning">チャットルームを大会する</button>
+            <button type="button" onclick="leave_room();" class="btn btn-outline-warning">ルームを出る</button>
           </div>
         </div>
+</div>
 {% else %}
 
 {% endif %}
 
+<div class="pb-5">
+
+</div>
 
 <!-- Room creation -->
 {% else %}
