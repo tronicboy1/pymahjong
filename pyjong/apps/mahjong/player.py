@@ -251,7 +251,7 @@ class Player():
         if choice == 'Y':
             emit('gameupdate',{'msg':f'{self.ron_hai}{text[1]}'})
             print(f'{self.ron_hai} ron')
-            self.tehai.append(ron_hai)
+            self.tehai.append(self.ron_hai)
             if self.is_ron == False:
                 self.is_tumo_agari = True
             if self.possible_rinshan:
