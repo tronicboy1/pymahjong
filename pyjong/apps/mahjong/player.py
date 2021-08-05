@@ -96,10 +96,11 @@ class Player():
             if i > len(self.can_sutehai)-1:
                 break
             else:
-                can_sutehai_pic.paste(self.can_sutehai[i].pic,(x+5,5))
+                can_sutehai_pic.paste(self.can_sutehai[i].pic,(x+4,4))
                 i += 1
 
-        return can_sutehai_pic.resize((int(can_sutehai_pic.size[0]*.75),int(can_sutehai_pic.size[1]*.75))) #display kawa
+        #return can_sutehai_pic.resize((int(can_sutehai_pic.size[0]*.75),int(can_sutehai_pic.size[1]*.75))) #display kawa
+        return can_sutehai_pic.resize((425,65))
 
     def kanchipon_list_gen(self):
         kanchipon_list = []
