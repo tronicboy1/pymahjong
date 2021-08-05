@@ -82,7 +82,8 @@ class Player():
         emit('gameupdate',{'msg':f'{self.name}の懐から{amount}ポイントがなくなった！\nポイント合計：{self.balance}'})
         print(f'{self.name}の懐から{amount}ポイントがなくなった！\nポイント合計：{self.balance}')
 
-    def can_sutehai_pic_gen(self):
+    def can_sutehai_pic_gen(self,unsorted=False):
+        #update can sutehai list
         self.refresh_can_sutehai_list()
         #adjust size to be same as hai pic
         can_sutehai_pic = Image.new('RGB',(850,130),(31,61,12)) #make green BG
@@ -98,7 +99,11 @@ class Player():
             else:
                 can_sutehai_pic.paste(self.can_sutehai[i].pic,(x+4,4))
                 i += 1
-
+        #add mochihai to pic if unsorted is true
+        if unsorted:
+            can_sutehai_pic.paste(self.mochihai.pic,(785,5))
+            #add mochihai to can sutehai
+            self.can_sutehai.append(self.mochihai)
         #return can_sutehai_pic.resize((int(can_sutehai_pic.size[0]*.75),int(can_sutehai_pic.size[1]*.75))) #display kawa
         return can_sutehai_pic.resize((425,65))
 

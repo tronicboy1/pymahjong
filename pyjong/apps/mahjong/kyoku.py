@@ -56,9 +56,19 @@ class Kyoku():
             self.turn += 1
         print('next player executed',self.current_player.name)
 
+
+
+    #use this to send player tehai so mochihai is on the end making it easy to understand what hai is new
+    def send_unsorted_tehai(self):
+        byte_arr = io.BytesIO()
+        #generate can sutehai tehai list with mochihai appended to end
+        self.current_player.can_sutehai_pic_gen(unsorted=True).save(byte_arr,format='jpeg')
+        byte_arr = byte_arr.getvalue()
+        emit('tehaiimg',{'img':byte_arr},broadcast=True,namespace='/main/game')
+
     def board_gui(self,player_turn=False,clear_mochihai=False): #add feature to rotate pic for player2 in future
         def send_tehai():
-            self.current_player.refresh_can_sutehai_list()
+
             byte_arr = io.BytesIO()
             self.current_player.can_sutehai_pic_gen().save(byte_arr,format='jpeg')
             byte_arr = byte_arr.getvalue()
@@ -77,12 +87,12 @@ class Kyoku():
             #send image to tehai
             send_tehai()
 
-            try:
-                #send mochihai if mochihai object is not None
-                self.board_pic.paste(self.current_player.mochihai.pic,(800,480))
-            except:
-                #send white slate if mochihai object is None
-                pass
+            # try:
+            #     #send mochihai if mochihai object is not None
+            #     self.board_pic.paste(self.current_player.mochihai.pic,(800,480))
+            # except:
+            #     #send white slate if mochihai object is None
+            #     pass
 
             #update kawa pics
 
@@ -146,11 +156,6 @@ class Kyoku():
         ##############################
 
 
-    def simple_hai_displayer(self):
-        emit('gameupdate',{'msg':f'{self.current_player.name}の手牌：'})
-        self.current_player.can_sutehai_pic_gen()
-        emit('gameupdate',{'msg':'持ち牌：'})
-        return self.current_player.mochihai.pic.resize((300,300))
 
     def refresh_hai_remaining(self):
         self.hai_remaining = self.yama.yama_hai_count()
@@ -230,7 +235,7 @@ class Kyoku():
         #have oya go first
         self.current_player.tenpai_check()
         if self.current_player.is_computer == False:
-            self.board_gui(player_turn=True)
+            #self.board_gui(player_turn=True)
             if self.current_player.mochihai in self.current_player.can_kan_hai:
                 #break here to wait for user input
                 emit('gameupdate',{'msg':'持ち牌をカンしますか？（YもしくはN)'})
@@ -240,10 +245,19 @@ class Kyoku():
             if self.current_player.mochihai in self.current_player.machihai:
                 self.current_player.ron(self.current_player.mochihai)
             if self.kyoku_on == True:
+                #show board
+                self.board_gui(player_turn=False)
+                #add mochihai to tehai for simple display
+                self.current_player.tehai.append(self.current_player.mochihai)
+                #send tehai img with mochihai appended on end
+                self.send_unsorted_tehai()
+                #clear mochihai
+                self.current_player.mochihai = None
+
                 #break here to wait for user input
-                emit('gameupdate',{'msg':'持ち牌を手牌に入れますか？（YもしくはN)','type':'yesno'})
+                emit('gameupdate',{'msg':f'{self.current_player.name}、捨て牌をクリックしてください。'})
                 #set room dict index1 value to type of next input
-                room_dict[session['room']][1] = 'kyokustart_yesno'
+                room_dict[session['room']][1] = 'kyoku_start_sutehai'
 
         elif self.current_player.is_computer == True:
             self.current_player.swap_hai()
@@ -331,9 +345,18 @@ class Kyoku():
                 if room_dict[session['room']][1] == 'cycle':
                     self.next_player()
             else:
-                emit('gameupdate',{'msg':'持ち牌を手牌に入れますか？（YもしくはN)'})
+                #show board
+                self.board_gui(player_turn=False)
+                #add mochihai to tehai for simple display
+                self.current_player.tehai.append(self.current_player.mochihai)
+                #show tehai with mochihai at 13
+                self.send_unsorted_tehai()
+                #clear mochihai
+                self.current_player.mochihai = None
+                #break here to wait for user input
+                emit('gameupdate',{'msg':f'{self.current_player.name}、捨て牌をクリックしてください。'})
                 #set room dict index1 value to type of next input
-                room_dict[session['room']][1] = 'kyoku_yesno'
+                room_dict[session['room']][1] = 'kyoku_sutehai'
 
 
         elif self.current_player.is_computer == True:
@@ -398,6 +421,7 @@ class Kyoku():
     def after_player_sutehai(self):
         self.current_player.tenpai_check()
         sutehai = self.current_player.kawa[-1]
+        emit('gameupdate',{'msg':f'{self.current_player.name}が{sutehai}を川に捨てました！'})
         #set key to 'cycle' before pon kan chi check, will be changed to other key if player action is necesary
         if room_dict[session['room']][1] != 'riichi_yesno':
             room_dict[session['room']][1] = 'cycle'

@@ -53,31 +53,21 @@ def gamecheck():
 def gamecontrol(choice):
     choice = choice['msg'].upper()
     print(choice)
-    #check what the next input type will be
-    if room_dict[session['room']][1] == 'kyokustart_yesno':
-        if choice in ('Y','N'):
-            if choice == 'Y':
-                room_dict[session['room']][0].kyoku.kyoku_start_non_computer(choice)
-            else:
-                room_dict[session['room']][0].kyoku.kyoku_start_non_computer(choice)
-                #'cycle' added to prevent false input and stop cycler for kan chi pon check
-                room_dict[session['room']][1] = 'cycle'
-                cycle_to_human()
-        else:
-            emit('gameupdate',{'msg':'不適切な入力がありました。'})
-    #condition for asking to get rid of a hai and accept mochihai
-    elif room_dict[session['room']][1] == 'kyoku_yesno':
-        if choice in ('Y','N'):
-            if choice == 'Y':
-                room_dict[session['room']][0].kyoku.player_turn_input(choice)
-            else:
-                room_dict[session['room']][0].kyoku.player_turn_input(choice)
-                room_dict[session['room']][1] = 'cycle'
-                cycle_to_human()
-        else:
-            emit('gameupdate',{'msg':'不適切な入力がありました。'})
-    #condition for asking which hai to throw into kawa
-    elif room_dict[session['room']][1] == 'sutehai':
+    # #check what the next input type will be
+    # if room_dict[session['room']][1] == 'kyokustart_yesno':
+    #     if choice in ('Y','N'):
+    #         if choice == 'Y':
+    #             room_dict[session['room']][0].kyoku.kyoku_start_non_computer(choice)
+    #         else:
+    #             room_dict[session['room']][0].kyoku.kyoku_start_non_computer(choice)
+    #             #'cycle' added to prevent false input and stop cycler for kan chi pon check
+    #             room_dict[session['room']][1] = 'cycle'
+    #             cycle_to_human()
+    #     else:
+    #         emit('gameupdate',{'msg':'不適切な入力がありました。'})
+    #######
+    #test to see if adding the mochihai to tehai works
+    if room_dict[session['room']][1] == 'kyoku_start_sutehai':
         if choice.isdigit():
             #convert choice to integer
             choice = int(choice)
@@ -86,6 +76,34 @@ def gamecontrol(choice):
                 room_dict[session['room']][0].kyoku.current_player.sutehai_user_input(choice)
                 room_dict[session['room']][0].kyoku.current_player.tenpai_check()
 
+                #do nothing if riichi check is necessary
+                if room_dict[session['room']][1] == 'riichi_yesno':
+                    pass
+                else:
+                    room_dict[session['room']][0].kyoku.after_tenpai_check()
+                    cycle_to_human()
+        else:
+            emit('gameupdate',{'msg':'不適切な入力がありました。'})
+    #condition for asking to get rid of a hai and accept mochihai
+    # elif room_dict[session['room']][1] == 'kyoku_yesno':
+    #     if choice in ('Y','N'):
+    #         if choice == 'Y':
+    #             room_dict[session['room']][0].kyoku.player_turn_input(choice)
+    #         else:
+    #             room_dict[session['room']][0].kyoku.player_turn_input(choice)
+    #             room_dict[session['room']][1] = 'cycle'
+    #             cycle_to_human()
+    #     else:
+    #         emit('gameupdate',{'msg':'不適切な入力がありました。'})
+    #condition for asking which hai to throw into kawa
+    elif room_dict[session['room']][1] == 'sutehai' or 'kyoku_sutehai':
+        if choice.isdigit():
+            #convert choice to integer
+            choice = int(choice)
+            #check to make sure input is in valid range
+            if choice < len(room_dict[session['room']][0].kyoku.current_player.can_sutehai):
+                room_dict[session['room']][0].kyoku.current_player.sutehai_user_input(choice)
+                room_dict[session['room']][0].kyoku.current_player.tenpai_check()
                 #do nothing if riichi check is necessary
                 if room_dict[session['room']][1] == 'riichi_yesno':
                     pass
