@@ -817,10 +817,10 @@ class Player():
                 return True
         del junchan_count
         honitu = True
-        for hai in winner.tehai:
+        for hai in self.tehai:
             if hai[0] == 0:
                 pass
-            elif hai[0] != winner.tehai[-1][0]:
+            elif hai[0] != self.tehai[-1][0]:
                 honitu = False
                 break
         if honitu:
@@ -877,7 +877,7 @@ class Player():
             else:
                 is_ryuuiisou = False
                 break
-        if is_ryuuiisou and Hai(0,5) in winner.tehai:
+        if is_ryuuiisou and Hai(0,5) in self.tehai:
             return True
         del is_ryuuiisou
         is_tuuiisou = False #tuuiisou check
