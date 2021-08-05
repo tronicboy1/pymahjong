@@ -241,7 +241,7 @@ class Kyoku():
                 self.current_player.ron(self.current_player.mochihai)
             if self.kyoku_on == True:
                 #break here to wait for user input
-                emit('gameupdate',{'msg':'持ち牌を手牌に入れますか？（YもしくはN)'})
+                emit('gameupdate',{'msg':'持ち牌を手牌に入れますか？（YもしくはN)','type':'yesno'})
                 #set room dict index1 value to type of next input
                 room_dict[session['room']][1] = 'kyokustart_yesno'
 

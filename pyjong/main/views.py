@@ -206,7 +206,7 @@ def game():
         room = session['room']
         return render_template('game.html',form=form,name=name,room=room)
 
-    #validation check
+    #validation check for invite
     if form.validate_on_submit():
         send_invite(session_username=current_user.username,invited_username=form.select_friend.data,room=form.room_name.data)
         session['room'] = form.room_name.data
