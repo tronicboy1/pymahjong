@@ -25,24 +25,54 @@
 
 <div class="" id="display">
 <img id="guiimg" src="" alt="" class="img-fluid rounded mx-auto d-block">
+
+
+
 <h5 id="tehai-text" class="pt-2">手配：</h5>
 <div class="py-1">
 <img id="tehaiimg" src="" alt="" class="img-fluid rounded mx-auto d-block">
 </div>
-</div>
-</div>
 
 <div class="container pt-2">
-  <textarea class="form-control" style="height: 200px" id="game" rows="20"></textarea>
+  <textarea class="form-control" style="height: 100px" id="game" rows="20"></textarea>
+</div>
+
+<div id="gamebuttons" class="btn-toolbar pt-1 pb-5" role="toolbar">
+  <div class="btn-group" role="group" style="width:100%" >
+    <button id="yes" type="button" class="btn btn-outline-primary">Yes</button>
+    <button id="no" type="button" class="btn btn-outline-primary">No</button>
+  </div>
+  <div id="haibutton" class="btn-group pt-1" style="width:100%" role="group">
+    <button id="hai0" type="button" class="btn btn-outline-secondary btn-block">0</button>
+    <button id="hai1" type="button" class="btn btn-outline-secondary btn-block">1</button>
+    <button id="hai2" type="button" class="btn btn-outline-secondary btn-block">2</button>
+    <button id="hai3" type="button" class="btn btn-outline-secondary btn-block">3</button>
+    <button id="hai4" type="button" class="btn btn-outline-secondary btn-block">4</button>
+    <button id="hai5" type="button" class="btn btn-outline-secondary btn-block">5</button>
+    <button id="hai6" type="button" class="btn btn-outline-secondary btn-block">6</button>
+  </div>
+  <div id="haibutton" class="btn-group pt-1" style="width:100%" role="group">
+
+    <button id="hai7" type="button" class="btn btn-outline-secondary btn-block">7</button>
+    <button id="hai8" type="button" class="btn btn-outline-secondary btn-block">8</button>
+    <button id="hai9" type="button" class="btn btn-outline-secondary btn-block">9</button>
+    <button id="hai10" type="button" class="btn btn-outline-secondary btn-block">10</button>
+    <button id="hai11" type="button" class="btn btn-outline-secondary btn-block">11</button>
+    <button id="hai12" type="button" class="btn btn-outline-secondary btn-block">12</button>
+    <button id="hai13" type="button" class="btn btn-outline-secondary btn-block">13</button>
+  </div>
+</div>
+</div>
 
 
-<div class="form-floating px-5">
+
+<!-- <div class="form-floating px-5">
 
   <div class="py-2">
     <input class="form-control" id="gamecontrol" placeholder="エンターキーを押して送信">
   </div>
 </div>
-</div>
+</div> -->
 
 
 
@@ -110,6 +140,7 @@
           <script type="text/javascript" charset="utf-8">
               var socket;
               $('#tehai-text').hide()
+              $('#gamebuttons').hide()
 
               $(document).ready(function(){
                   socket = io.connect('http://' + document.domain + ':' + location.port + '/main/game');
@@ -129,9 +160,11 @@
                   });
                   socket.on('gameupdate', function(data) {
                       $('#game').val($('#game').val() + data.msg + '\n');
+                      // $('#game').css("overflow", "hidden");
                       $('#game').scrollTop($('#game')[0].scrollHeight);
                       console.log('game message func')
                   });
+
                   socket.on('board_gui', function(data) {
                     var arrayBufferView = new Uint8Array( data.img );
                     var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
@@ -162,17 +195,17 @@
 
                       }
                   });
-                  $('#gamecontrol').keypress(function(e) {
-                      var code = e.keyCode || e.which;
-                      console.log('keypress')
-                      if (code == 13) {
-                          text = $('#gamecontrol').val();
-                          $('#gamecontrol').val('');
-                          socket.emit('gamecontrol', {msg: text});
-                          console.log('emit text',text)
-
-                      }
-                  });
+                  // $('#gamecontrol').keypress(function(e) {
+                  //     var code = e.keyCode || e.which;
+                  //     console.log('keypress')
+                  //     if (code == 13) {
+                  //         text = $('#gamecontrol').val();
+                  //         $('#gamecontrol').val('');
+                  //         socket.emit('gamecontrol', {msg: text});
+                  //         console.log('emit text',text)
+                  //
+                  //     }
+                  // });
                   $('#startsolo').on('click', function() {
                     socket.emit('startsolo');
                     console.log('startsolo')
@@ -181,9 +214,73 @@
                     socket.emit('start');
                     $('#gamestart').hide();
                     $('#tehai-text').show()
+                    $('#gamebuttons').show()
                     console.log('gamestart')
                   });
-
+                  $('#yes').on('click', function() {
+                    socket.emit('gamecontrol', {msg: 'Y'});
+                    console.log('yes button')
+                  });
+                  $('#no').on('click', function() {
+                    socket.emit('gamecontrol', {msg: 'N'});
+                    console.log('no button')
+                  });
+                  $('#hai0').on('click', function() {
+                    socket.emit('gamecontrol', {msg: '0'});
+                    console.log('hai0')
+                  });
+                  $('#hai1').on('click', function() {
+                    socket.emit('gamecontrol', {msg: '1'});
+                    console.log('hai1')
+                  });
+                  $('#hai2').on('click', function() {
+                    socket.emit('gamecontrol', {msg: '2'});
+                    console.log('hai2')
+                  });
+                  $('#hai3').on('click', function() {
+                    socket.emit('gamecontrol', {msg: '3'});
+                    console.log('hai3')
+                  });
+                  $('#hai4').on('click', function() {
+                    socket.emit('gamecontrol', {msg: '4'});
+                    console.log('hai4')
+                  });
+                  $('#hai5').on('click', function() {
+                    socket.emit('gamecontrol', {msg: '5'});
+                    console.log('hai5')
+                  });
+                  $('#hai6').on('click', function() {
+                    socket.emit('gamecontrol', {msg: '6'});
+                    console.log('hai6')
+                  });
+                  $('#hai7').on('click', function() {
+                    socket.emit('gamecontrol', {msg: '7'});
+                    console.log('hai7')
+                  });
+                  $('#hai8').on('click', function() {
+                    socket.emit('gamecontrol', {msg: '8'});
+                    console.log('hai8')
+                  });
+                  $('#hai9').on('click', function() {
+                    socket.emit('gamecontrol', {msg: '9'});
+                    console.log('hai9')
+                  });
+                  $('#hai10').on('click', function() {
+                    socket.emit('gamecontrol', {msg: '10'});
+                    console.log('hai10')
+                  });
+                  $('#hai11').on('click', function() {
+                    socket.emit('gamecontrol', {msg: '11'});
+                    console.log('hai11')
+                  });
+                  $('#hai12').on('click', function() {
+                    socket.emit('gamecontrol', {msg: '12'});
+                    console.log('hai12')
+                  });
+                  $('#hai13').on('click', function() {
+                    socket.emit('gamecontrol', {msg: '13'});
+                    console.log('hai13')
+                  });
 
 
               });

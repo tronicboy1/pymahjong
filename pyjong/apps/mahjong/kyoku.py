@@ -117,7 +117,7 @@ class Kyoku():
 
             self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)).rotate(270,expand=True),(10,200))
             try:
-                self.board_pic.paste(self.current_player.kanchipon_pic_gen().rotate(270,expand=True),(10,65))
+                self.board_pic.paste(self.current_player.kanchipon_pic_gen().rotate(270,expand=True),(10,100))
             except:
                 pass
             if self.current_player.is_riichi:
@@ -220,7 +220,7 @@ class Kyoku():
     def new_dora(self):
         self.dora.append(self.wanpai[0].pop(2))
         self.uradora.append(self.wanpai[1].pop(2))
-        self.board_pic.paste(self.dora[len(self.dora)-1].pic,(((len(self.dora)-1)*30),0))
+        self.board_pic.paste(self.dora[len(self.dora)-1].pic,(((len(self.dora)-1)*60),0))
 
     def kyoku_start(self):
         #have players take their hai
