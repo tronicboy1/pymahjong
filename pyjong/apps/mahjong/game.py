@@ -3,6 +3,7 @@ import random
 from flask_socketio import emit
 from pyjong.apps.mahjong.player import Player
 from pyjong.apps.mahjong.kyoku import Kyoku
+from pyjong.apps.mahjong.hai import Hai
 from pyjong.apps.socketioapps.mahjongsocketio import room_dict
 from flask import session
 
@@ -41,9 +42,11 @@ class Game():
 
 
     def end_kyoku_check(self):
+        #set key to end to avoid cycle
+        room_dict[session['room']][1] = 'end'
         #link kyoku back to room_dict kyoku
         self.kyoku = room_dict[session['room']][0].kyoku
-        if kyoku.winner == None:
+        if self.kyoku.winner == None:
             emit('gameupdate',{'msg':'流局！'})
             tenpatteru_list = []
             for player in self.player_dict.values(): #add players who are tenpatteru into tenpatteru list
@@ -74,22 +77,22 @@ class Game():
             if self.player_dict[self.oya].is_tenpatteru == False:
                 self.oya_koutai()
         else: #if there is a winner, must calculate score here
-            tensuu = self.tensuu_calc(kyoku.winner,self.kazamuki,self.oya,kyoku.dora,kyoku.uradora,kyoku.hai_remaining,kyoku.turn_count)
+            tensuu = self.tensuu_calc(self.kyoku.winner,self.kazamuki,self.oya,self.kyoku.dora,self.kyoku.uradora,self.kyoku.hai_remaining,self.kyoku.turn_count)
 
             #give score to winner
-            if kyoku.winner.is_tumo_agari:
-                if kyoku.winner == self.oya:
-                    kyoku.winner.add_funds(tensuu)
+            if self.kyoku.winner.is_tumo_agari:
+                if self.kyoku.winner == self.oya:
+                    self.kyoku.winner.add_funds(tensuu)
                     for player in self.player_dict.values():
-                        if player == kyoku.winner:
+                        if player == self.kyoku.winner:
                             pass
                         else:
                             remove = int(math.ceil(tensuu/300))*100
                             player.remove_funds(remove)
                 else:
-                    kyoku.winner.add_funds(tensuu)
+                    self.kyoku.winner.add_funds(tensuu)
                     for player in self.player_dict.values():
-                        if player == kyoku.winner:
+                        if player == self.kyoku.winner:
                             pass
                         elif player == self.oya:
                             remove = int(math.ceil(tensuu/200))*100
@@ -98,8 +101,8 @@ class Game():
                             remove = int(math.ceil(tensuu/400))*100
                             player.remove_funds(remove)
             else:
-                kyoku.winner.add_funds(tensuu)
-                kyoku.current_player.remove_funds(tensuu)
+                self.kyoku.winner.add_funds(tensuu)
+                self.kyoku.current_player.remove_funds(tensuu)
 
 
 

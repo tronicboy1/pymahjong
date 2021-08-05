@@ -116,7 +116,10 @@ def gamecontrol(choice):
                 #remove pon hai from other player's kawa
                 room_dict[session['room']][0].kyoku.ponkanchi_start_player.kawa.pop(-1)
                 room_dict[session['room']][0].kyoku.current_player.kan_user_input()
-                room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.player_dict[room_dict[session['room']][0].kyoku.ponkanchi_start_player]
+                #reset player to player at start of pon kan chi check
+                room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.ponkanchi_start_player
+                #change to next player
+                room_dict[session['room']][0].kyoku.next_player()
                 room_dict[session['room']][1] = 'cycle'
                 cycle_to_human()
             else:
@@ -124,6 +127,8 @@ def gamecontrol(choice):
                 room_dict[session['room']][0].kyoku.pon_kan_chi_check_sutehai = self.current_player.kawa[-1]
                 room_dict[session['room']][1] = 'cycle'
                 room_dict[session['room']][0].kyoku.after_player_kan()
+                #cycle to next player once more to avoid bug where player turn repeats
+                room_dict[session['room']][0].kyoku.next_player()
                 cycle_to_human()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'})
@@ -149,6 +154,8 @@ def gamecontrol(choice):
             else:
                 room_dict[session['room']][1] = 'cycle'
                 room_dict[session['room']][0].kyoku.after_player_pon()
+                #cycle to next player once more to avoid bug where player turn repeats
+                room_dict[session['room']][0].kyoku.next_player()
                 cycle_to_human()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'})
@@ -160,7 +167,10 @@ def gamecontrol(choice):
             #check to make sure input is in valid range
             if choice < len(room_dict[session['room']][0].kyoku.current_player.can_sutehai):
                 room_dict[session['room']][0].kyoku.current_player.pon_user_input(choice)
+                #reset player to player at start of pon kan chi check
                 room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.ponkanchi_start_player
+                #change to next player
+                room_dict[session['room']][0].kyoku.next_player()
                 room_dict[session['room']][1] = 'cycle'
                 cycle_to_human()
         else:
@@ -174,7 +184,7 @@ def gamecontrol(choice):
                 #add chihai to player chihai list
                 room_dict[session['room']][0].kyoku.current_player.tenpai_check(not_turn=True)
                 for mentu in room_dict[session['room']][0].kyoku.current_player.mentuhai: #add chi mentu into chi hai
-                    if chi_hai in mentu:
+                    if room_dict[session['room']][0].kyoku.pon_kan_chi_check_sutehai in mentu:
                         room_dict[session['room']][0].kyoku.current_player.chi_hai.extend(mentu)
 
                 #remove hai from other player's kawa
@@ -186,6 +196,8 @@ def gamecontrol(choice):
             else:
                 room_dict[session['room']][1] = 'cycle'
                 room_dict[session['room']][0].kyoku.after_player_chi()
+                #cycle to next player once more to avoid bug where player turn repeats
+                room_dict[session['room']][0].kyoku.next_player()
                 cycle_to_human()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'})
@@ -196,7 +208,10 @@ def gamecontrol(choice):
             #check to make sure input is in valid range
             if choice < len(room_dict[session['room']][0].kyoku.current_player.can_sutehai):
                 room_dict[session['room']][0].kyoku.current_player.chi_user_input(choice)
+                #reset player to player at start of pon kan chi check
                 room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.ponkanchi_start_player
+                #change to next player
+                room_dict[session['room']][0].kyoku.next_player()
                 room_dict[session['room']][1] = 'cycle'
                 cycle_to_human()
         else:

@@ -381,7 +381,7 @@ class Player():
     def first_round_kan(self):
         hai_count = {hai:self.tehai.count(hai) for hai in self.tehai}
         for hai,count in hai_count.items():
-            if count == 4 and hai not in can_kan:
+            if count == 4 and hai not in self.can_kan:
                 if self.kan(hai):
                     self.tehai.remove(hai)
                     return True
