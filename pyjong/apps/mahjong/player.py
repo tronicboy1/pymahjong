@@ -169,8 +169,11 @@ class Player():
                 self.can_sutehai.append(hai)
             #check for doubles here
             else:
-                if hai_count[hai] >= 2:
+                if hai_count[hai] >= 2 and hai not in self.pon_hai and hai not in self.kan_hai:
                     hai_count[hai] -= 1
+                    self.can_sutehai.append(hai)
+                elif hai_count[hai] == 4 and hai not in self.kan_hai:
+                    hai_count[hai] -= 3
                     self.can_sutehai.append(hai)
 
         self.can_sutehai.sort()
@@ -219,7 +222,7 @@ class Player():
 
 
     def ron(self,ron_hai,is_ron=False):
-        if self.is_ron == False:
+        if is_ron == False:
             text = ('ツモりますか','をツモった！')
         else:
             text = ('ロンしますか','をロンした！')
@@ -266,6 +269,8 @@ class Player():
                 self.is_tumo_agari = True
             if self.possible_rinshan:
                 self.is_rinshan = True
+            #set current player back to player who threw the ron hai
+            room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.ponkanchi_start_player
             room_dict[session['room']][0].kyoku.winner = room_dict[session['room']][0].kyoku.current_player
             room_dict[session['room']][0].kyoku.kyoku_on = False
             self.mentu_check()
