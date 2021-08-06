@@ -156,7 +156,10 @@ class Kyoku():
                 send_mochihai(player_id=2)
             except:
                 pass
-
+        #send new board pic to players
+        else:
+            send_board(player_id=2)
+            send_board(player_id=1)
             #update kawa pics
 
          #paste new kawa after players finish

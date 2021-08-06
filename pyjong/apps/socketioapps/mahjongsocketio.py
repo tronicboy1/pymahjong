@@ -52,6 +52,7 @@ def cycle_to_human():
     #while room_dict[session['room']][0].kyoku.current_player.is_computer:
     while room_dict[session['room']][1] == 'cycle':
         room_dict[session['room']][0].kyoku.player_turn()
+        room_dict[session['room']][0].kyoku.board_gui()
 
     #room_dict[session['room']][0].kyoku.player_turn()
 
