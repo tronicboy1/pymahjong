@@ -213,6 +213,9 @@ def game():
         session['room'] = form.room_name.data
         session['in_room'] = True
         session['players'] = 2
+        #add names to session data to avoid errors
+        session['player1_name'] = session['username']
+        session['player2_name'] = form.select_friend.data
         flash("招待状を送りました！",'alert-success')
         return redirect(url_for('main.game'))
     #setup solo room
@@ -244,6 +247,7 @@ def friends():
 
     #check all forms for positive return
     if accept_invite_form.validate_on_submit():
+        #room name is linked to select_friend value
         session['room'] = accept_invite_form.select_friend.data
         session['in_room'] = True
         flash(f"{session['room']}に入りました！","alert-success")

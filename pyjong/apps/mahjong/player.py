@@ -830,7 +830,7 @@ class Player():
 
         if ron_atama_hai[0][0] == 0 and ron_atama_hai[0][1] in (4,5,6): #shousangen check
             sangenhai_count = 0
-            for mentu in ron_mentu_hai:
+            for mentu in self.mentuhai:
                 if mentu[0][0] == 0 and mentu[0][1] in (4,5,6):
                     sangenhai_count += 1
             if sangenhai_count == 2:
@@ -857,7 +857,7 @@ class Player():
             return True
         del is_chinitu
         sangenmentu_count = 0 #daisangen check
-        for mentu in ron_mentu_hai:
+        for mentu in self.mentuhai:
             if mentu[0][0] == 0 and mentu[0][1] in (4,5,6):
                 sangenmentu_count += 1
         if sangenmentu_count == 3:
