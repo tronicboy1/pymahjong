@@ -97,67 +97,105 @@ class Kyoku():
                 emit('p2-guiimg',{'img':byte_arr},broadcast=True,namespace='/main/game',room=session['room'])
                 print('player 2 board sent')
 
+        def kawa_update():
+            #player 1 kawa and kanchipon
+            self.board_pic.paste(self.player1.kawa_pic_gen().resize((180,200)),(420,390))
+            try:
+                self.board_pic.paste(self.player1.kanchipon_pic_gen(),(10,540))
+            except:
+                pass
+            if self.player1.is_riichi:
+                self.board_pic.paste(self.senbou,(450,350))
 
-        if player_turn: #only paste can sutehai if player turn
+            #Player2
+            self.board_pic.paste(self.player2.kawa_pic_gen().resize((180,200)).rotate(90,expand=True),(790,200))
+            try:
+                self.board_pic.paste(self.player2.kanchipon_pic_gen().rotate(90,expand=True),(890,450))
+            except:
+                pass
+            if self.player2.is_riichi:
+                self.board_pic.paste(self.senbou.rotate(90,expand=True),(750,270))
 
-            if self.current_player == self.player1:
-                send_tehai(player_id=1)
-                send_board(player_id=1)
-                try:
-                    #send mochihai if mochihai object is not None
-                    send_mochihai(player_id=1)
-                except:
-                    pass
+            #player3
+            self.board_pic.paste(self.player3.kawa_pic_gen().resize((180,200)).rotate(180,expand=True),(420,10))
+            try:
+                self.board_pic.paste(self.player3.kanchipon_pic_gen().rotate(180,expand=True),(900,10))
+            except:
+                pass
+            if self.player3.is_riichi:
+                self.board_pic.paste(self.senbou.rotate(180,expand=True),(450,270))
 
-            elif self.current_player == self.player3 and self.player3.is_computer == False:
-                send_tehai(player_id=2)
-                send_board(player_id=2)
-                try:
-                    send_mochihai(player_id=2)
-                except:
-                    pass
+            #player4
+            self.board_pic.paste(self.player4.kawa_pic_gen().resize((180,200)).rotate(270,expand=True),(10,200))
+            try:
+                self.board_pic.paste(self.player4.kanchipon_pic_gen().rotate(270,expand=True),(10,100))
+            except:
+                pass
+            if self.player4.is_riichi:
+                self.board_pic.paste(self.senbou.rotate(270,expand=True),(340,270))
+
+
+        #update kawa for all players
+        kawa_update()
+
+        if self.current_player == self.player1:
+            send_tehai(player_id=1)
+            send_board(player_id=1)
+            send_board(player_id=2)
+            try:
+                #send mochihai if mochihai object is not None
+                send_mochihai(player_id=1)
+            except:
+                pass
+
+        elif self.current_player == self.player3 and self.player3.is_computer == False:
+            send_tehai(player_id=2)
+            send_board(player_id=2)
+            send_board(player_id=1)
+            try:
+                send_mochihai(player_id=2)
+            except:
+                pass
 
             #update kawa pics
 
          #paste new kawa after players finish
-        if self.current_player == self.player1:
+        # if self.current_player == self.player1:
+        #
+        #     self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)),(420,390))
+        #     try:
+        #         self.board_pic.paste(self.current_player.kanchipon_pic_gen(),(10,540))
+        #     except:
+        #         pass
+        #     if self.current_player.is_riichi:
+        #         self.board_pic.paste(self.senbou,(450,350))
+        # elif self.current_player == self.player2:
+        #     self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)).rotate(90,expand=True),(790,200))
+        #     try:
+        #         self.board_pic.paste(self.current_player.kanchipon_pic_gen().rotate(90,expand=True),(890,450))
+        #     except:
+        #         pass
+        #     if self.current_player.is_riichi:
+        #         self.board_pic.paste(self.senbou.rotate(90,expand=True),(750,270))
+        # elif self.current_player == self.player3:
+        #
+        #     self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)).rotate(180,expand=True),(420,10))
+        #     try:
+        #         self.board_pic.paste(self.current_player.kanchipon_pic_gen().rotate(180,expand=True),(900,10))
+        #     except:
+        #         pass
+        #     if self.current_player.is_riichi:
+        #         self.board_pic.paste(self.senbou.rotate(180,expand=True),(450,270))
+        # elif self.current_player == self.player4:
+        #
+        #     self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)).rotate(270,expand=True),(10,200))
+        #     try:
+        #         self.board_pic.paste(self.current_player.kanchipon_pic_gen().rotate(270,expand=True),(10,100))
+        #     except:
+        #         pass
+        #     if self.current_player.is_riichi:
+        #         self.board_pic.paste(self.senbou.rotate(270,expand=True),(340,270))
 
-            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)),(420,390))
-            try:
-                self.board_pic.paste(self.current_player.kanchipon_pic_gen(),(10,540))
-            except:
-                pass
-            if self.current_player.is_riichi:
-                self.board_pic.paste(self.senbou,(450,350))
-        elif self.current_player == self.player2:
-            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)).rotate(90,expand=True),(790,200))
-            try:
-                self.board_pic.paste(self.current_player.kanchipon_pic_gen().rotate(90,expand=True),(890,450))
-            except:
-                pass
-            if self.current_player.is_riichi:
-                self.board_pic.paste(self.senbou.rotate(90,expand=True),(750,270))
-        elif self.current_player == self.player3:
-
-            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)).rotate(180,expand=True),(420,10))
-            try:
-                self.board_pic.paste(self.current_player.kanchipon_pic_gen().rotate(180,expand=True),(900,10))
-            except:
-                pass
-            if self.current_player.is_riichi:
-                self.board_pic.paste(self.senbou.rotate(180,expand=True),(450,270))
-        elif self.current_player == self.player4:
-
-            self.board_pic.paste(self.current_player.kawa_pic_gen().resize((180,200)).rotate(270,expand=True),(10,200))
-            try:
-                self.board_pic.paste(self.current_player.kanchipon_pic_gen().rotate(270,expand=True),(10,100))
-            except:
-                pass
-            if self.current_player.is_riichi:
-                self.board_pic.paste(self.senbou.rotate(270,expand=True),(340,270))
-
-        if clear_mochihai:
-            pass
 
     def refresh_hai_remaining(self):
         self.hai_remaining = self.yama.yama_hai_count()
@@ -338,7 +376,7 @@ class Kyoku():
                 if room_dict[session['room']][1] == 'cycle':
                     self.next_player()
             else:
-                emit('gameupdate',{'msg':'持ち牌を手牌に入れますか？（YもしくはN)'},room=session['room'])
+                emit('gameupdate',{'msg':f'{self.current_player.name}持ち牌を手牌に入れますか？（YもしくはN)'},room=session['room'])
                 #set room dict index1 value to type of next input
                 room_dict[session['room']][1] = 'kyoku_yesno'
 

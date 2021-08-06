@@ -196,7 +196,7 @@ def info():
 @login_required
 def game():
 
-    print(session['players'])
+    
     #forms
     form = InviteFriend()
     form = add_friends_to_form(form)
