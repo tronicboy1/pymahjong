@@ -162,9 +162,17 @@ class Player():
 
     def refresh_can_sutehai_list(self):
         self.can_sutehai = []
+        #count hai to make sure same hai as in chi are not being removed from tehai
+        hai_count = {hai:self.tehai.count(hai) for hai in self.tehai}
         for hai in self.tehai:
             if hai not in self.chi_hai and hai not in self.kan_hai and hai not in self.pon_hai:
                 self.can_sutehai.append(hai)
+            #check for doubles here
+            else:
+                if hai_count[hai] >= 2:
+                    hai_count[hai] -= 1
+                    self.can_sutehai.append(hai)
+
         self.can_sutehai.sort()
 
     def sutehai(self,choice=None):

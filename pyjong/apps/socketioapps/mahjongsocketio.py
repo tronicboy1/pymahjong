@@ -1,5 +1,5 @@
 from flask_socketio import join_room,leave_room,emit
-from pyjong import socketio,room_dict,room_players
+from pyjong import socketio,room_dict,room_players,db
 from flask_login import current_user
 from pyjong.models import UserData
 from flask import session,redirect,flash
@@ -17,9 +17,11 @@ from pyjong.apps.mahjong.game import Game
 #################################################
 
 def add_game_results(game,players):
+    global room_dict
     if players == 1:
         #search for first player
-        result = UserData.query.filter_by(username=room_dict[session['room']][0].player1.name).first()
+        username1 = room_dict[session['room']][0].player1.name
+        result = UserData.query.filter_by(username=username1).first()
         #add kyoku wins to UserData
         result.kyoku_win_count += room_dict[session['room']][0].player1_kyokuwin_count
         #add game wins to UserData
@@ -29,19 +31,21 @@ def add_game_results(game,players):
         db.add(result)
         db.commit()
         print('game data added to db')
-        result = UserData.query.filter_by(username=room_dict[session['room']][0].player1.name).first()
-        flash(f'{session['room']][0].player1.name}の情報が更新されました：\n局勝利数：{}回、\nゲーム勝利数：{}回、\n獲得ポイント合計{}、',"alert-success")
+        result = UserData.query.filter_by(username=username1).first()
+        flash(f"{session['room'][0].player1.name}の情報が更新されました：\n局勝利数：{result.kyoku_win_count}回、\nゲーム勝利数：{result.game_win_count}回、\n獲得ポイント合計{result.points}","alert-success")
         return redirect(url_for('main.friends'))
 
     elif players == 2:
         # first player
-        result1 = UserData.query.filter_by(username=room_dict[session['room']][0].player1.name).first()
+        username1 = room_dict[session['room']][0].player1.name
+        result1 = UserData.query.filter_by(username=username1).first()
         result1.kyoku_win_count += room_dict[session['room']][0].player1_kyokuwin_count
         result1.game_win_count += room_dict[session['room']][0].player1_gamewin_count
         result1.points += (room_dict[session['room']][0].player1.balance - 30000)
         #second player
         #in the game object player invited to room is referred to as player 3
-        result2 = UserData.query.filter_by(username=room_dict[session['room']][0].player3.name).first()
+        username2 = room_dict[session['room']][0].player3.name
+        result2 = UserData.query.filter_by(username=username2).first()
         result2.kyoku_win_count += room_dict[session['room']][0].player3_kyokuwin_count
         result2.game_win_count += room_dict[session['room']][0].player3_gamewin_count
         result2.points += (room_dict[session['room']][0].player3.balance - 30000)
@@ -128,6 +132,7 @@ def gamecontrol(choice):
             if choice < len(room_dict[session['room']][0].kyoku.current_player.can_sutehai):
                 room_dict[session['room']][0].kyoku.current_player.sutehai_user_input(choice)
                 room_dict[session['room']][0].kyoku.current_player.tenpai_check()
+                room_dict[session['room']][0].kyoku.board_gui()
 
                 #do nothing if riichi check is necessary
                 if room_dict[session['room']][1] == 'riichi_yesno':
