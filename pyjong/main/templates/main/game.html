@@ -21,6 +21,10 @@
   <button type="button" id="gamestart" class="btn btn-outline-primary">ゲームをスタート</button>
 </div>
 </div>
+
+<div id="inputpanel">
+
+
 {% if session['player_id'] == 1 %}
 <div id="player1" class="container px-5">
 <div class="" id="p1-display">
@@ -112,7 +116,7 @@
 </div>
 </div>
 {% endif %}
-
+</div>
 
 {% if session['players'] == 2 %}
 <!-- Chat box -->
@@ -210,6 +214,9 @@
                       // $('#game').css("overflow", "hidden");
                       $('#game').scrollTop($('#game')[0].scrollHeight);
                       console.log('game message func')
+                  });
+                  socket.on('new-game', function() {
+                      $('#inputpanel').show()
                   });
                   {% if session['player_id'] == 1 %}
                   socket.on('p1-board_gui', function(data) {

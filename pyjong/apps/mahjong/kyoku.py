@@ -63,9 +63,9 @@ class Kyoku():
             self.current_player.can_sutehai_pic_gen().save(byte_arr,format='jpeg')
             byte_arr = byte_arr.getvalue()
             if player_id == 1:
-                emit('p1-tehaiimg',{'img':byte_arr},broadcast=True,namespace='/main/game')
+                emit('p1-tehaiimg',{'img':byte_arr},broadcast=True,namespace='/main/game',room=session['room'])
             if player_id == 2:
-                emit('p2-tehaiimg',{'img':byte_arr},broadcast=True,namespace='/main/game')
+                emit('p2-tehaiimg',{'img':byte_arr},broadcast=True,namespace='/main/game',room=session['room'])
 
         def send_mochihai(player_id=1):
             img = self.current_player.mochihai.pic
@@ -78,14 +78,14 @@ class Kyoku():
             byte_arr = io.BytesIO()
             result.save(byte_arr,format='jpeg')
             byte_arr = byte_arr.getvalue()
-            emit(f'p{player_id}-mochihai',{'img':byte_arr},broadcast=True,namespace='/main/game')
+            emit(f'p{player_id}-mochihai',{'img':byte_arr},broadcast=True,namespace='/main/game',room=session['room'])
 
         def send_board(player_id=1):
             if player_id == 1:
                 byte_arr = io.BytesIO()
                 self.board_pic.save(byte_arr,format='jpeg')
                 byte_arr = byte_arr.getvalue()
-                emit('p1-board_gui',{'img':byte_arr},broadcast=True,namespace='/main/game')
+                emit('p1-board_gui',{'img':byte_arr},broadcast=True,namespace='/main/game',room=session['room'])
                 print('player1 board sent')
 
                 #player 2 gui Emit
@@ -94,7 +94,7 @@ class Kyoku():
                 rotated_board = self.board_pic.rotate(180)
                 rotated_board.save(byte_arr,format='jpeg')
                 byte_arr = byte_arr.getvalue()
-                emit('p2-guiimg',{'img':byte_arr},broadcast=True,namespace='/main/game')
+                emit('p2-guiimg',{'img':byte_arr},broadcast=True,namespace='/main/game',room=session['room'])
                 print('player 2 board sent')
 
 
@@ -159,14 +159,6 @@ class Kyoku():
         if clear_mochihai:
             pass
 
-
-
-    def simple_hai_displayer(self):
-        emit('gameupdate',{'msg':f'{self.current_player.name}の手牌：'})
-        self.current_player.can_sutehai_pic_gen()
-        emit('gameupdate',{'msg':'持ち牌：'})
-        return self.current_player.mochihai.pic.resize((300,300))
-
     def refresh_hai_remaining(self):
         self.hai_remaining = self.yama.yama_hai_count()
 
@@ -199,7 +191,7 @@ class Kyoku():
     #have the oya roll dice to decide which yama to take from
     def saikoro_furi(self):
         saikoro_result = random.randint(1,6)
-        emit('gameupdate',{'msg':f'親の{self.current_player.name}がサイコロを振りました。\n{saikoro_result}が出ました！'})
+        emit('gameupdate',{'msg':f'親の{self.current_player.name}がサイコロを振りました。\n{saikoro_result}が出ました！'},room=session['room'])
         return saikoro_result
 
 
@@ -248,7 +240,7 @@ class Kyoku():
             self.board_gui(player_turn=True)
             if self.current_player.mochihai in self.current_player.can_kan_hai:
                 #break here to wait for user input
-                emit('gameupdate',{'msg':'持ち牌をカンしますか？（YもしくはN)'})
+                emit('gameupdate',{'msg':'持ち牌をカンしますか？（YもしくはN)'},room=session['room'])
                 #set room dict index1 value to type of next input
                 room_dict[session['room']][1] = 'mochihai_kan_yesno'
 
@@ -256,7 +248,7 @@ class Kyoku():
                 self.current_player.ron(self.current_player.mochihai)
             if self.kyoku_on == True:
                 #break here to wait for user input
-                emit('gameupdate',{'msg':'持ち牌を手牌に入れますか？（YもしくはN)','type':'yesno'})
+                emit('gameupdate',{'msg':'持ち牌を手牌に入れますか？（YもしくはN)','type':'yesno'},room=session['room'])
                 #set room dict index1 value to type of next input
                 room_dict[session['room']][1] = 'kyokustart_yesno'
 
@@ -278,7 +270,7 @@ class Kyoku():
         # while self.kyoku_on == True and self.hai_remaining > 0:
         #     self.player_turn()
     def after_mochihai_kan(self):
-        emit('gameupdate',{'msg':f'{self.current_player.mochihai}をカンしました！'})
+        emit('gameupdate',{'msg':f'{self.current_player.mochihai}をカンしました！'},room=session['room'])
         print(f'{self.current_player.mochihai}をカンしました！')
         self.kan_hai.append(self.current_player.mochihai)
         self.current_player.mochihai = None
@@ -346,7 +338,7 @@ class Kyoku():
                 if room_dict[session['room']][1] == 'cycle':
                     self.next_player()
             else:
-                emit('gameupdate',{'msg':'持ち牌を手牌に入れますか？（YもしくはN)'})
+                emit('gameupdate',{'msg':'持ち牌を手牌に入れますか？（YもしくはN)'},room=session['room'])
                 #set room dict index1 value to type of next input
                 room_dict[session['room']][1] = 'kyoku_yesno'
 
@@ -399,7 +391,7 @@ class Kyoku():
 
         else:
             self.current_player.kawa.append(self.current_player.mochihai)
-            emit('gameupdate',{'msg':f'{self.current_player.name}が{self.current_player.mochihai}を川に捨てました！'})
+            emit('gameupdate',{'msg':f'{self.current_player.name}が{self.current_player.mochihai}を川に捨てました！'},room=session['room'])
             self.current_player.mochihai = None
             self.board_gui(clear_mochihai=True)
             #set key to 'cycle' before pon kan chi check, will be changed to other key if player action is necesary
@@ -519,7 +511,7 @@ class Kyoku():
                         if self.current_player.ron(self.current_player.mochihai):
                             self.current_player = self.player_dict[start_player]
                     else:
-                        emit('gameupdate',{'msg':'持ち牌を手牌に入れますか？（YもしくはN)'})
+                        emit('gameupdate',{'msg':'持ち牌を手牌に入れますか？（YもしくはN)'},room=session['room'])
                         #set room dict index1 value to type of next input
                         room_dict[session['room']][1] = 'kan_yesno'
 
@@ -566,7 +558,7 @@ class Kyoku():
                         if self.current_player.ron(self.current_player.mochihai):
                             self.current_player = self.player_dict[start_player]
                     else:
-                        emit('gameupdate',{'msg':'持ち牌を手牌に入れますか？（YもしくはN)'})
+                        emit('gameupdate',{'msg':'持ち牌を手牌に入れますか？（YもしくはN)'},room=session['room'])
                         #set room dict index1 value to type of next input
                         room_dict[session['room']][1] = 'kan_yesno'
 

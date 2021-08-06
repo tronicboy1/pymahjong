@@ -70,6 +70,7 @@ def startgame():
         #kyoku.game will set index 1 value of room dict to define what the next input will be
         #index2 will be used for iterations
     elif session['players'] == 2:
+        emit('new-game',namespace='/main/game',room=session['room'])
         game = Game()
         room_dict[session['room']] = [game,'',0]
         room_dict[session['room']][0].create_players(players=2,player1_name=room_players[session['room']][0],player3_name=room_players[session['room']][1])
