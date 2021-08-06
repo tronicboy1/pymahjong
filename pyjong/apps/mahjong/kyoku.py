@@ -66,11 +66,11 @@ class Kyoku():
 
         def send_mochihai(player_id=1):
             img = self.current_player.mochihai.pic
-            background = Image.new('RGB',(60,130),(255,255,255))
-            background.paste(img,(0,5),img)
+            background = Image.new('RGB',(70,110),(31,61,12))
+            background.paste(img,(5,5),img)
 
             result = background.rotate(90,expand=True)
-            result = result.resize((75,30))
+            result = result.resize((55,35))
 
             byte_arr = io.BytesIO()
             result.save(byte_arr,format='jpeg')

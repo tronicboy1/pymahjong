@@ -29,8 +29,10 @@
 
 <div class="" id="p1-input">
 <h5 id="tehai-text" class="pt-2">手配：</h5>
-<img id="p1-mochihai" src="" alt="" class="rounded d-block mx-auto">
-<div class="container py-1">
+<div id="mochihai-container" class="pt-1">
+<img id="p1-mochihai" src="" alt="" class="rounded-top d-block mx-auto">
+</div>
+<div class="container pb-1">
 <img id="p1-tehaiimg" src="" alt="" class="rounded mx-auto d-block" usemap="#player1-tehaimap">
 <map name="player1-tehaimap" >
   <area id="hai0" class="tehaimap" shape="rect" coords="2,2,32,52">
@@ -197,6 +199,7 @@
                     var imageUrl = urlCreator.createObjectURL( blob );
                     var image_id = document.getElementById('p1-mochihai');
                     image_id.src = imageUrl;
+                    $('#mochihai-container').show();
                     console.log('mochihai image received')
                   });
 
@@ -235,12 +238,12 @@
                   });
                   $('#yes').on('click', function() {
                     socket.emit('gamecontrol', {msg: 'Y'});
-                    $('#p1-mochihai').hide();
+                    $('#mochihai-container').hide();
                     console.log('yes button')
                   });
                   $('#no').on('click', function() {
                     socket.emit('gamecontrol', {msg: 'N'});
-                    $('#p1-mochihai').hide();
+                    $('#mochihai-container').hide();
                     console.log('no button')
                   });
                   $('#hai0').on('click', function() {
