@@ -270,10 +270,11 @@ class Player():
             if self.possible_rinshan:
                 self.is_rinshan = True
             #set current player back to player who threw the ron hai
-            room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.ponkanchi_start_player
+            if is_ron:
+                room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.ponkanchi_start_player
             room_dict[session['room']][0].kyoku.winner = room_dict[session['room']][0].kyoku.current_player
             room_dict[session['room']][0].kyoku.kyoku_on = False
-            self.mentu_check()
+            self.tenpai_check(not_turn=True)
             return True #return true for use with monzen check
         else:
             self.can_ron = False

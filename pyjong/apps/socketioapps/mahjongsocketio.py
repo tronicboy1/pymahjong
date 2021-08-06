@@ -32,7 +32,7 @@ def add_game_results(game,players):
         db.session.commit()
         print('game data added to db')
         result = UserData.query.filter_by(username=username1).first()
-        flash(f"{session['room'][0].player1.name}の情報が更新されました：\n局勝利数：{result.kyoku_win_count}回、\nゲーム勝利数：{result.game_win_count}回、\n獲得ポイント合計{result.points}","alert-success")
+        flash("プレーヤー情報が更新されました！","alert-success")
         return redirect(url_for('main.friends'))
 
     elif players == 2:

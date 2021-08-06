@@ -112,18 +112,19 @@ def get_friends_list(session_username):
     session['friends'] = friends_list
 
     #add self to see users own stat
-    friends_list.insert(0,session['username'])
+    friends_list_stat = friends_list.copy()
+    friends_list_stat.insert(0,session['username'])
     if len(friends_list) > 0:
         session['has_friends'] = True
         #retrieve friend stats
         session['friend_stats'] = list()
-        for friend in session['friends']:
+        for friend in friends_list_stat:
             friend_info = UserData.query.filter_by(username=friend).first()
             session['friend_stats'].append([friend,friend_info.kyoku_win_count,friend_info.game_win_count,friend_info.points])
     else:
         session['has_friends'] = False
         session['friend_stats'] = list()
-        for friend in session['friends']:
+        for friend in friends_list_stat:
             friend_info = UserData.query.filter_by(username=friend).first()
             session['friend_stats'].append([friend,friend_info.kyoku_win_count,friend_info.game_win_count,friend_info.points])
 

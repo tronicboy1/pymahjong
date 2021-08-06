@@ -558,7 +558,7 @@ class Kyoku():
                 if self.current_player.is_computer == False:
                     self.board_gui(player_turn=True)
                     if self.current_player.mochihai in self.current_player.machihai:
-                        if self.current_player.ron(self.current_player.mochihai):
+                        if self.current_player.ron(self.current_player.mochihai,True):
                             self.current_player = self.player_dict[start_player]
                     else:
                         emit('gameupdate',{'msg':'持ち牌を手牌に入れますか？（YもしくはN)'},room=session['room'])
@@ -605,7 +605,7 @@ class Kyoku():
                 if self.current_player.is_computer == False:
                     self.board_gui(player_turn=True)
                     if self.current_player.mochihai in self.current_player.machihai:
-                        if self.current_player.ron(self.current_player.mochihai):
+                        if self.current_player.ron(self.current_player.mochihai,True):
                             self.current_player = self.player_dict[start_player]
                     else:
                         emit('gameupdate',{'msg':'持ち牌を手牌に入れますか？（YもしくはN)'},room=session['room'])
