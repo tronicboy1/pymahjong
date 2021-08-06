@@ -2,7 +2,7 @@ from flask_socketio import join_room,leave_room,emit
 from pyjong import socketio,room_dict,room_players
 from flask_login import current_user
 from pyjong.models import UserData
-from flask import session,redirect
+from flask import session,redirect,flash
 from time import time
 
 
@@ -25,23 +25,30 @@ def add_game_results(game,players):
         #add game wins to UserData
         result.game_win_count += room_dict[session['room']][0].player1_gamewin_count
         #add points to user data
-        result.game_win_count += (room_dict[session['room']][0].player1.balance - 30000)
+        result.points += (room_dict[session['room']][0].player1.balance - 30000)
         db.add(result)
         db.commit()
+        print('game data added to db')
+        result = UserData.query.filter_by(username=room_dict[session['room']][0].player1.name).first()
+        flash(f'{session['room']][0].player1.name}の情報が更新されました：\n局勝利数：{}回、\nゲーム勝利数：{}回、\n獲得ポイント合計{}、',"alert-success")
+        return redirect(url_for('main.friends'))
+
     elif players == 2:
         # first player
         result1 = UserData.query.filter_by(username=room_dict[session['room']][0].player1.name).first()
         result1.kyoku_win_count += room_dict[session['room']][0].player1_kyokuwin_count
         result1.game_win_count += room_dict[session['room']][0].player1_gamewin_count
-        result1.game_win_count += (room_dict[session['room']][0].player1.balance - 30000)
+        result1.points += (room_dict[session['room']][0].player1.balance - 30000)
         #second player
         #in the game object player invited to room is referred to as player 3
         result2 = UserData.query.filter_by(username=room_dict[session['room']][0].player3.name).first()
         result2.kyoku_win_count += room_dict[session['room']][0].player3_kyokuwin_count
         result2.game_win_count += room_dict[session['room']][0].player3_gamewin_count
-        result2.game_win_count += (room_dict[session['room']][0].player3.balance - 30000)
+        result2.points += (room_dict[session['room']][0].player3.balance - 30000)
         db.add_all([result1,result2])
         db.commit()
+        flash(f'プレーヤーの情報が更新されました！',"alert-success")
+        return redirect(url_for('main.friends'))
 
 
 #################################################
@@ -156,10 +163,10 @@ def gamecontrol(choice):
                 else:
                     #handling for 1 player mode
                     if session['players'] == 1:
-                        pass
+                        add_game_results(room_dict[session['room']][0],1)
                     #handling for 2 player mode
                     elif session['players'] == 2:
-                        pass
+                        add_game_results(room_dict[session['room']][0],2)
 
                     #will add features to store game data to database here
 
