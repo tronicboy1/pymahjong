@@ -336,12 +336,8 @@ class Game():
             if winner.machihai[0][1]+2 == winner.machihai[1][1] and monzen: #pinfu check
                 han += 1
                 emit('gameupdate',{'msg':'ピンフ！'})
-        for mentu in winner.mentuhai: #ippeikou check
-            if mentu[0][1]+2 == mentu[2][1]:
-                if {me:winner.mentuhai.count(me) for me in winner.mentuhai}[mentu] == 2 and monzen:
-                    han += 1
-                    emit('gameupdate',{'msg':'イッペイコウ！'})
-                    break
+
+
         if hai_remaining == 0 and winner.is_tumo_agari: #haitei check
             han += 1
             emit('gameupdate',{'msg':'ハイテイアガリ！'})
@@ -406,14 +402,25 @@ class Game():
         if len(winner.kan_hai) == 3:
             han += 2
             emit('gameupdate',{'msg':'三槓子！'})
+
+        #ipeko ryanpeikou check
         ryanpeikou_count = 0
-        for mentu in winner.mentuhai: #ryanpeikou check
-            if mentu[0][1]+2 == mentu[2][1]:
-                if {me:winner.mentuhai.count(me) for me in winner.mentuhai}[mentu] == 2 and monzen:
-                    ryanpeikou_count += 1
+        counted_mentu = []
+        shuntu_mentu = [mentu for mentu in winner.mentuhai if mentu[0][1]+2 == mentu[2][1]]
+        for mentu in shuntu_mentu:
+            if winner.mentuhai.count(mentu) == 2 and mentu not in counted_mentu:
+                #add mentu here to make sure not counted twice
+                counted_mentu.append(mentu)
+                ryanpeikou_count += 1
+                emit('gameupdate',{'msg':'一盃口！'})
+
         if ryanpeikou_count == 2:
-            han += 3
+            han += 2 #add two because
             emit('gameupdate',{'msg':'二盃口！'})
+        elif ryanpeikou_count == 1:
+            han += 1
+            emit('gameupdate',{'msg':'一盃口！'})
+
         del ryanpeikou_count
         junchan_count = 0 #junchan check
         for hai in winner.tehai:
