@@ -2,7 +2,7 @@ from flask_socketio import join_room,leave_room,emit
 from pyjong import socketio,room_dict,room_players,db
 from flask_login import current_user
 from pyjong.models import UserData
-from flask import session,redirect,flash
+from flask import session,redirect,flash,url_for
 from time import time
 
 
