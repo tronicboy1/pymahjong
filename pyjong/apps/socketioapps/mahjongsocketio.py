@@ -1,15 +1,12 @@
 from flask_socketio import join_room,leave_room,emit
-from pyjong import socketio
+from pyjong import socketio,room_dict,room_players
 from flask_login import current_user
 from pyjong.models import UserData
 from flask import session,redirect
 from time import time
 
 
-#data will be stored in a universal variable as a dictionary
-#the dictionary will have the current status of a game in a room saved
-#{'room1':[kyoku,player1,player2......]}
-room_dict = dict()
+
 
 #room dict is used in Kyoku so import must be done after creation
 from pyjong.apps.mahjong.yama import Yama
@@ -67,11 +64,17 @@ def startgame():
     if session['players'] == 1:
         game = Game()
         room_dict[session['room']] = [game,'',0]
-        room_dict[session['room']][0].create_players(players=1,player1_name=session['username'])
+        room_dict[session['room']][0].create_players(players=1,player1_name=room_players[session['room']][0])
         room_dict[session['room']][0].kyoku.kyoku_start()
         cycle_to_human()
         #kyoku.game will set index 1 value of room dict to define what the next input will be
         #index2 will be used for iterations
+    elif session['players'] == 2:
+        game = Game()
+        room_dict[session['room']] = [game,'',0]
+        room_dict[session['room']][0].create_players(players=2,player1_name=room_players[session['room']][0],player3_name=room_players[session['room']][1])
+        room_dict[session['room']][0].kyoku.kyoku_start()
+        cycle_to_human()
 
 
 

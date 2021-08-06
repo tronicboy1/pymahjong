@@ -6,6 +6,8 @@
 {% if session['in_room'] == True %}
 
 
+
+
 </head>
 <div class="container py-3">
 <h1>PyJongルーム</h1>
@@ -20,16 +22,13 @@
 </div>
 </div>
 
+{% if session['player_id'] == 1 %}
 <div class="container px-5">
-
-
 <div class="" id="display">
-<img id="guiimg" src="" alt="" class="img-fluid rounded mx-auto d-block">
-
-
+<img id="p1-guiimg" src="" alt="" class="img-fluid rounded mx-auto d-block">
 <div class="" id="p1-input">
 <h5 id="tehai-text" class="pt-2">手配：</h5>
-<div id="mochihai-container" class="pt-1">
+<div id="p1-mochihai-container" class="pt-1">
 <img id="p1-mochihai" src="" alt="" class="rounded-top d-block mx-auto">
 </div>
 <div class="container pb-1">
@@ -54,7 +53,49 @@
 
 </div>
 
+<div class="container pt-2">
+  <textarea class="form-control" style="height: 100px" id="game" rows="20"></textarea>
+</div>
 
+<div id="gamebuttons" class="btn-toolbar pt-1 pb-5" role="toolbar">
+  <div id="yesnobuttons" class="btn-group" role="group" style="width:100%" >
+    <button id="p1-yes" type="button" class="btn btn-outline-primary">Yes</button>
+    <button id="p1-no" type="button" class="btn btn-outline-primary">No</button>
+  </div>
+</div>
+{% else %}
+
+<p>Player2 GUI</p>
+
+<div class="container px-5">
+<div class="" id="display">
+<img id="p2-guiimg" src="" alt="" class="img-fluid rounded mx-auto d-block">
+<div class="" id="p1-input">
+<h5 id="tehai-text" class="pt-2">手配：</h5>
+<div id="p1-mochihai-container" class="pt-1">
+<img id="p1-mochihai" src="" alt="" class="rounded-top d-block mx-auto">
+</div>
+<div class="container pb-1">
+<img id="p1-tehaiimg" src="" alt="" class="rounded mx-auto d-block" usemap="#player1-tehaimap">
+<map name="player1-tehaimap" >
+  <area id="hai0" class="tehaimap" shape="rect" coords="2,2,32,52">
+  <area id="hai1" class="tehaimap" shape="rect" coords="32,2,62,52">
+  <area id="hai2" class="tehaimap" shape="rect" coords="62,2,92,52">
+  <area id="hai3" class="tehaimap"  shape="rect" coords="92,2,122,52">
+  <area id="hai4" class="tehaimap" shape="rect" coords="122,2,152,52">
+  <area id="hai5" class="tehaimap" shape="rect" coords="152,2,182,52">
+  <area id="hai6" class="tehaimap" shape="rect" coords="182,2,212,52">
+  <area id="hai7" class="tehaimap"  shape="rect" coords="212,2,242,52">
+  <area id="hai8" class="tehaimap" shape="rect" coords="242,2,272,52">
+  <area id="hai9" class="tehaimap" shape="rect" coords="272,2,302,52">
+  <area id="hai10" class="tehaimap" shape="rect" coords="302,2,332,52">
+  <area id="hai11" class="tehaimap"  shape="rect" coords="332,2,362,52">
+  <area id="hai12" class="tehaimap" shape="rect" coords="362,2,392,52">
+  <area id="hai13" class="tehaimap" shape="rect" coords="392,2,422,52">
+</map>
+</div>
+
+</div>
 
 <div class="container pt-2">
   <textarea class="form-control" style="height: 100px" id="game" rows="20"></textarea>
@@ -62,22 +103,12 @@
 
 <div id="gamebuttons" class="btn-toolbar pt-1 pb-5" role="toolbar">
   <div id="yesnobuttons" class="btn-group" role="group" style="width:100%" >
-    <button id="yes" type="button" class="btn btn-outline-primary">Yes</button>
-    <button id="no" type="button" class="btn btn-outline-primary">No</button>
+    <button id="p2-yes" type="button" class="btn btn-outline-primary">Yes</button>
+    <button id="p2-no" type="button" class="btn btn-outline-primary">No</button>
   </div>
 </div>
 
-
-
-
-<!-- <div class="form-floating px-5">
-
-  <div class="py-2">
-    <input class="form-control" id="gamecontrol" placeholder="エンターキーを押して送信">
-  </div>
-</div>
-</div> -->
-
+{% endif %}
 
 
 
@@ -174,12 +205,12 @@
                       console.log('game message func')
                   });
 
-                  socket.on('board_gui', function(data) {
+                  socket.on('p1-board_gui', function(data) {
                     var arrayBufferView = new Uint8Array( data.img );
                     var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
                     var urlCreator = window.URL || window.webkitURL;
                     var imageUrl = urlCreator.createObjectURL( blob );
-                    var image_id = document.getElementById('guiimg');
+                    var image_id = document.getElementById('p1-guiimg');
                     image_id.src = imageUrl;
                     console.log('board image received')
                   });
@@ -199,10 +230,37 @@
                     var imageUrl = urlCreator.createObjectURL( blob );
                     var image_id = document.getElementById('p1-mochihai');
                     image_id.src = imageUrl;
-                    $('#mochihai-container').show();
+                    $('#p1-mochihai-container').show();
                     console.log('mochihai image received')
                   });
-
+                  socket.on('p2-board_gui', function(data) {
+                    var arrayBufferView = new Uint8Array( data.img );
+                    var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
+                    var urlCreator = window.URL || window.webkitURL;
+                    var imageUrl = urlCreator.createObjectURL( blob );
+                    var image_id = document.getElementById('p2-guiimg');
+                    image_id.src = imageUrl;
+                    console.log('board image received')
+                  });
+                  socket.on('p2-tehaiimg', function(data) {
+                    var arrayBufferView = new Uint8Array( data.img );
+                    var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
+                    var urlCreator = window.URL || window.webkitURL;
+                    var imageUrl = urlCreator.createObjectURL( blob );
+                    var image_id = document.getElementById('p2-tehaiimg');
+                    image_id.src = imageUrl;
+                    console.log('tehai image received')
+                  });
+                  socket.on('p2-mochihai', function(data) {
+                    var arrayBufferView = new Uint8Array( data.img );
+                    var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
+                    var urlCreator = window.URL || window.webkitURL;
+                    var imageUrl = urlCreator.createObjectURL( blob );
+                    var image_id = document.getElementById('p2-mochihai');
+                    image_id.src = imageUrl;
+                    $('#p2-mochihai-container').show();
+                    console.log('mochihai image received')
+                  });
                   $('#text').keypress(function(e) {
                       var code = e.keyCode || e.which;
                       console.log('keypress')
@@ -236,14 +294,24 @@
                     $('#gamebuttons').show()
                     console.log('gamestart')
                   });
-                  $('#yes').on('click', function() {
+                  $('#p1-yes').on('click', function() {
                     socket.emit('gamecontrol', {msg: 'Y'});
-                    $('#mochihai-container').hide();
+                    $('#p1-mochihai-container').hide();
                     console.log('yes button')
                   });
-                  $('#no').on('click', function() {
+                  $('#p1-no').on('click', function() {
                     socket.emit('gamecontrol', {msg: 'N'});
-                    $('#mochihai-container').hide();
+                    $('#p1-mochihai-container').hide();
+                    console.log('no button')
+                  });
+                  $('#p2-yes').on('click', function() {
+                    socket.emit('gamecontrol', {msg: 'Y'});
+                    $('#p2-mochihai-container').hide();
+                    console.log('yes button')
+                  });
+                  $('#p2-no').on('click', function() {
+                    socket.emit('gamecontrol', {msg: 'N'});
+                    $('#p2-mochihai-container').hide();
                     console.log('no button')
                   });
                   $('#hai0').on('click', function() {

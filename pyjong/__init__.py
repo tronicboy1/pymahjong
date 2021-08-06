@@ -39,6 +39,15 @@ login_manager.login_view = 'authentication.login'
 #add socket IO
 socketio = SocketIO(app)
 
+#data will be stored in a universal variable as a dictionary
+#the dictionary will have the current status of a game in a room saved
+#{'room1':[kyoku,player1,player2......]}
+room_dict = dict()
+
+#Data to make start new game will be stored in this global dictionary
+room_players = dict()
+
+
 from pyjong.authentication.views import authentication_blueprint
 from pyjong.main.views import main_blueprint
 from pyjong.error_handler.errors import error_pages

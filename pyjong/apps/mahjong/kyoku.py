@@ -62,7 +62,10 @@ class Kyoku():
             byte_arr = io.BytesIO()
             self.current_player.can_sutehai_pic_gen().save(byte_arr,format='jpeg')
             byte_arr = byte_arr.getvalue()
-            emit(f'p{player_id}-tehaiimg',{'img':byte_arr},broadcast=True,namespace='/main/game')
+            if player_id == 1:
+                emit('p1-tehaiimg',{'img':byte_arr},broadcast=True,namespace='/main/game')
+            if player_id == 2:
+                emit('p2-tehaiimg',{'img':byte_arr},broadcast=True,namespace='/main/game')
 
         def send_mochihai(player_id=1):
             img = self.current_player.mochihai.pic
@@ -77,26 +80,38 @@ class Kyoku():
             byte_arr = byte_arr.getvalue()
             emit(f'p{player_id}-mochihai',{'img':byte_arr},broadcast=True,namespace='/main/game')
 
-        if player_turn: #only paste can sutehai if player turn
-            ########FOR DEBUGGING
-            # print('hai in tehai:',len(self.current_player.tehai))
-            # self.current_player.refresh_can_sutehai_list()
-            # for i,hai in enumerate(self.current_player.chihai):
-            #     print(i,hai)
-            #     emit('gameupdate',{'msg':f'{i}:{hai}'})
-            #
-            # emit('gameupdate',{'msg':f"もち牌：{self.current_player.mochihai}"})
-            ###################################
-            #send image to tehai
-            send_tehai(player_id=1)
+        def send_board(player_id=1):
+            if player_id == 1:
+                byte_arr = io.BytesIO()
+                self.board_pic.save(byte_arr,format='jpeg')
+                byte_arr = byte_arr.getvalue()
+                emit('p1-board_gui',{'img':byte_arr},broadcast=True,namespace='/main/game')
 
-            try:
-                #send mochihai if mochihai object is not None
-                send_mochihai(player_id=1)
-                #self.board_pic.paste(self.current_player.mochihai.pic,(800,480))
-            except:
-                #send white slate if mochihai object is None
-                pass
+                #player 2 gui Emit
+            elif player_id == 2:
+                byte_arr = io.BytesIO()
+                rotated_board = self.board_pic.rotate(180)
+                rotated_board.save(byte_arr,format='jpeg')
+                byte_arr = byte_arr.getvalue()
+                emit('p2-board_gui',{'img':byte_arr},broadcast=True,namespace='/main/game')
+
+
+        if player_turn: #only paste can sutehai if player turn
+
+            if self.current_player == self.player1:
+                send_tehai(player_id=1)
+                try:
+                    #send mochihai if mochihai object is not None
+                    send_mochihai(player_id=1)
+                except:
+                    pass
+
+            elif self.current_player == self.player3:
+                send_tehai(player_id=2)
+                try:
+                    send_mochihai(player_id=2)
+                except:
+                    pass
 
             #update kawa pics
 
@@ -138,24 +153,14 @@ class Kyoku():
                 self.board_pic.paste(self.senbou.rotate(270,expand=True),(340,270))
 
         if clear_mochihai:
-            self.board_pic.paste(Image.new('RGB',(60,100),(31,61,12)),(800,480))
-            send_tehai()
+            pass
 
         ####################################
         ####Emit board gui
         ##################################
+        send_board(player_id=1)
 
-        # file_name = os.path.join(os.path.abspath(os.path.dirname(__file__)),'static','gui',(session['room']+'.jpg'))
-        # self.board_pic.resize((600,600))
-        # self.board_pic.save(file_name)
-        # with open(file_name,'rb') as f:
-        #     gui_binary = f.read()
-        #     emit('board_gui',{'img':gui_binary},broadcast=True,namespace='/main/game')
-        #     f.close()
-        byte_arr = io.BytesIO()
-        self.board_pic.save(byte_arr,format='jpeg')
-        byte_arr = byte_arr.getvalue()
-        emit('board_gui',{'img':byte_arr},broadcast=True,namespace='/main/game')
+        #send_board(player_id=2)
 
         ##############################
 

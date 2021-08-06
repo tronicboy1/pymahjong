@@ -1,6 +1,6 @@
 from flask import Blueprint,render_template,redirect,url_for,flash,session
 from flask_login import login_required,current_user
-from pyjong import db
+from pyjong import db,room_players
 from pyjong.models import UserData
 from pyjong.main.forms import FriendRequest,AcceptFriendRequest,DeleteFriend,InviteFriend,AcceptInvite,PlaySolo
 import datetime
@@ -213,9 +213,11 @@ def game():
         session['room'] = form.room_name.data
         session['in_room'] = True
         session['players'] = 2
-        #add names to session data to avoid errors
-        session['player1_name'] = session['username']
-        session['player2_name'] = form.select_friend.data
+        #set inviter as player one
+        session['player_id'] = 1
+        #add names to variable to be accessed on game 0=player1_name,1=player3_name
+        room_players[session['room']] = [session['username'],form.select_friend.data]
+
         flash("招待状を送りました！",'alert-success')
         return redirect(url_for('main.game'))
     #setup solo room
@@ -223,6 +225,9 @@ def game():
         session['room'] = str(int(time()))
         session['players'] = 1
         session['in_room'] = True
+        session['player_id'] = 1
+        #set name for player2 to none
+        room_players[session['room']] = [session['username'],None]
         return redirect(url_for('main.game'))
 
     return render_template('game.html',form=form,solo_form=solo_form)
@@ -250,6 +255,9 @@ def friends():
         #room name is linked to select_friend value
         session['room'] = accept_invite_form.select_friend.data
         session['in_room'] = True
+        session['players'] = 2
+        #set joining user as player 2
+        session['player_id'] = 2
         flash(f"{session['room']}に入りました！","alert-success")
         return redirect(url_for('main.game'))
     if form_delete.validate_on_submit():
