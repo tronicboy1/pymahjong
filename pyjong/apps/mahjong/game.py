@@ -15,6 +15,12 @@ class Game():
         self.game_on = True
         self.kyoku_suu = 0
         self.kyoku = None
+        #variable for kyoku win count to be used to update database
+        self.player1_kyokuwin_count = 0
+        self.player3_kyokuwin_count = 0
+        #variable for game win count to be used with database
+        self.player1_gamewin_count = 0
+        self.player3_gamewin_count = 0
 
 
         emit('gameupdate',{'msg':'ようこそ、Pyjongへ'})
@@ -35,7 +41,7 @@ class Game():
             self.player3 = Player(player3_name,is_computer=False)
             self.player4 = Player('Computer 2')
 
-        
+
 
         self.player_dict = {0:self.player1,1:self.player2,2:self.player3,3:self.player4}
 

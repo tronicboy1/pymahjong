@@ -57,12 +57,25 @@ class Kyoku():
         print('next player executed',self.current_player.name)
 
     def board_gui(self,player_turn=False,clear_mochihai=False): #add feature to rotate pic for player2 in future
-        def send_tehai():
+        def send_tehai(player_id=1):
             self.current_player.refresh_can_sutehai_list()
             byte_arr = io.BytesIO()
             self.current_player.can_sutehai_pic_gen().save(byte_arr,format='jpeg')
             byte_arr = byte_arr.getvalue()
-            emit('tehaiimg',{'img':byte_arr},broadcast=True,namespace='/main/game')
+            emit(f'p{player_id}-tehaiimg',{'img':byte_arr},broadcast=True,namespace='/main/game')
+
+        def send_mochihai(player_id=1):
+            img = self.current_player.mochihai.pic
+            background = Image.new('RGB',(60,130),(255,255,255))
+            background.paste(img,(0,5),img)
+
+            result = background.rotate(90,expand=True)
+            result = result.resize((75,30))
+
+            byte_arr = io.BytesIO()
+            result.save(byte_arr,format='jpeg')
+            byte_arr = byte_arr.getvalue()
+            emit(f'p{player_id}-mochihai',{'img':byte_arr},broadcast=True,namespace='/main/game')
 
         if player_turn: #only paste can sutehai if player turn
             ########FOR DEBUGGING
@@ -75,11 +88,12 @@ class Kyoku():
             # emit('gameupdate',{'msg':f"もち牌：{self.current_player.mochihai}"})
             ###################################
             #send image to tehai
-            send_tehai()
+            send_tehai(player_id=1)
 
             try:
                 #send mochihai if mochihai object is not None
-                self.board_pic.paste(self.current_player.mochihai.pic,(800,480))
+                send_mochihai(player_id=1)
+                #self.board_pic.paste(self.current_player.mochihai.pic,(800,480))
             except:
                 #send white slate if mochihai object is None
                 pass

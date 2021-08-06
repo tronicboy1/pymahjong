@@ -96,7 +96,7 @@ class Player():
             if i > len(self.can_sutehai)-1:
                 break
             else:
-                can_sutehai_pic.paste(self.can_sutehai[i].pic,(x+4,4))
+                can_sutehai_pic.paste(self.can_sutehai[i].pic,(x+4,4),self.can_sutehai[i].pic)
                 i += 1
 
         #return can_sutehai_pic.resize((int(can_sutehai_pic.size[0]*.75),int(can_sutehai_pic.size[1]*.75))) #display kawa
@@ -125,7 +125,7 @@ class Player():
                 if i > len(kanchipon_list)-1:
                     break
                 else:
-                    im.paste(kanchipon_list[i].pic.resize((30,50)),(x,0))
+                    im.paste(kanchipon_list[i].pic.resize((30,50)),(x,0),kanchipon_list[i].pic.resize((30,50)))
                     i += 1
             return im.resize((int(im.size[0]*.75),int(im.size[1]*.75)))
 
@@ -174,7 +174,7 @@ class Player():
             self.can_sutehai_pic_gen()
             input_range = ['{}'.format(x) for x in range(0,len(self.can_sutehai))]
             #ask user for sutehai no and pass off to sutehai_user_input
-            emit('gameupdate',{'msg':f'{self.name}、捨て牌を入力してください。'})
+            emit('gameupdate',{'msg':f'{self.name}、捨て牌を選んでください。'})
             room_dict[session['room']][1] = 'sutehai'
 
         else:

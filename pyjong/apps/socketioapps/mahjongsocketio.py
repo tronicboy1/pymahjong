@@ -1,6 +1,7 @@
 from flask_socketio import join_room,leave_room,emit
 from pyjong import socketio
 from flask_login import current_user
+from pyjong.models import UserData
 from flask import session,redirect
 from time import time
 
@@ -14,6 +15,36 @@ room_dict = dict()
 from pyjong.apps.mahjong.yama import Yama
 from pyjong.apps.mahjong.game import Game
 
+#################################################
+#DATABASE FUNCTIONS
+#################################################
+
+def add_game_results(game,players):
+    if players == 1:
+        #search for first player
+        result = UserData.query.filter_by(username=room_dict[session['room']][0].player1.name).first()
+        #add kyoku wins to UserData
+        result.kyoku_win_count += room_dict[session['room']][0].player1_kyokuwin_count
+        #add game wins to UserData
+        result.game_win_count += room_dict[session['room']][0].player1_gamewin_count
+        #add points to user data
+        result.game_win_count += (room_dict[session['room']][0].player1.balance - 30000)
+        db.add(result)
+        db.commit()
+    elif players == 2:
+        # first player
+        result1 = UserData.query.filter_by(username=room_dict[session['room']][0].player1.name).first()
+        result1.kyoku_win_count += room_dict[session['room']][0].player1_kyokuwin_count
+        result1.game_win_count += room_dict[session['room']][0].player1_gamewin_count
+        result1.game_win_count += (room_dict[session['room']][0].player1.balance - 30000)
+        #second player
+        #in the game object player invited to room is referred to as player 3
+        result2 = UserData.query.filter_by(username=room_dict[session['room']][0].player3.name).first()
+        result2.kyoku_win_count += room_dict[session['room']][0].player3_kyokuwin_count
+        result2.game_win_count += room_dict[session['room']][0].player3_gamewin_count
+        result2.game_win_count += (room_dict[session['room']][0].player3.balance - 30000)
+        db.add_all([result1,result2])
+        db.commit()
 
 
 #################################################
@@ -64,7 +95,7 @@ def gamecontrol(choice):
                 room_dict[session['room']][1] = 'cycle'
                 cycle_to_human()
         else:
-            emit('gameupdate',{'msg':'不適切な入力がありました。'})
+            emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
     #condition for asking to get rid of a hai and accept mochihai
     elif room_dict[session['room']][1] == 'kyoku_yesno':
         if choice in ('Y','N'):
@@ -75,7 +106,7 @@ def gamecontrol(choice):
                 room_dict[session['room']][1] = 'cycle'
                 cycle_to_human()
         else:
-            emit('gameupdate',{'msg':'不適切な入力がありました。'})
+            emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
     #condition for asking which hai to throw into kawa
     elif room_dict[session['room']][1] == 'sutehai':
         if choice.isdigit():
@@ -93,7 +124,7 @@ def gamecontrol(choice):
                     room_dict[session['room']][0].kyoku.after_tenpai_check()
                     cycle_to_human()
         else:
-            emit('gameupdate',{'msg':'不適切な入力がありました。'})
+            emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
     #condition for ron atama_check
     elif room_dict[session['room']][1] == 'roncheck':
         if choice in ('Y','N'):
@@ -108,7 +139,7 @@ def gamecontrol(choice):
                 room_dict[session['room']][0].kyoku.after_player_ron_check()
                 cycle_to_human()
         else:
-            emit('gameupdate',{'msg':'不適切な入力がありました。'})
+            emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
     #condition to staaart new kyoku
     elif room_dict[session['room']][1] == 'newkyoku_yesno':
             if choice in ('Y','N'):
@@ -118,11 +149,17 @@ def gamecontrol(choice):
                     room_dict[session['room']][0].kyoku.kyoku_start()
                     cycle_to_human()
                 else:
-                    pass
+                    #handling for 1 player mode
+                    if session['players'] == 1:
+                        pass
+                    #handling for 2 player mode
+                    elif session['players'] == 2:
+                        pass
+
                     #will add features to store game data to database here
 
             else:
-                emit('gameupdate',{'msg':'不適切な入力がありました。'})
+                emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
     #condition for turn after kan draw
     elif room_dict[session['room']][1] == 'kan_yesno':
         if choice in ('Y','N'):
@@ -145,7 +182,7 @@ def gamecontrol(choice):
                 room_dict[session['room']][0].kyoku.next_player()
                 cycle_to_human()
         else:
-            emit('gameupdate',{'msg':'不適切な入力がありました。'})
+            emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
 
     #accept user input to pon or not
     elif room_dict[session['room']][1] == 'pon_yesno':
@@ -161,7 +198,7 @@ def gamecontrol(choice):
                     if room_dict[session['room']][0].kyoku.pon_kan_chi_check_sutehai in mentu:
                         room_dict[session['room']][0].kyoku.current_player.pon_hai.extend(mentu)
                 room_dict[session['room']][0].kyoku.board_gui(False,True)
-                emit('gameupdate',{'msg':'{}、捨て牌を入力してください。'.format(room_dict[session['room']][0].kyoku.current_player.name)})
+                emit('gameupdate',{'msg':'{}、捨て牌を入力してください。'.format(room_dict[session['room']][0].kyoku.current_player.name)},namespace='/main/game')
                 room_dict[session['room']][1] = 'pon_sutehai'
                 print('pon choice yes')
 
@@ -172,7 +209,7 @@ def gamecontrol(choice):
                 room_dict[session['room']][0].kyoku.next_player()
                 cycle_to_human()
         else:
-            emit('gameupdate',{'msg':'不適切な入力がありました。'})
+            emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
     #accept user sutehai choice after chi
     elif room_dict[session['room']][1] == 'pon_sutehai':
         if choice.isdigit():
@@ -188,7 +225,7 @@ def gamecontrol(choice):
                 room_dict[session['room']][1] = 'cycle'
                 cycle_to_human()
         else:
-            emit('gameupdate',{'msg':'不適切な入力がありました。'})
+            emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
     #check if user will chi
     elif room_dict[session['room']][1] == 'chi_yesno':
         if choice in ('Y','N'):
@@ -204,7 +241,7 @@ def gamecontrol(choice):
                 #remove hai from other player's kawa
                 room_dict[session['room']][0].kyoku.ponkanchi_start_player.kawa.pop(-1)
                 room_dict[session['room']][0].kyoku.board_gui(False,True)
-                emit('gameupdate',{'msg':'{}、捨て牌を入力してください。'.format(room_dict[session['room']][0].kyoku.current_player.name)})
+                emit('gameupdate',{'msg':'{}、捨て牌を入力してください。'.format(room_dict[session['room']][0].kyoku.current_player.name)},namespace='/main/game')
                 room_dict[session['room']][1] = 'chi_sutehai'
 
             else:
@@ -214,7 +251,7 @@ def gamecontrol(choice):
                 room_dict[session['room']][0].kyoku.next_player()
                 cycle_to_human()
         else:
-            emit('gameupdate',{'msg':'不適切な入力がありました。'})
+            emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
     #accept user sutehai choice after chi
     elif room_dict[session['room']][1] == 'chi_sutehai':
         if choice.isdigit():
@@ -229,7 +266,7 @@ def gamecontrol(choice):
                 room_dict[session['room']][1] = 'cycle'
                 cycle_to_human()
         else:
-            emit('gameupdate',{'msg':'不適切な入力がありました。'})
+            emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
     #user input for riichi
     elif room_dict[session['room']][1] == 'riichi_yesno':
         print('riichi input:',choice)
@@ -243,7 +280,7 @@ def gamecontrol(choice):
                 if room_dict[session['room']][1] == 'cycle':
                     cycle_to_human()
         else:
-            emit('gameupdate',{'msg':'不適切な入力がありました。'})
+            emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
 
     #user input for mochihai kan
     elif room_dict[session['room']][1] == 'mochihai_kan_yesno':
@@ -253,4 +290,4 @@ def gamecontrol(choice):
             else:
                 cycle_to_human()
         else:
-            emit('gameupdate',{'msg':'不適切な入力がありました。'})
+            emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')

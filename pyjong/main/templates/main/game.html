@@ -27,10 +27,11 @@
 <img id="guiimg" src="" alt="" class="img-fluid rounded mx-auto d-block">
 
 
-
+<div class="" id="p1-input">
 <h5 id="tehai-text" class="pt-2">手配：</h5>
-<div class="py-1">
-<img id="tehaiimg" src="" alt="" class="img rounded mx-auto d-block" usemap="#player1-tehaimap">
+<img id="p1-mochihai" src="" alt="" class="rounded d-block mx-auto">
+<div class="container py-1">
+<img id="p1-tehaiimg" src="" alt="" class="rounded mx-auto d-block" usemap="#player1-tehaimap">
 <map name="player1-tehaimap" >
   <area id="hai0" class="tehaimap" shape="rect" coords="2,2,32,52">
   <area id="hai1" class="tehaimap" shape="rect" coords="32,2,62,52">
@@ -49,6 +50,7 @@
 </map>
 </div>
 
+</div>
 
 
 
@@ -144,7 +146,7 @@
 <!-- Chat room/game　script  -->
           <script type="text/javascript" charset="utf-8">
               var socket;
-              $('#tehai-text').hide()
+              $('#p1-input').hide()
               $('#gamebuttons').hide()
 
               $(document).ready(function(){
@@ -179,14 +181,23 @@
                     image_id.src = imageUrl;
                     console.log('board image received')
                   });
-                  socket.on('tehaiimg', function(data) {
+                  socket.on('p1-tehaiimg', function(data) {
                     var arrayBufferView = new Uint8Array( data.img );
                     var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
                     var urlCreator = window.URL || window.webkitURL;
                     var imageUrl = urlCreator.createObjectURL( blob );
-                    var image_id = document.getElementById('tehaiimg');
+                    var image_id = document.getElementById('p1-tehaiimg');
                     image_id.src = imageUrl;
                     console.log('tehai image received')
+                  });
+                  socket.on('p1-mochihai', function(data) {
+                    var arrayBufferView = new Uint8Array( data.img );
+                    var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
+                    var urlCreator = window.URL || window.webkitURL;
+                    var imageUrl = urlCreator.createObjectURL( blob );
+                    var image_id = document.getElementById('p1-mochihai');
+                    image_id.src = imageUrl;
+                    console.log('mochihai image received')
                   });
 
                   $('#text').keypress(function(e) {
@@ -218,16 +229,18 @@
                   $('#gamestart').on('click', function() {
                     socket.emit('start');
                     $('#gamestart').hide();
-                    $('#tehai-text').show()
+                    $('#p1-input').show()
                     $('#gamebuttons').show()
                     console.log('gamestart')
                   });
                   $('#yes').on('click', function() {
                     socket.emit('gamecontrol', {msg: 'Y'});
+                    $('#p1-mochihai').hide();
                     console.log('yes button')
                   });
                   $('#no').on('click', function() {
                     socket.emit('gamecontrol', {msg: 'N'});
+                    $('#p1-mochihai').hide();
                     console.log('no button')
                   });
                   $('#hai0').on('click', function() {
