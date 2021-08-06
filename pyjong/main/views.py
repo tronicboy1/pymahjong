@@ -110,15 +110,23 @@ def get_friends_list(session_username):
     current_usr = UserData.query.filter_by(username=session_username).first()
     friends_list = eval(current_usr.friends_list)
     session['friends'] = friends_list
+
+    #add self to see users own stat
+    friends_list.insert(0,session['username'])
     if len(friends_list) > 0:
         session['has_friends'] = True
         #retrieve friend stats
-        session['friend_stats'] = dict()
-        # for friend in session['friends']:
-        #     current_usr = UserData.query.filter_by(username=friend).first()
+        session['friend_stats'] = list()
+        for friend in session['friends']:
+            friend_info = UserData.query.filter_by(username=friend).first()
+            session['friend_stats'].append([friend,friend_info.kyoku_win_count,friend_info.game_win_count,friend_info.points])
     else:
         session['has_friends'] = False
-    return friends_list
+        session['friend_stats'] = list()
+        for friend in session['friends']:
+            friend_info = UserData.query.filter_by(username=friend).first()
+            session['friend_stats'].append([friend,friend_info.kyoku_win_count,friend_info.game_win_count,friend_info.points])
+
 
 #call username and retrieve invites. invites retrieved will be transferred to session memory and deleted form database
 def get_invites(session_username):
@@ -196,7 +204,7 @@ def info():
 @login_required
 def game():
 
-    
+
     #forms
     form = InviteFriend()
     form = add_friends_to_form(form)
