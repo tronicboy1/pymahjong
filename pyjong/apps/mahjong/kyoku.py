@@ -86,6 +86,7 @@ class Kyoku():
                 self.board_pic.save(byte_arr,format='jpeg')
                 byte_arr = byte_arr.getvalue()
                 emit('p1-board_gui',{'img':byte_arr},broadcast=True,namespace='/main/game')
+                print('player1 board sent')
 
                 #player 2 gui Emit
             elif player_id == 2:
@@ -93,21 +94,24 @@ class Kyoku():
                 rotated_board = self.board_pic.rotate(180)
                 rotated_board.save(byte_arr,format='jpeg')
                 byte_arr = byte_arr.getvalue()
-                emit('p2-board_gui',{'img':byte_arr},broadcast=True,namespace='/main/game')
+                emit('p2-guiimg',{'img':byte_arr},broadcast=True,namespace='/main/game')
+                print('player 2 board sent')
 
 
         if player_turn: #only paste can sutehai if player turn
 
             if self.current_player == self.player1:
                 send_tehai(player_id=1)
+                send_board(player_id=1)
                 try:
                     #send mochihai if mochihai object is not None
                     send_mochihai(player_id=1)
                 except:
                     pass
 
-            elif self.current_player == self.player3:
+            elif self.current_player == self.player3 and self.player3.is_computer == False:
                 send_tehai(player_id=2)
+                send_board(player_id=2)
                 try:
                     send_mochihai(player_id=2)
                 except:
@@ -155,14 +159,6 @@ class Kyoku():
         if clear_mochihai:
             pass
 
-        ####################################
-        ####Emit board gui
-        ##################################
-        send_board(player_id=1)
-
-        #send_board(player_id=2)
-
-        ##############################
 
 
     def simple_hai_displayer(self):

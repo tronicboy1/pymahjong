@@ -21,10 +21,9 @@
   <button type="button" id="gamestart" class="btn btn-outline-primary">ゲームをスタート</button>
 </div>
 </div>
-
 {% if session['player_id'] == 1 %}
-<div class="container px-5">
-<div class="" id="display">
+<div id="player1" class="container px-5">
+<div class="" id="p1-display">
 <img id="p1-guiimg" src="" alt="" class="img-fluid rounded mx-auto d-block">
 <div class="" id="p1-input">
 <h5 id="tehai-text" class="pt-2">手配：</h5>
@@ -50,7 +49,7 @@
   <area id="hai13" class="tehaimap" shape="rect" coords="392,2,422,52">
 </map>
 </div>
-
+</div>
 </div>
 
 <div class="container pt-2">
@@ -63,25 +62,29 @@
     <button id="p1-no" type="button" class="btn btn-outline-primary">No</button>
   </div>
 </div>
-{% else %}
+</div>
 
-<p>Player2 GUI</p>
 
-<div class="container px-5">
-<div class="" id="display">
+
+
+
+{% elif session['player_id'] == 2 %}
+<div id="player2" class="container px-5">
+  <p>Player2 GUI</p>
+<div class="" id="p2-display">
 <img id="p2-guiimg" src="" alt="" class="img-fluid rounded mx-auto d-block">
 <div class="" id="p1-input">
 <h5 id="tehai-text" class="pt-2">手配：</h5>
-<div id="p1-mochihai-container" class="pt-1">
-<img id="p1-mochihai" src="" alt="" class="rounded-top d-block mx-auto">
+<div id="p2-mochihai-container" class="pt-1">
+<img id="p2-mochihai" src="" alt="" class="rounded-top d-block mx-auto">
 </div>
 <div class="container pb-1">
-<img id="p1-tehaiimg" src="" alt="" class="rounded mx-auto d-block" usemap="#player1-tehaimap">
+<img id="p2-tehaiimg" src="" alt="" class="rounded mx-auto d-block" usemap="#player1-tehaimap">
 <map name="player1-tehaimap" >
   <area id="hai0" class="tehaimap" shape="rect" coords="2,2,32,52">
   <area id="hai1" class="tehaimap" shape="rect" coords="32,2,62,52">
   <area id="hai2" class="tehaimap" shape="rect" coords="62,2,92,52">
-  <area id="hai3" class="tehaimap"  shape="rect" coords="92,2,122,52">
+  <area id="hai3" class="tehaimap" shape="rect" coords="92,2,122,52">
   <area id="hai4" class="tehaimap" shape="rect" coords="122,2,152,52">
   <area id="hai5" class="tehaimap" shape="rect" coords="152,2,182,52">
   <area id="hai6" class="tehaimap" shape="rect" coords="182,2,212,52">
@@ -94,7 +97,7 @@
   <area id="hai13" class="tehaimap" shape="rect" coords="392,2,422,52">
 </map>
 </div>
-
+</div>
 </div>
 
 <div class="container pt-2">
@@ -107,9 +110,8 @@
     <button id="p2-no" type="button" class="btn btn-outline-primary">No</button>
   </div>
 </div>
-
+</div>
 {% endif %}
-
 
 
 {% if session['players'] == 2 %}
@@ -176,6 +178,11 @@
 {% endif %}
 
 
+
+
+
+
+
 <!-- Chat room/game　script  -->
           <script type="text/javascript" charset="utf-8">
               var socket;
@@ -204,7 +211,7 @@
                       $('#game').scrollTop($('#game')[0].scrollHeight);
                       console.log('game message func')
                   });
-
+                  {% if session['player_id'] == 1 %}
                   socket.on('p1-board_gui', function(data) {
                     var arrayBufferView = new Uint8Array( data.img );
                     var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
@@ -233,7 +240,8 @@
                     $('#p1-mochihai-container').show();
                     console.log('mochihai image received')
                   });
-                  socket.on('p2-board_gui', function(data) {
+                  {% else %}
+                  socket.on('p2-guiimg', function(data) {
                     var arrayBufferView = new Uint8Array( data.img );
                     var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
                     var urlCreator = window.URL || window.webkitURL;
@@ -261,6 +269,7 @@
                     $('#p2-mochihai-container').show();
                     console.log('mochihai image received')
                   });
+                  {% endif %}
                   $('#text').keypress(function(e) {
                       var code = e.keyCode || e.which;
                       console.log('keypress')
