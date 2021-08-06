@@ -28,8 +28,8 @@ def add_game_results(game,players):
         result.game_win_count += room_dict[session['room']][0].player1_gamewin_count
         #add points to user data
         result.points += (room_dict[session['room']][0].player1.balance - 30000)
-        db.add(result)
-        db.commit()
+        db.session.add(result)
+        db.session.commit()
         print('game data added to db')
         result = UserData.query.filter_by(username=username1).first()
         flash(f"{session['room'][0].player1.name}の情報が更新されました：\n局勝利数：{result.kyoku_win_count}回、\nゲーム勝利数：{result.game_win_count}回、\n獲得ポイント合計{result.points}","alert-success")
@@ -49,8 +49,8 @@ def add_game_results(game,players):
         result2.kyoku_win_count += room_dict[session['room']][0].player3_kyokuwin_count
         result2.game_win_count += room_dict[session['room']][0].player3_gamewin_count
         result2.points += (room_dict[session['room']][0].player3.balance - 30000)
-        db.add_all([result1,result2])
-        db.commit()
+        db.session.add_all([result1,result2])
+        db.session.commit()
         flash(f'プレーヤーの情報が更新されました！',"alert-success")
         return redirect(url_for('main.friends'))
 
