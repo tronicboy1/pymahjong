@@ -351,8 +351,14 @@ class Kyoku():
 
 
     def player_turn(self):
-        print('player:',self.current_player.name)
-        print('kawa len',len(self.current_player.kawa))
+        #check if game on and hai in yama at start and end
+        if self.kyoku_on != True or self.hai_remaining == 0:
+            room_dict[session['room']][0].end_kyoku_check()
+
+            room_dict[session['room']][0].kyoku_suu_change()
+
+            room_dict[session['room']][0].kyoku_summary()
+
         if self.turn_count < 4:
             if self.current_player.first_round_kan():
                 self.player_turn()
@@ -512,7 +518,7 @@ class Kyoku():
                     self.current_player.is_monzen = False
                     self.current_player.mochihai = self.wanpai[0].pop(0)
                     self.current_player.tenpai_check(not_turn=True)
-                    self.player_turn()
+                    room_dict[session['room']][1] = 'kan_cycle'
                     break
                     #Will figure out an implementation of chankan check later
                     # n = 0 #chankan check
@@ -536,6 +542,9 @@ class Kyoku():
         # check if key was changed before changing player
         if room_dict[session['room']][1] == 'cycle':
             self.next_player()
+        elif room_dict[session['room']][1] == 'kan_cycle':
+            room_dict[session['room']][1] = 'cycle'
+            self.player_turn()
 
     def after_player_chi(self):
         #check for possible kan
