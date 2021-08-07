@@ -14,6 +14,7 @@ login_manager= LoginManager()
 #set login manager warning message to Japanese
 login_manager.login_message = u"このページにアクセスするためにはログインする必要があります。"
 login_manager.login_message_category = "alert-warning"
+login_manager.login_view = 'authentication.login'
 
 #Create Bcrypt object
 bcrypt = Bcrypt()

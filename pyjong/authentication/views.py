@@ -2,6 +2,7 @@ from flask import Blueprint,render_template,redirect,url_for,flash,session,abort
 from pyjong import db,bcrypt
 from pyjong.models import UserData
 from pyjong.authentication.forms import Login,SignUp
+from pyjong.main.views import get_friends_list
 from flask_login import login_user,login_required,logout_user,current_user
 import datetime
 
@@ -59,6 +60,7 @@ def login():
                 session['in_room'] = False
                 session['has_new_invites'] = False
                 session['players'] = 1
+                get_friends_list(session['username'])
                 next = request.args.get('next')
                 #check if user was redirected, and send them to the page they were trying to access before login
                 if next == None or not next[0] == '/':
