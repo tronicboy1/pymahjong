@@ -122,6 +122,7 @@ def gamecontrol(choice):
             else:
                 room_dict[session['room']][0].kyoku.player_turn_input(choice)
                 room_dict[session['room']][1] = 'cycle'
+                socketio.sleep(1)
                 cycle_to_human()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
@@ -135,6 +136,7 @@ def gamecontrol(choice):
                 room_dict[session['room']][0].kyoku.current_player.sutehai_user_input(choice)
                 room_dict[session['room']][0].kyoku.current_player.tenpai_check()
                 room_dict[session['room']][0].kyoku.board_gui()
+                socketio.sleep(1)
 
                 #do nothing if riichi check is necessary
                 if room_dict[session['room']][1] == 'riichi_yesno':

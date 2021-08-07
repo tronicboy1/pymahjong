@@ -251,6 +251,9 @@ class Player():
                 print(f'{self.name}が{ron_hai}{text[1]}')
                 if is_ron == False:
                     self.is_tumo_agari = True
+                else:
+                    #set current player back to player who threw the ron hai
+                    room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.ponkanchi_start_player
                 room_dict[session['room']][0].kyoku.winner = room_dict[session['room']][0].kyoku.current_player
                 room_dict[session['room']][0].kyoku.kyoku_on = False
                 self.mentu_check()
@@ -270,7 +273,7 @@ class Player():
             if self.possible_rinshan:
                 self.is_rinshan = True
             #set current player back to player who threw the ron hai
-            if is_ron:
+            if self.is_ron:
                 room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.ponkanchi_start_player
             room_dict[session['room']][0].kyoku.winner = room_dict[session['room']][0].kyoku.current_player
             room_dict[session['room']][0].kyoku.kyoku_on = False
