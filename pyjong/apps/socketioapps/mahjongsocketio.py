@@ -32,8 +32,7 @@ def add_game_results(game,players):
         db.session.commit()
         print('game data added to db')
         result = UserData.query.filter_by(username=username1).first()
-        flash("プレーヤー情報が更新されました！","alert-success")
-        return redirect(url_for('main.friends'))
+
 
     elif players == 2:
         # first player
@@ -173,9 +172,13 @@ def gamecontrol(choice):
                     #handling for 1 player mode
                     if session['players'] == 1:
                         add_game_results(room_dict[session['room']][0],1)
+                        flash("プレーヤー情報が更新されました！","alert-success")
+                        return redirect(url_for('main.friends'))
                     #handling for 2 player mode
                     elif session['players'] == 2:
                         add_game_results(room_dict[session['room']][0],2)
+                        flash("プレーヤー情報が更新されました！","alert-success")
+                        return redirect(url_for('main.friends'))
 
                     #will add features to store game data to database here
 

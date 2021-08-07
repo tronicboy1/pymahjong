@@ -267,8 +267,10 @@ class Game():
                         fu += 16
                     else:
                         fu += 8
-        if winner.atama_hai[0] in (Hai(0,4),Hai(0,5),Hai(0,6)):
-            fu += 2
+
+        #need to address why atama hai list is empty
+        # if winner.atama_hai[0] in (Hai(0,4),Hai(0,5),Hai(0,6)):
+        #     fu += 2
         if len(winner.machihai) == 1:
             fu += 2
         if winner.is_tumo_agari == False:
