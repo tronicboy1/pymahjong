@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
 from flask_socketio import SocketIO
+from celery import Celery
 
 #create login manager object
 login_manager= LoginManager()
@@ -38,6 +39,29 @@ login_manager.login_view = 'authentication.login'
 
 #add socket IO
 socketio = SocketIO(app)
+
+#add celery to app
+def make_celery(app):
+    celery = Celery(
+        app.import_name,
+        backend=app.config['CELERY_RESULT_BACKEND'],
+        broker=app.config['CELERY_BROKER_URL']
+    )
+    celery.conf.update(app.config)
+
+    class ContextTask(celery.Task):
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return self.run(*args, **kwargs)
+
+    celery.Task = ContextTask
+    return celery
+
+app.config['CELERY_BROKER_URL'] = 'amqp://localhost//'
+app.config['CELERY_RESULT_BACKEND'] = 'rpc://'
+
+celery = make_celery(app)
+
 
 #data will be stored in a universal variable as a dictionary
 #the dictionary will have the current status of a game in a room saved

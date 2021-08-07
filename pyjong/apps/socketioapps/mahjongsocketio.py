@@ -1,9 +1,9 @@
 from flask_socketio import join_room,leave_room,emit
-from pyjong import socketio,room_dict,room_players,db
+from pyjong import socketio,room_dict,room_players,db,celery
 from flask_login import current_user
 from pyjong.models import UserData
 from flask import session,redirect,flash,url_for
-from time import time
+from time import sleep
 
 
 
@@ -58,12 +58,22 @@ def add_game_results(game,players):
 #################################################
 ###MAHJONG FUNCTIONS
 #################################################
+
+
 def cycle_to_human():
+    @celery.task()
+    def send_board_and_wait(sec):
+        room_dict[session['room']][0].kyoku.board_gui()
+        print('waiting')
+        sleep(sec)
+        return True
+
+
     #changed to 'cycle' key so cycler stops whenever user input is necessary
     #while room_dict[session['room']][0].kyoku.current_player.is_computer:
     while room_dict[session['room']][1] == 'cycle':
         room_dict[session['room']][0].kyoku.player_turn()
-        room_dict[session['room']][0].kyoku.board_gui()
+        send_board_and_wait(1)
 
     #room_dict[session['room']][0].kyoku.player_turn()
 

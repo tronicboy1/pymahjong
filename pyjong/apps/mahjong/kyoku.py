@@ -4,6 +4,7 @@ import time
 import os
 from pyjong.apps.mahjong.yama import Yama
 from pyjong.apps.socketioapps.mahjongsocketio import room_dict
+from pyjong import celery
 from flask_socketio import emit
 from flask import session
 import io
