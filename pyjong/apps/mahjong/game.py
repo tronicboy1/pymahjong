@@ -58,6 +58,13 @@ class Game():
         room_dict[session['room']][1] = 'end'
         #link kyoku back to room_dict kyoku
         self.kyoku = room_dict[session['room']][0].kyoku
+
+        #add kyoku win count here
+        if self.kyoku.winner == self.player1:
+            self.player1_kyokuwin_count += 1
+        elif self.kyoku.winner == self.player3:
+            self.player3_kyokuwin_count +=1
+
         if self.kyoku.winner == None:
             emit('gameupdate',{'msg':'流局！'},room=session['room'])
             tenpatteru_list = []
@@ -458,15 +465,16 @@ class Game():
             emit('gameupdate',{'msg':'混一色！'},room=session['room'])
         del honitu
 
-        if winner.atama_hai[0][0] == 0 and winner.atama_hai[0][1] in (4,5,6): #shousangen check
-            sangenhai_count = 0
-            for mentu in winner.mentuhai:
-                if mentu[0][0] == 0 and mentu[0][1] in (4,5,6):
-                    sangenhai_count += 1
-            if sangenhai_count == 2:
-                han += 4
-                emit('gameupdate',{'msg':'小三元！'},room=session['room'])
-            del sangenhai_count
+        #atama hai mia
+        # if winner.atama_hai[0][0] == 0 and winner.atama_hai[0][1] in (4,5,6): #shousangen check
+        #     sangenhai_count = 0
+        #     for mentu in winner.mentuhai:
+        #         if mentu[0][0] == 0 and mentu[0][1] in (4,5,6):
+        #             sangenhai_count += 1
+        #     if sangenhai_count == 2:
+        #         han += 4
+        #         emit('gameupdate',{'msg':'小三元！'},room=session['room'])
+        #     del sangenhai_count
         is_honroutou = False #honroutou check
         for hai in winner.tehai:
             if hai[0] == 0 or hai[1] in (0,8):

@@ -514,10 +514,14 @@ class Kyoku():
             #check if the next player can chi previous player's sutehai
             if room_dict[session['room']][2] == 0:
                 if self.pon_kan_chi_check_sutehai in self.current_player.can_chi_hai and self.current_player.is_riichi == False:
-                    self.current_player.chi(self.pon_kan_chi_check_sutehai)
-                    #break if current user is not a computer to wait for input
-                    if self.current_player.is_computer == False:
-                        break
+                    if self.current_player.chi(self.pon_kan_chi_check_sutehai):
+                        #break if current user is not a computer to wait for input
+                        if self.current_player.is_computer == False:
+                            break
+                        else:
+                            room_dict[session['room']][1] = 'cycle'
+                            break
+
             #check for possible kan
             if self.pon_kan_chi_check_sutehai in self.current_player.can_kan_hai and self.current_player.is_riichi == False:
                 if self.current_player.kan(self.pon_kan_chi_check_sutehai):
@@ -537,7 +541,9 @@ class Kyoku():
                     #             self.current_player.is_chankan = True
             #check for possible pon
             if self.pon_kan_chi_check_sutehai in self.current_player.can_pon_hai and self.current_player.is_riichi == False:
-                self.current_player.pon(self.pon_kan_chi_check_sutehai)
+                if self.current_player.pon(self.pon_kan_chi_check_sutehai):
+                    room_dict[session['room']][1] = 'cycle'
+                    break
                 #break if current user is not a computer to wait for input
                 if self.current_player.is_computer == False:
                     break
@@ -582,7 +588,8 @@ class Kyoku():
                 #             self.current_player.is_chankan = True
         #check for possible pon
         elif self.pon_kan_chi_check_sutehai in self.current_player.can_pon_hai and self.current_player.is_riichi == False:
-            self.current_player.pon(self.pon_kan_chi_check_sutehai)
+            if self.current_player.pon(self.pon_kan_chi_check_sutehai):
+                room_dict[session['room']][1] = 'cycle'
         room_dict[session['room']][2] +=1
         self.pon_kan_chi_check()
 

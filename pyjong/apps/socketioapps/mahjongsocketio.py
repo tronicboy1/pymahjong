@@ -64,7 +64,7 @@ def cycle_to_human():
     while room_dict[session['room']][1] == 'cycle':
         room_dict[session['room']][0].kyoku.player_turn()
         room_dict[session['room']][0].kyoku.board_gui()
-        socketio.sleep(1)
+        socketio.sleep(1.5)
 
     #room_dict[session['room']][0].kyoku.player_turn()
 

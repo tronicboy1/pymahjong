@@ -7,6 +7,9 @@
 <div class="container text-center w-3">
   <h1 class="">{{session['username']}}、PyJongへようこそ！</h1>
 </div>
+<div class="container py-1 text-center">
+  <button type="button" onclick="location.href='{{url_for('main.game')}}'" class="btn btn-secondary btn-lg btn-block mx-auto">ゲームを始めるならこちら</button>
+</div>
 <div class="container py-3">
   <h3 class="pb-2">友達リクエスト</h3>
   {% if session['new_requests'] %}
@@ -15,7 +18,7 @@
     {{form_add.hidden_tag()}}
     {{form_add.select_friend(class='form-select')}}
     <div class="py-2">
-    {{form_add.submit(class="btn btn-primary btn-lg")}}
+    {{form_add.submit(class="btn btn-secondary btn-lg")}}
     </div>
   </form>
   {% else %}

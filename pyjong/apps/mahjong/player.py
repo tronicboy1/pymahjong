@@ -86,12 +86,12 @@ class Player():
     def can_sutehai_pic_gen(self):
         self.refresh_can_sutehai_list()
         #adjust size to be same as hai pic
-        can_sutehai_pic = Image.new('RGB',(850,130),(31,61,12)) #make green BG
-        draw = ImageDraw.Draw(can_sutehai_pic) #create editable
-        basedir = os.path.abspath(os.path.dirname(__file__))
-        font = ImageFont.truetype(basedir+'/static/'+'Arial.ttf',20) #create font for list marking
-        for n,x in enumerate([x*60 for x in range(0,14)]): #length of 14 at max
-            draw.text((x+20,106),'{}'.format(n),(255,255,255),font=font)#text at bottom of image
+        can_sutehai_pic = Image.new('RGB',(850,110),(31,61,12)) #make green BG
+        # draw = ImageDraw.Draw(can_sutehai_pic) #create editable
+        # basedir = os.path.abspath(os.path.dirname(__file__))
+        # font = ImageFont.truetype(basedir+'/static/'+'Arial.ttf',20) #create font for list marking
+        # for n,x in enumerate([x*60 for x in range(0,14)]): #length of 14 at max
+        #     draw.text((x+20,106),'{}'.format(n),(255,255,255),font=font)#text at bottom of image
         i = 0
         for x in [x*60 for x in range(0,14)]:#paste all the hai that are not pon chi kan
             if i > len(self.can_sutehai)-1:
@@ -254,11 +254,15 @@ class Player():
                 if is_ron == False:
                     self.is_tumo_agari = True
                 else:
+                    #set ronned player as winner
+                    room_dict[session['room']][0].kyoku.winner = room_dict[session['room']][0].kyoku.current_player
                     #set current player back to player who threw the ron hai
                     room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.ponkanchi_start_player
-                room_dict[session['room']][0].kyoku.winner = room_dict[session['room']][0].kyoku.current_player
-                room_dict[session['room']][0].kyoku.kyoku_on = False
                 self.mentu_check()
+                self.atama_check(self.non_mentu_hai)
+
+                room_dict[session['room']][0].kyoku.kyoku_on = False
+
                 return True
 
     def ron_input(self,choice):
@@ -276,15 +280,21 @@ class Player():
                 self.is_rinshan = True
             #set current player back to player who threw the ron hai
             if self.is_ron:
+                room_dict[session['room']][0].kyoku.winner = room_dict[session['room']][0].kyoku.current_player
                 room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.ponkanchi_start_player
             #add kyoku win to game
+            else:
+                room_dict[session['room']][0].kyoku.winner = room_dict[session['room']][0].kyoku.current_player
+
             if room_dict[session['room']][0].kyoku.current_player == room_dict[session['room']][0].kyoku.player1:
                 room_dict[session['room']][0].player1_kyokuwin_count += 1
             elif room_dict[session['room']][0].kyoku.current_player == room_dict[session['room']][0].kyoku.player3:
                 room_dict[session['room']][0].player3_kyokuwin_count += 1
-            room_dict[session['room']][0].kyoku.winner = room_dict[session['room']][0].kyoku.current_player
+            self.mentu_check()
+            self.atama_check(self.non_mentu_hai)
+
             room_dict[session['room']][0].kyoku.kyoku_on = False
-            self.tenpai_check(not_turn=True)
+
             return True #return true for use with monzen check
         else:
             self.can_ron = False
@@ -305,6 +315,18 @@ class Player():
         else:
             if self.is_tenpatteru == True:
                 pass
+            elif pon_hai in (Hai(0,4),Hai(0,5),Hai(0,6)):
+                self.tehai.append(pon_hai)
+                #remove hai from other players kawa
+                room_dict[session['room']][0].kyoku.ponkanchi_start_player.kawa.pop(-1)
+                self.is_monzen = False
+                emit('gameupdate',{'msg':f'{self.name}が{pon_hai}をポンしました！'},room=session['room'])
+                print(f'{self.name}が{pon_hai}をポンしました！')
+                self.tenpai_check(not_turn=True)
+                self.sutehai()
+                room_dict[session['room']][0].kyoku.board_gui()
+                socketio.sleep(1)
+                return True
             elif random.randint(0,7) == 0:
                 self.tehai.append(pon_hai)
                 #remove hai from other players kawa
@@ -314,8 +336,9 @@ class Player():
                 print(f'{self.name}が{pon_hai}をポンしました！')
                 self.tenpai_check(not_turn=True)
                 self.sutehai()
-                self.board_gui()
+                room_dict[session['room']][0].kyoku.board_gui()
                 socketio.sleep(1)
+                return True
 
     #only executed when player inputs yes
     def pon_user_input(self,choice):
@@ -349,8 +372,9 @@ class Player():
                 emit('gameupdate',{'msg':f'{self.name}が{chi_hai}をチーしました！'},room=session['room'])
                 print(f'{self.name}{chi_hai} riichi')
                 self.sutehai()
-                self.board_gui()
+                room_dict[session['room']][0].kyoku.board_gui()
                 socketio.sleep(1)
+                return True
 
     #only executed when player inputs yes
     def chi_user_input(self,choice):
@@ -376,7 +400,7 @@ class Player():
             emit('gameupdate',{'msg':f'{self.name}が{kan_hai}をカンしました！'},room=session['room'])
             print(f'{self.name} kan {kan_hai}')
             self.tenpai_check(not_turn=True)
-            self.board_gui()
+            room_dict[session['room']][0].kyoku.board_gui()
             socketio.sleep(1)
             return True
 
