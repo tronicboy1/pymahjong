@@ -76,12 +76,12 @@ class Player():
     def add_funds(self,amount):
         self.balance += amount
         emit('gameupdate',{'msg':f'{self.name}が{amount}ポイントを懐に入れました！\nポイント合計：{self.balance}'},room=session['room'])
-        print(f'{self.name}が{amount}ポイントを懐に入れました！\nポイント合計：{self.balance}')
+
 
     def remove_funds(self,amount):
         self.balance -= amount
         emit('gameupdate',{'msg':f'{self.name}の懐から{amount}ポイントがなくなった！\nポイント合計：{self.balance}'},room=session['room'])
-        print(f'{self.name}の懐から{amount}ポイントがなくなった！\nポイント合計：{self.balance}')
+
 
     def can_sutehai_pic_gen(self):
         self.refresh_can_sutehai_list()
@@ -207,7 +207,7 @@ class Player():
             self.tehai.remove(sutehai)
             self.kawa_pic_gen()
             emit('gameupdate',{'msg':f'{self.name}が{sutehai}を川に捨てました！'},room=session['room'])
-            print(f'{self.name} threw {sutehai} to kawa')
+
 
     def sutehai_user_input(self,choice):
         sutehai_location = (int(choice))
@@ -216,7 +216,7 @@ class Player():
         self.tehai.remove(sutehai)
         self.kawa_pic_gen()
         emit('gameupdate',{'msg':f'{self.name}が{sutehai}を川に捨てました！'},room=session['room'])
-        print(f'{sutehai} thrown into kawa')
+
 
 
 
@@ -241,7 +241,6 @@ class Player():
 
         if self.can_ron:
             if self.is_computer == False:
-                print('ron check')
                 emit('gameupdate',{'msg':f'{ron_hai}{text[0]}\nYもしくはNを入力してください。'},room=session['room'])
                 room_dict[session['room']][1] = 'roncheck'
                 ### BReak to ron_input to continue
@@ -249,7 +248,6 @@ class Player():
             else:
                 self.tehai.append(ron_hai)
                 emit('gameupdate',{'msg':f'{self.name}が{ron_hai}{text[1]}'},room=session['room'])
-                print(f'{self.name}が{ron_hai}{text[1]}')
                 socketio.sleep(1)
                 if is_ron == False:
                     self.is_tumo_agari = True
@@ -272,7 +270,6 @@ class Player():
             text = ('ロンしますか','をロンした！')
         if choice == 'Y':
             emit('gameupdate',{'msg':f'{self.ron_hai}{text[1]}'},room=session['room'])
-            print(f'{self.ron_hai} ron')
             self.tehai.append(self.ron_hai)
             if self.is_ron == False:
                 self.is_tumo_agari = True
@@ -307,7 +304,6 @@ class Player():
             #save possible pon hai
             self.possible_pon_hai = pon_hai
             #ask user if they will pon, pass to pon_user_input
-            print('pon check')
             emit('gameupdate',{'msg':f'{self.name}、{pon_hai}をポンしますか？\nYもしくはNを入力してください。'},room=session['room'])
             room_dict[session['room']][1] = 'pon_yesno'
 
@@ -321,7 +317,6 @@ class Player():
                 room_dict[session['room']][0].kyoku.ponkanchi_start_player.kawa.pop(-1)
                 self.is_monzen = False
                 emit('gameupdate',{'msg':f'{self.name}が{pon_hai}をポンしました！'},room=session['room'])
-                print(f'{self.name}が{pon_hai}をポンしました！')
                 self.tenpai_check(not_turn=True)
                 self.sutehai()
                 room_dict[session['room']][0].kyoku.board_gui()
@@ -333,7 +328,6 @@ class Player():
                 room_dict[session['room']][0].kyoku.ponkanchi_start_player.kawa.pop(-1)
                 self.is_monzen = False
                 emit('gameupdate',{'msg':f'{self.name}が{pon_hai}をポンしました！'},room=session['room'])
-                print(f'{self.name}が{pon_hai}をポンしました！')
                 self.tenpai_check(not_turn=True)
                 self.sutehai()
                 room_dict[session['room']][0].kyoku.board_gui()
@@ -352,7 +346,6 @@ class Player():
         if self.is_riichi:
             pass
         elif self.is_computer == False:
-            print('chi check')
             emit('gameupdate',{'msg':f'{self.name}、{chi_hai}をチーしますか？\nYもしくはNを入力してください。'},room=session['room'])
             room_dict[session['room']][1] = 'chi_yesno'
 
@@ -370,7 +363,6 @@ class Player():
                     if chi_hai in mentu:
                         self.chi_hai.extend(mentu)
                 emit('gameupdate',{'msg':f'{self.name}が{chi_hai}をチーしました！'},room=session['room'])
-                print(f'{self.name}{chi_hai} riichi')
                 self.sutehai()
                 room_dict[session['room']][0].kyoku.board_gui()
                 socketio.sleep(1)
@@ -395,10 +387,9 @@ class Player():
             emit('gameupdate',{'msg':f'{kan_hai}をカンしますか？\nYもしくはNを入力してください。'},room=session['room'])
             room_dict[session['room']][1] = 'kan_yesno'
 
-        else:
+        elif random.randint(0,1) == 1:
             self.kan_hai.append(kan_hai)
             emit('gameupdate',{'msg':f'{self.name}が{kan_hai}をカンしました！'},room=session['room'])
-            print(f'{self.name} kan {kan_hai}')
             self.tenpai_check(not_turn=True)
             room_dict[session['room']][0].kyoku.board_gui()
             socketio.sleep(1)
@@ -406,7 +397,6 @@ class Player():
 
     def kan_user_input(self):
         emit('gameupdate',{'msg':f'{self.temp_kan_hai}をカンしました！'},room=session['room'])
-        print(f'{self.temp_kan_hai} user kan')
         self.kan_hai.append(self.temp_kan_hai)
         #remove hai from other players kawa
         room_dict[session['room']][0].kyoku.ponkanchi_start_player.kawa.pop(-1)
@@ -425,7 +415,6 @@ class Player():
             user_input = input(f'持ち牌の{mochihai}をカンしますか？\nYもしくはNを入力してください。').upper()
         if user_input == 'Y':
             emit('gameupdate',{'msg':f'{mochihai}をカンしました！'},room=session['room'])
-            print(f'{mochihai}をカンしました！')
             self.kan_hai.append(mochihai)
             self.tenpai_check(not_turn=True)
             return True
@@ -582,9 +571,7 @@ class Player():
             self.mentuhai = kootu_shuntu_mentuhai
             self.non_mentu_hai = non_mentu_hai_list_gen(tehai_copy,kootu_shuntu_mentuhai)
             self.can_kan_hai = kootu_shuntu_can_kan_hai
-        #print(len(self.mentuhai))
-        #print(len(self.non_mentu_hai))
-        #print(len(self.can_kan_hai))
+
 
 
 
@@ -620,14 +607,14 @@ class Player():
                 if room_dict[session['room']][0].kyoku.turn_count <= 4:
                         self.double_riichi = True
                 emit('gameupdate',{'msg':f'{self.name}はリーチしました！'},room=session['room'])
-                print(f'{self.name}はリーチしました！')
+
 
     def player_riichi_input(self):
         self.is_riichi = True
         if room_dict[session['room']][0].kyoku.turn_count <= 4:
             self.double_riichi = True
         emit('gameupdate',{'msg':f'{self.name}はリーチしました！'},room=session['room'])
-        print(f'{self.name} riichi')
+
 
 
     def atama_check(self,hai_list):

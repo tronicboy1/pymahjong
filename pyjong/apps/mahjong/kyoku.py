@@ -56,7 +56,7 @@ class Kyoku():
         else:
             self.current_player = self.player_dict[self.turn]
             self.turn += 1
-        print('next player executed',self.current_player.name)
+
 
     def board_gui(self,player_turn=False,clear_mochihai=False): #add feature to rotate pic for player2 in future
         def send_tehai(player_id=1):
@@ -88,7 +88,7 @@ class Kyoku():
                 self.board_pic.save(byte_arr,format='jpeg')
                 byte_arr = byte_arr.getvalue()
                 emit('p1-board_gui',{'img':byte_arr},broadcast=True,namespace='/main/game',room=session['room'])
-                print('player1 board sent')
+
 
                 #player 2 gui Emit
             elif player_id == 2:
@@ -97,7 +97,7 @@ class Kyoku():
                 rotated_board.save(byte_arr,format='jpeg')
                 byte_arr = byte_arr.getvalue()
                 emit('p2-guiimg',{'img':byte_arr},broadcast=True,namespace='/main/game',room=session['room'])
-                print('player 2 board sent')
+
 
         def kawa_update():
             #player 1 kawa and kanchipon
@@ -273,7 +273,7 @@ class Kyoku():
             self.uradora.append(self.wanpai[1].pop(0))
             self.board_pic.paste(self.dora[len(self.dora)-1].pic,(((len(self.dora)-1)*60),0))
         except:
-            print('no wanpai')
+            pass
 
     def kyoku_start(self):
         #have players take their hai
@@ -318,7 +318,7 @@ class Kyoku():
         #     self.player_turn()
     def after_mochihai_kan(self):
         emit('gameupdate',{'msg':f'{self.current_player.mochihai}をカンしました！'},room=session['room'])
-        print(f'{self.current_player.mochihai}をカンしました！')
+
 
         self.kan_hai.append(self.current_player.mochihai)
         self.current_player.mochihai = None
@@ -489,7 +489,7 @@ class Kyoku():
 
     #wraps pon_kan_chi_check to reset iteration value first time only
     def start_pon_kan_chi(self,sutehai):
-        print('start_pon_kan_chi')
+
         self.pon_kan_chi_check_sutehai = sutehai
         #use int function to deep copy turn count
         if self.turn == 0:
@@ -498,16 +498,16 @@ class Kyoku():
             self.ponkanchi_start_player = self.player_dict[(self.turn-1)]
         #iteration count for pon kan chi check
         room_dict[session['room']][2] = 0
-        print('\nponkanchi start player:',self.ponkanchi_start_player.name)
+
         self.pon_kan_chi_check()
 
 
     def pon_kan_chi_check(self):
         #add key 'cycle' check to stop pon_kan_chi_check when user input is necessary
         while room_dict[session['room']][2]<3 and room_dict[session['room']][1] == 'cycle':
-            print('\nponkanchi start player:',self.ponkanchi_start_player.name)
+
             self.next_player()
-            print('cycling pon kan chi check. player:',self.current_player.name)
+            
             if self.pon_kan_chi_check_sutehai in self.current_player.machihai:
                 if self.current_player.ron(self.pon_kan_chi_check_sutehai,True):
                     self.current_player = self.ponkanchi_start_player
