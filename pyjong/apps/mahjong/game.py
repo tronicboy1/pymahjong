@@ -390,7 +390,7 @@ class Game():
                 han += 2
         sanankou_set = set() # sanankou check
         for mentu in winner.mentuhai:
-            if mentu[0] == mentu [2]:
+            if mentu[0] == mentu [2] and mentu[0] not in winner.pon_hai:
                 sanankou_set.add(mentu[0][0])
         if len(sanankou_set) == 3:
             han += 2
