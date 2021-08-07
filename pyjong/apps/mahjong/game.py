@@ -5,6 +5,7 @@ from pyjong.apps.mahjong.player import Player
 from pyjong.apps.mahjong.kyoku import Kyoku
 from pyjong.apps.mahjong.hai import Hai
 from pyjong.apps.socketioapps.mahjongsocketio import room_dict
+from pyjong import socketio
 from flask import session
 
 class Game():
@@ -24,6 +25,7 @@ class Game():
 
 
         emit('gameupdate',{'msg':'ようこそ、Pyjongへ'},room=session['room'])
+        socketio.sleep(1)
         #players_input = ''
         #while players_input not in ('1','2'):
             #players_input = input('プレーヤー数を入力してください。\n（"1"もしくは"2"）:')
@@ -124,14 +126,18 @@ class Game():
 
     def oya_gime(self):
         self.oya = 0
+        emit('gameupdate',{'msg':'サイコロを振ります。'},room=session['room'])
+        socketio.sleep(1)
         saikoro_result = random.randint(1,6)
         emit('gameupdate',{'msg':f'{saikoro_result}が出ました！'},room=session['room'])
+        socketio.sleep(1)
         for n in range(0,saikoro_result):
             if self.oya == 3:
                 self.oya = 0
             else:
                 self.oya += 1
         emit('gameupdate',{'msg':f'{self.player_dict[self.oya].name}が親になりました！'},room=session['room'])
+        socketio.sleep(1)
 
     def oya_koutai(self):
         if self.oya == 3:
@@ -139,6 +145,7 @@ class Game():
         else:
             self.oya += 1
         emit('gameupdate',{'msg':f'{self.player_dict[self.oya].name}が新しい親！'},room=session['room'])
+        socketio.sleep(1)
 
     def tensuu_calc(self,winner,bakaze,oya,dora,uradora,hai_remaining,round_count):
 
@@ -578,6 +585,7 @@ class Game():
                 emit('gameupdate',{'msg':'地和！！'},room=session['room'])
         #set han to 13 if over 13
         emit('gameupdate',{'msg':f'{fu}符の{han}翻！'},room=session['room'])
+        socketio.sleep(1)
 
         if han > 13:
             han = 13
@@ -613,6 +621,7 @@ class Game():
         emit('gameupdate',{'msg':f'{self.player2.name}:{self.player2.balance}点'},room=session['room'])
         emit('gameupdate',{'msg':f'{self.player3.name}:{self.player3.balance}点'},room=session['room'])
         emit('gameupdate',{'msg':f'{self.player4.name}:{self.player4.balance}点'},room=session['room'])
+        socketio.sleep(1)
 
         if self.game_on:
             emit('gameupdate',{'msg':'続けて新しい局に進みますか？(YもしくはN)'},room=session['room'])

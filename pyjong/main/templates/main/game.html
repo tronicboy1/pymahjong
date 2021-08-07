@@ -10,7 +10,7 @@
 
 </head>
 <div class="container py-3">
-<h1>PyJongルーム</h1>
+<h1>PyJong雀荘</h1>
 <h5 class="pt-1">ルーム名： {{ session['room'] }}</h5>
 </div>
 
@@ -18,7 +18,7 @@
 <div class="container py-2">
 <h3><strong>Game</strong></h3>
 <div class="float-end"　id="gamestart-btn">
-  <button type="button" id="gamestart" class="btn btn-outline-primary">ゲームをスタート</button>
+  <button type="button" id="gamestart" class="btn btn-outline-warning">ゲームをスタート</button>
 </div>
 </div>
 
@@ -27,7 +27,7 @@
 
 {% if session['player_id'] == 1 %}
 
-<div id="player1" class="container px-5">
+<div id="player1" class="container px-3">
 <div class="" id="p1-display">
 <img id="p1-guiimg" src="" alt="" class="img-fluid rounded mx-auto d-block">
 <div class="" id="p1-input">
@@ -63,8 +63,8 @@
 
 <div id="gamebuttons" class="btn-toolbar pt-1 pb-5" role="toolbar">
   <div id="yesnobuttons" class="btn-group" role="group" style="width:100%" >
-    <button id="p1-yes" type="button" class="btn btn-outline-primary">Yes</button>
-    <button id="p1-no" type="button" class="btn btn-outline-primary">No</button>
+    <button id="p1-yes" type="button" class="btn btn-outline-secondary">Yes</button>
+    <button id="p1-no" type="button" class="btn btn-outline-secondary">No</button>
   </div>
 </div>
 </div>
@@ -106,13 +106,13 @@
 </div>
 
 <div class="container pt-2">
-  <textarea class="form-control" style="height: 100px" id="game" rows="20"></textarea>
+  <textarea class="form-control" style="height: 100px" id="game"></textarea>
 </div>
 
 <div id="gamebuttons" class="btn-toolbar pt-1 pb-5" role="toolbar">
   <div id="yesnobuttons" class="btn-group" role="group" style="width:100%" >
-    <button id="p2-yes" type="button" class="btn btn-outline-primary">Yes</button>
-    <button id="p2-no" type="button" class="btn btn-outline-primary">No</button>
+    <button id="p2-yes" type="button" class="btn btn-outline-secondary">Yes</button>
+    <button id="p2-no" type="button" class="btn btn-outline-secondary">No</button>
   </div>
 </div>
 </div>
@@ -157,21 +157,21 @@
 {% if session['has_friends'] %}
 
 <div class="container">
-  <h1 class="">友達を誘ってチャットを始めましょう！</h1>
+  <h1 class="mx-3">友達を誘ってチャットを始めましょう！</h1>
   <form class="" action="" method="POST">
     <div class="form-floating px-5">
 
   {{form.hidden_tag()}}
   <div class="py-2">
   {{form.select_friend.label(class="form-label")}}
-  {{form.select_friend(class="form-select")}}
+  {{form.select_friend(class="form-control")}}
 </div>
 <div class="py-2">
   {{form.room_name.label(class="form-label")}}
   {{form.room_name(class="form-control")}}
 
 </div>
-  {{form.submit(class="btn btn-outline-primary")}}
+  {{form.submit(class="btn btn-secondary")}}
 
 </div>
   </form>

@@ -40,30 +40,21 @@
 
 <div class="container py-3">
   <h3 class="pb-2">友達の情報</h3>
-  <div class="row border bg-light">
+  <div class="row border bg-secondary">
     <div class="col">ユーザーネーム</div>
     <div class="col">局勝利数</div>
     <div class="col">ゲーム勝利数</div>
     <div class="col">獲得ポイント</div>
   </div>
-{% if session['has_friends'] %}
 
   {% for row in session['friend_stats'] %}
 <div class="row border">
   {% for cell in row %}
-    <div class="col">{{cell}}</div>
+    <div class="col bg-dark">{{cell}}</div>
     {% endfor %}
 </div>
   {% endfor %}
 </ul>
-
-
-
-
-
-{% else %}
-<p>現在、友達は追加していないようです。</p>
-{% endif %}
 </div>
 
 <div class="container py-3">
@@ -72,10 +63,11 @@
 
 
 {{form_req.hidden_tag()}}
-<div class="py-2">
-{{form_req.username.label(class="form-label")}}{{form_req.username(class="form-control",placeholder="username123")}}
+<div class="input-group py-2">
+{{form_req.username(class="form-control",placeholder="username123")}}
+{{form_req.submit(class="btn btn-secondary btn-sm")}}
 </div>
-{{form_req.submit(class="form-control")}}
+
 </div>
 </form>
 {% if session['has_friends'] %}
@@ -83,7 +75,7 @@
 <h5 class="pt-3">友達を削除：</h5>
   <div class="input-group py-2">
     {{form_delete.hidden_tag()}}
-    {{form_delete.select_friend(class="form-select")}}
+    {{form_delete.select_friend(class="form-control")}}
     {{form_delete.submit(class="btn btn-danger btn-sm")}}
 
   </div>

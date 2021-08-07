@@ -2,7 +2,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container text-center bg-light">
+<div class="container text-center pt-2">
   <h1 class="px-3">PyJongへようこそ！</h1>
 </div>
 
@@ -12,7 +12,7 @@
   <p class="lead">このページを開いた時の時間：{{time_now}}</p>
 </div>
   <p class="text-center">
-  <a href="{{url_for('authentication.login')}}" class="btn btn-primary my-2 mx-1">ログインのページはこちら</a>
+  <a href="{{url_for('authentication.login')}}" class="btn btn-secondary my-2 mx-1">ログインのページはこちら</a>
   <a href="{{url_for('authentication.signup')}}" class="btn btn-secondary my-2 mx-1">新しいメンバーは新規登録へ</a>
   </p>
 

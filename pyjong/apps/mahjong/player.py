@@ -1,5 +1,6 @@
 from pyjong.apps.mahjong.yama import Hai
 from pyjong.apps.socketioapps.mahjongsocketio import room_dict
+from pyjong import socketio
 from PIL import Image,ImageDraw,ImageFont
 from flask import session
 from flask_socketio import emit
@@ -249,6 +250,7 @@ class Player():
                 self.tehai.append(ron_hai)
                 emit('gameupdate',{'msg':f'{self.name}が{ron_hai}{text[1]}'},room=session['room'])
                 print(f'{self.name}が{ron_hai}{text[1]}')
+                socketio.sleep(1)
                 if is_ron == False:
                     self.is_tumo_agari = True
                 else:
@@ -312,6 +314,8 @@ class Player():
                 print(f'{self.name}が{pon_hai}をポンしました！')
                 self.tenpai_check(not_turn=True)
                 self.sutehai()
+                self.board_gui()
+                socketio.sleep(1)
 
     #only executed when player inputs yes
     def pon_user_input(self,choice):
@@ -345,6 +349,8 @@ class Player():
                 emit('gameupdate',{'msg':f'{self.name}が{chi_hai}をチーしました！'},room=session['room'])
                 print(f'{self.name}{chi_hai} riichi')
                 self.sutehai()
+                self.board_gui()
+                socketio.sleep(1)
 
     #only executed when player inputs yes
     def chi_user_input(self,choice):
@@ -370,6 +376,8 @@ class Player():
             emit('gameupdate',{'msg':f'{self.name}が{kan_hai}をカンしました！'},room=session['room'])
             print(f'{self.name} kan {kan_hai}')
             self.tenpai_check(not_turn=True)
+            self.board_gui()
+            socketio.sleep(1)
             return True
 
     def kan_user_input(self):

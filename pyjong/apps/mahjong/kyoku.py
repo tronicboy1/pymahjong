@@ -4,6 +4,7 @@ import time
 import os
 from pyjong.apps.mahjong.yama import Yama
 from pyjong.apps.socketioapps.mahjongsocketio import room_dict
+from pyjong import socketio
 
 from flask_socketio import emit
 from flask import session
@@ -267,9 +268,12 @@ class Kyoku():
         self.current_player.mochihai = self.yama_manager(hai_num=1)
 
     def new_dora(self):
-        self.dora.append(self.wanpai[0].pop(2))
-        self.uradora.append(self.wanpai[1].pop(2))
-        self.board_pic.paste(self.dora[len(self.dora)-1].pic,(((len(self.dora)-1)*60),0))
+        try:
+            self.dora.append(self.wanpai[0].pop(0))
+            self.uradora.append(self.wanpai[1].pop(0))
+            self.board_pic.paste(self.dora[len(self.dora)-1].pic,(((len(self.dora)-1)*60),0))
+        except:
+            print('no wanpai')
 
     def kyoku_start(self):
         #have players take their hai
@@ -298,6 +302,7 @@ class Kyoku():
             self.current_player.swap_hai()
             self.current_player.tenpai_check()
             self.board_gui()
+            socketio.sleep(1)
             sutehai = self.current_player.kawa[-1]
             #set key to 'cycle' before pon kan chi check, will be changed to other key if player action is necesary
             room_dict[session['room']][1] = 'cycle'
@@ -314,6 +319,7 @@ class Kyoku():
     def after_mochihai_kan(self):
         emit('gameupdate',{'msg':f'{self.current_player.mochihai}をカンしました！'},room=session['room'])
         print(f'{self.current_player.mochihai}をカンしました！')
+
         self.kan_hai.append(self.current_player.mochihai)
         self.current_player.mochihai = None
         self.tenpai_check(not_turn=True)
