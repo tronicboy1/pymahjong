@@ -274,9 +274,9 @@ class Player():
                 self.is_rinshan = True
             #set current player back to player who threw the ron hai
             if self.is_ron:
-                room_dict[session['room']][0].kyoku.current_player == room_dict[session['room']][0].kyoku.ponkanchi_start_player
+                room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.ponkanchi_start_player
             #add kyoku win to game
-            if room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.player1:
+            if room_dict[session['room']][0].kyoku.current_player == room_dict[session['room']][0].kyoku.player1:
                 room_dict[session['room']][0].player1_kyokuwin_count += 1
             elif room_dict[session['room']][0].kyoku.current_player == room_dict[session['room']][0].kyoku.player3:
                 room_dict[session['room']][0].player3_kyokuwin_count += 1
