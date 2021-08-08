@@ -1,7 +1,7 @@
 from flask_socketio import join_room,leave_room,emit
 from pyjong import socketio,room_dict,room_players,db
 from flask_login import current_user
-from pyjong.models import UserData
+from pyjong.models import UserData,new_game_update
 from flask import session,redirect,flash,url_for
 from time import sleep
 
@@ -75,6 +75,7 @@ def cycle_to_human():
 def startgame():
     global room_dict
     if session['players'] == 1:
+        new_game_update(text=f"{session['username']}がゲームを開始しました！")
         game = Game()
         room_dict[session['room']] = [game,'',0]
         room_dict[session['room']][0].create_players(players=1,player1_name=room_players[session['room']][0])

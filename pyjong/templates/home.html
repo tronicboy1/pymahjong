@@ -17,5 +17,18 @@
   </p>
 
 </div>
+<div class="container">
+  <h3>ユーザーの近況：</h3>
+  <ul class="list-group">
+    {% for update in game_updates.items %}
+    <li class="list-group-item">
+      <small>{{update.date.strftime('%Y-%M-%D, %H:%M:%S')}}</small>
+      <br>
+      <strong>{{update.text}}</strong>
+    </li>
+    {% endfor %}
+  </ul>
+
+</div>
 
 {% endblock %}
