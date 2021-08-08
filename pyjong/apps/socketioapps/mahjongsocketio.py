@@ -192,7 +192,8 @@ def gamecontrol(choice):
         if choice in ('Y','N'):
             if choice == 'Y':
                 #remove pon hai from other player's kawa
-                room_dict[session['room']][0].kyoku.ponkanchi_start_player.kawa.pop(-1)
+                kan_hai = room_dict[session['room']][0].kyoku.ponkanchi_start_player.kawa.pop(-1)
+                new_game_update(text=f"{session['username']}が{kan_hai}をカンしました！")
                 room_dict[session['room']][0].kyoku.current_player.kan_user_input()
                 #reset player to player at start of pon kan chi check
                 room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.ponkanchi_start_player
@@ -299,6 +300,7 @@ def gamecontrol(choice):
         print('riichi input:',choice)
         if choice in ('Y','N'):
             if choice == 'Y':
+                new_game_update(text=f"{session['username']}が{kan_hai}をリーチしました！")
                 room_dict[session['room']][0].kyoku.current_player.player_riichi_input()
                 room_dict[session['room']][0].kyoku.after_tenpai_check()
                 cycle_to_human()

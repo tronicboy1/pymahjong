@@ -3,7 +3,7 @@ from pyjong import app,db,socketio
 from pyjong.models import retrieve_game_updates
 from flask import render_template,session,flash,redirect,url_for
 from flask_login import logout_user,login_required,current_user
-import datetime
+
 import os
 
 #create all db
@@ -22,11 +22,7 @@ def index():
     game_updates = retrieve_game_updates()
     if current_user.is_authenticated:
         return redirect(url_for('main.friends'))
-    date_now = datetime.date.today()
-    time_now = datetime.datetime.now().strftime('%H:%M:%S')
-    
-
-    return render_template('home.html',date_now=date_now,time_now=time_now,game_updates=game_updates)
+    return render_template('home.html',game_updates=game_updates)
 
 @app.route('/logout')
 @login_required

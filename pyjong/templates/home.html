@@ -7,9 +7,8 @@
 </div>
 
 
-<div class="container p-3 text-left">
-  <p class="lead">今日の日付は：{{date_now}}</p>
-  <p class="lead">このページを開いた時の時間：{{time_now}}</p>
+<div class="container py-3 px-5 text-center">
+  <p class="lead">PyJongは、PythonとJavaScriptで開発された、無料麻雀アプリです。</p>
 </div>
   <p class="text-center">
   <a href="{{url_for('authentication.login')}}" class="btn btn-secondary my-2 mx-1">ログインのページはこちら</a>
@@ -17,7 +16,7 @@
   </p>
 
 </div>
-<div class="container pt-2">
+<div class="container pt-2 pb-5">
   <h3>ユーザーの近況：</h3>
   <ul class="list-group pt-1">
     {% for update in game_updates.items %}
