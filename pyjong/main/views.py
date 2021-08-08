@@ -1,7 +1,7 @@
 from flask import Blueprint,render_template,redirect,url_for,flash,session
 from flask_login import login_required,current_user
 from pyjong import db,room_players
-from pyjong.models import UserData
+from pyjong.models import UserData,retrieve_game_updates,add_friend,delete_friend,send_request,get_new_requests,get_friends_list,get_invites,send_invite
 from pyjong.main.forms import FriendRequest,AcceptFriendRequest,DeleteFriend,InviteFriend,AcceptInvite,PlaySolo
 import datetime
 from time import time
@@ -11,156 +11,6 @@ main_blueprint = Blueprint('main',__name__,template_folder='templates/main')
 #initialise socketiofunctions
 from pyjong.apps.socketioapps import chat,mahjongsocketio
 
-#################################################
-#########DB FUNCTIONS##########################
-#################################################
-
-
-#adds new friend to both the requester and requested
-def add_friend(requested_username,requester_username):
-    #add requester to requested
-    result1 = UserData.query.filter_by(username=requested_username).first()
-    new_friends_list = eval(result1.friends_list)
-    new_friends_list.append(requester_username)
-    result1.friends_list = str(new_friends_list)
-    #add requested to requester
-    result2 = UserData.query.filter_by(username=requester_username).first()
-    new_friends_list = eval(result2.friends_list)
-    new_friends_list.append(requested_username)
-    result2.friends_list = str(new_friends_list)
-
-    db.session.add_all([result1,result2])
-    db.session.commit()
-
-    ##check to see if written correctly
-    # result1 = UserData.query.filter_by(username=requested_username).first()
-    # result2 = UserData.query.filter_by(username=requester_username).first()
-    # print(result1.friends_list,result2.friends_list)
-
-#removes friends from both users
-def delete_friend(requested_username,requester_username):
-    #add requester to requested
-    result1 = UserData.query.filter_by(username=requested_username).first()
-    new_friends_list = eval(result1.friends_list)
-    new_friends_list.remove(requester_username)
-    result1.friends_list = str(new_friends_list)
-    #add requested to requester
-    result2 = UserData.query.filter_by(username=requester_username).first()
-    new_friends_list = eval(result2.friends_list)
-    new_friends_list.remove(requested_username)
-    result2.friends_list = str(new_friends_list)
-
-    db.session.add_all([result1,result2])
-    db.session.commit()
-
-    ##check to see if written correctly
-    result1 = UserData.query.filter_by(username=requested_username).first()
-    result2 = UserData.query.filter_by(username=requester_username).first()
-    print(result1.friends_list,result2.friends_list)
-
-
-#adds new friend request to requested user from requesting user
-def send_request(requester_username,requested_username):
-    result = UserData.query.filter_by(username=requested_username).all()
-    if len(result) > 0 and requester_username != requested_username:
-        result = result[0]
-        new_friend_requests = eval(result.friend_requests)
-        #check to make sure multiple requests are not being sent
-        if requester_username in new_friend_requests:
-            return False
-        else:
-            new_friend_requests.append(requester_username)
-            result.friend_requests = str(new_friend_requests)
-            db.session.add(result)
-            db.session.commit()
-            return True
-    else:
-        return False
-
-#gets new friend request from db and adds to session, deleting from db
-def get_new_requests(session_username):
-    current_usr = UserData.query.filter_by(username=session_username).first()
-    new_requests_list = eval(current_usr.friend_requests)
-
-    if session['updated'] == False:
-        if len(new_requests_list) > 0:
-            session['requests'] = new_requests_list
-            session['new_requests'] = True
-            current_usr.friend_requests = str([])
-            db.session.add(current_usr)
-            db.session.commit()
-            session['updated'] = True
-        else:
-            print('new requests set to false')
-            session['new_requests'] = False
-            session['updated'] = True
-    else:
-        if len(new_requests_list) > 0:
-            for request in new_requests_list:
-                session['requests'].append(request)
-            session['new_requests'] = True
-            current_usr.friend_requests = str([])
-            db.session.add(current_usr)
-            db.session.commit()
-        else:
-            pass
-
-#retrieve list of users friends
-def get_friends_list(session_username):
-    current_usr = UserData.query.filter_by(username=session_username).first()
-    friends_list = eval(current_usr.friends_list)
-    session['friends'] = friends_list
-
-    #add self to see users own stat
-    friends_list_stat = friends_list.copy()
-    friends_list_stat.insert(0,session['username'])
-    if len(friends_list) > 0:
-        session['has_friends'] = True
-        #retrieve friend stats
-        session['friend_stats'] = list()
-        for friend in friends_list_stat:
-            friend_info = UserData.query.filter_by(username=friend).first()
-            session['friend_stats'].append([friend,friend_info.kyoku_win_count,friend_info.game_win_count,friend_info.points])
-    else:
-        session['has_friends'] = False
-        session['friend_stats'] = list()
-        for friend in friends_list_stat:
-            friend_info = UserData.query.filter_by(username=friend).first()
-            session['friend_stats'].append([friend,friend_info.kyoku_win_count,friend_info.game_win_count,friend_info.points])
-
-
-#call username and retrieve invites. invites retrieved will be transferred to session memory and deleted form database
-def get_invites(session_username):
-    current_usr = UserData.query.filter_by(username=session_username).first()
-    invites = eval(current_usr.invites)
-    if session['has_new_invites'] and len(invites) > 0:
-        for invite in invites:
-            session['invites'].append(invite)
-        current_usr.invites = str([])
-        db.session.add(current_usr)
-        db.session.commit()
-    elif len(invites) > 0 and session['has_new_invites'] == False:
-        session['has_new_invites'] = True
-        session['invites'] = invites
-        current_usr.invites = str([])
-        db.session.add(current_usr)
-        db.session.commit()
-    elif session['has_new_invites']:
-        pass
-    else:
-        session['has_new_invites'] = False
-
-#invites will include senders name and room name '['username','room']'
-def send_invite(session_username,invited_username,room):
-    user = UserData.query.filter_by(username=invited_username).first()
-    invites = eval(user.invites)
-    invites.append((session_username,room))
-    user.invites = str(invites)
-    db.session.add(user)
-    db.session.commit()
-
-#########################################################
-##########################################################
 
 ##########FORM FUNCTIONS
 #function to generate friend lists for invite choice
@@ -257,6 +107,7 @@ def friends():
     form_add = add_friend_requests_to_form(form_add)
     accept_invite_form = AcceptInvite()
     accept_invite_form = add_invites_to_form(accept_invite_form)
+    game_updates = retrieve_game_updates()
 
 
     #check all forms for positive return
@@ -287,4 +138,4 @@ def friends():
         session['requests'] = []
         flash('友達を追加しました！','alert-success')
         return redirect(url_for('main.friends'))
-    return render_template('friends.html',form_delete=form_delete,form_add=form_add,form_req=form_req,accept_invite_form=accept_invite_form)
+    return render_template('friends.html',form_delete=form_delete,form_add=form_add,form_req=form_req,accept_invite_form=accept_invite_form,game_updates=game_updates)

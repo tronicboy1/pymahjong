@@ -17,14 +17,14 @@
   </p>
 
 </div>
-<div class="container">
+<div class="container pt-2">
   <h3>ユーザーの近況：</h3>
-  <ul class="list-group">
+  <ul class="list-group pt-1">
     {% for update in game_updates.items %}
-    <li class="list-group-item">
-      <small>{{update.date.strftime('%Y-%M-%D, %H:%M:%S')}}</small>
+    <li class="list-group-item bg-secondary text-white">
+      <small>{{update.date.strftime('%D %H:%M:%S')}}</small>
       <br>
-      <strong>{{update.text}}</strong>
+      <p>{{update.text}}</p>
     </li>
     {% endfor %}
   </ul>

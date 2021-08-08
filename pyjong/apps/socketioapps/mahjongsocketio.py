@@ -155,6 +155,7 @@ def gamecontrol(choice):
                 room_dict[session['room']][0].end_kyoku_check()
                 room_dict[session['room']][0].kyoku_suu_change()
                 room_dict[session['room']][0].kyoku_summary()
+
             else:
                 room_dict[session['room']][1] = 'cycle'
                 room_dict[session['room']][0].kyoku.after_player_ron_check()

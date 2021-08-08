@@ -1,8 +1,7 @@
 from flask import Blueprint,render_template,redirect,url_for,flash,session,abort,request
 from pyjong import db,bcrypt
-from pyjong.models import UserData
+from pyjong.models import UserData,duplicate_username_email_check,username_password_check,get_friends_list,new_game_update
 from pyjong.authentication.forms import Login,SignUp
-from pyjong.main.views import get_friends_list
 from flask_login import login_user,login_required,logout_user,current_user
 import datetime
 
@@ -11,30 +10,7 @@ authentication_blueprint = Blueprint('authentication',__name__,template_folder='
 
 
 
-############################################
-###FUNCTIONS FOR DB HANDLING#################
-#############################################
 
-
-#checks username for duplicates
-def duplicate_username_email_check(potential_username,potential_email):
-    if len(UserData.query.filter_by(username=potential_username).all()) == 0:
-        if len(UserData.query.filter_by(email_address=potential_email).all()) == 0:
-            return True
-    else:
-        return False
-
-#checks username to see if registered and if supplied password is correct
-def username_password_check(potential_username,input_password):
-    result = UserData.query.filter_by(username=potential_username).all()
-    if len(result) > 0:
-        result = result[0]
-        if bcrypt.check_password_hash(result.password,input_password):
-            return True
-        else:
-            return False
-    else:
-        return False
 
 
 ##################################################
@@ -87,6 +63,9 @@ def signup():
             new_user = UserData(username=form.username.data,email_address=form.email_address.data,password=form.password.data,friends_list="[]",friend_requests="[]",invites="[]",kyoku_win_count=0,game_win_count=0,points=0)
             db.session.add(new_user)
             db.session.commit()
+            #add update to board of new player registration
+            new_game_update(text=f"{form.username.data}が新しくPyJongに登録しました！友達リクエストを送りましょう！")
+
             #update session info for use with other request checks
             session['updated'] = False
             session['username'] = form.username.data

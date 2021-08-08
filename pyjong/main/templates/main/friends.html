@@ -10,9 +10,24 @@
 <div class="container py-1 text-center">
   <button type="button" onclick="location.href='{{url_for('main.game')}}'" class="btn btn-secondary btn-lg btn-block px-3">ゲームを始めましょう</button>
 </div>
+
 <div class="container py-3">
-  <h3 class="pb-2">友達リクエスト</h3>
+  <h3>ユーザーの近況：</h3>
+  <ul class="list-group pt-1">
+    {% for update in game_updates.items %}
+    <li class="list-group-item bg-secondary text-white">
+      <small>{{update.date.strftime('%D %H:%M:%S')}}</small>
+      <p>{{update.text}}</p>
+    </li>
+    {% endfor %}
+  </ul>
+
+</div>
   {% if session['new_requests'] %}
+<div class="container py-3">
+
+  <h3 class="pb-2">友達リクエスト</h3>
+
   <p class="">新しい友達のリクエストが届いていました！</p>
   <form class="" action="" method="POST">
     {{form_add.hidden_tag()}}
@@ -22,13 +37,13 @@
     </div>
   </form>
   {% else %}
-  <p>新しいリクエストは届いていません。</p>
   {% endif %}
 </div>
-
+{% if  session['has_new_invites'] %}
 <div class="container py-3">
+
   <h3 class="pb-2">友達からの招待</h3>
-  {% if  session['has_new_invites'] %}
+
   <form class="" action="" method="POST">
   {{accept_invite_form.hidden_tag()}}
   <div class="input-group">
@@ -37,7 +52,6 @@
   </div>
   </form>
   {% else %}
-  <p>新しい招待が来ていません。</p>
 {% endif %}
 </div>
 

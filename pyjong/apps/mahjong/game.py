@@ -6,6 +6,7 @@ from pyjong.apps.mahjong.kyoku import Kyoku
 from pyjong.apps.mahjong.hai import Hai
 from pyjong.apps.socketioapps.mahjongsocketio import room_dict
 from pyjong import socketio
+from pyjong.models import new_game_update
 from flask import session
 
 class Game():
@@ -119,6 +120,11 @@ class Game():
                         else:
                             remove = int(math.ceil(tensuu/400))*100
                             player.remove_funds(remove)
+                    if self.kyoku.winner.is_computer == False:
+                        if kyoku.winner.is_tumo_agari:
+                            new_game_update(text=f"{self.kyoku.winner.name}がツモ上がりで{tensuu}ポイントを獲得しました！")
+                        else:
+                            new_game_update(text=f"{self.kyoku.winner.name}がロン上がりで{tensuu}ポイントを獲得しました！")
             else:
                 self.kyoku.winner.add_funds(tensuu)
                 self.kyoku.current_player.remove_funds(tensuu)
