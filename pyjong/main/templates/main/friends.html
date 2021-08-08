@@ -88,7 +88,8 @@
 </div>
 </form>
 {% if session['has_friends'] %}
-<form class="p-2" action="" method="POST">
+<div class="container py-3">
+<form class="" action="" method="POST">
 <h5 class="pt-3">友達を削除：</h5>
   <div class="input-group py-2">
     {{form_delete.hidden_tag()}}
@@ -97,6 +98,7 @@
 
   </div>
 </form>
+</div>
 {% else %}
 {% endif %}
 

@@ -33,9 +33,6 @@ class UserData(db.Model,UserMixin):
     game_win_count = db.Column(db.Integer)
     points = db.Column(db.Integer)
 
-    #connect to seperate database to post user updates to home page
-    posts = db.relationship('GameUpdates',backref='userdata',lazy=True)
-
     ##################################################
 
     def __init__(self,email_address,username,password,friends_list,friend_requests,invites,kyoku_win_count,game_win_count,points):
@@ -58,19 +55,14 @@ class UserData(db.Model,UserMixin):
         return eval(self.friends_list)
 
 class GameUpdates(db.Model):
-    #add access to UserData db
-    users = db.relationship(UserData)
 
     id = db.Column(db.Integer,primary_key=True)
-    #link to UserData database ids, userdata is name of UserData db
-    user_id = db.Column(db.Integer,db.ForeignKey('userdata.id'))
 
     date = db.Column(db.DateTime,nullable=False,default=datetime.now)
     text = db.Column(db.Text,nullable=False)
 
     def __init__(self,text,user_id):
         self.text = text
-        self.user_id = user_id
 
 
 
@@ -167,7 +159,6 @@ def get_new_requests(session_username):
             db.session.commit()
             session['updated'] = True
         else:
-            print('new requests set to false')
             session['new_requests'] = False
             session['updated'] = True
     else:

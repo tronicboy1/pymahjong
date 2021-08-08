@@ -423,7 +423,7 @@ class Kyoku():
                 room_dict[session['room']][1] = 'cycle'
                 self.start_pon_kan_chi(sutehai)
                 #do not go to next player unless in 'cycle', stop for user input
-                if room_dict[session['room']][1] == 'cycle':
+                if room_dict[session['room']][1] == 'cycle' and self.action_break == False:
                     self.next_player()
 
             self.turn_count += 1
@@ -504,13 +504,15 @@ class Kyoku():
 
     def pon_kan_chi_check(self):
         #add key 'cycle' check to stop pon_kan_chi_check when user input is necessary
+        #variable to stop change turn after
+        self.action_break = False
         while room_dict[session['room']][2]<3 and room_dict[session['room']][1] == 'cycle':
 
             self.next_player()
-            
+
             if self.pon_kan_chi_check_sutehai in self.current_player.machihai:
-                if self.current_player.ron(self.pon_kan_chi_check_sutehai,True):
-                    self.current_player = self.ponkanchi_start_player
+                self.current_player.ron(self.pon_kan_chi_check_sutehai,True)
+
             #check if the next player can chi previous player's sutehai
             if room_dict[session['room']][2] == 0:
                 if self.pon_kan_chi_check_sutehai in self.current_player.can_chi_hai and self.current_player.is_riichi == False:
@@ -520,6 +522,7 @@ class Kyoku():
                             break
                         else:
                             room_dict[session['room']][1] = 'cycle'
+                            action_break = True
                             break
 
             #check for possible kan
@@ -543,6 +546,7 @@ class Kyoku():
             if self.pon_kan_chi_check_sutehai in self.current_player.can_pon_hai and self.current_player.is_riichi == False:
                 if self.current_player.pon(self.pon_kan_chi_check_sutehai):
                     room_dict[session['room']][1] = 'cycle'
+                    action_break = True
                     break
                 #break if current user is not a computer to wait for input
                 if self.current_player.is_computer == False:

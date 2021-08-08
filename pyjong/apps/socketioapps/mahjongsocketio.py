@@ -51,7 +51,7 @@ def add_game_results(game,players):
         db.session.add_all([result1,result2])
         db.session.commit()
         flash(f'プレーヤーの情報が更新されました！',"alert-success")
-        return redirect(url_for('main.friends'))
+        redirect(url_for('main.friends'))
 
 
 #################################################

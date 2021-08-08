@@ -2,14 +2,19 @@ from flask_socketio import join_room,leave_room,emit
 from pyjong import socketio
 from flask_login import current_user
 from flask import session
+from time import time
 
 #information to join room will be held in session
 #function to join a room provided a users session data
 @socketio.on('joined', namespace='/main/game')
 def joined(message):
-    room = session['room']
-    join_room(room)
-    emit('status', {'msg': session['username'] + 'がチャットルームに入りました'}, room=room)
+    #will give an error when player accesses game before creating a room
+    try:
+        room = session['room']
+        join_room(room)
+        emit('status', {'msg': session['username'] + 'がチャットルームに入りました'}, room=room)
+    except:
+        pass
 
 
 @socketio.on('text', namespace='/main/game')
