@@ -63,9 +63,6 @@ def signup():
             new_user = UserData(username=form.username.data,email_address=form.email_address.data,password=form.password.data,friends_list="[]",friend_requests="[]",invites="[]",kyoku_win_count=0,game_win_count=0,points=0)
             db.session.add(new_user)
             db.session.commit()
-            #add update to board of new player registration
-            new_game_update(text=f"{form.username.data}が新しくPyJongに登録しました！友達リクエストを送りましょう！")
-
             #update session info for use with other request checks
             session['updated'] = False
             session['username'] = form.username.data
@@ -73,6 +70,8 @@ def signup():
             session['has_new_invites'] = False
             session['players'] = 0
             login_user(new_user)
+            #add update to board of new player registration
+            new_game_update(text=f"{form.username.data}が新しくPyJongに登録しました！友達リクエストを送りましょう！")
             flash(f"{current_user.username}、登録できました！",'alert-success')
             return redirect(url_for('index'))
         #send user back to signup page and display duplicate username error

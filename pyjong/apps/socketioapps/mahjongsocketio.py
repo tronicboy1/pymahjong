@@ -85,6 +85,7 @@ def startgame():
         #index2 will be used for iterations
     elif session['players'] == 2:
         emit('new-game',namespace='/main/game',room=session['room'])
+        new_game_update(text=f"{room_players[session['room']][0]}と{room_players[session['room']][1]}が対戦を開始しました！")
         game = Game()
         room_dict[session['room']] = [game,'',0]
         room_dict[session['room']][0].create_players(players=2,player1_name=room_players[session['room']][0],player3_name=room_players[session['room']][1])
