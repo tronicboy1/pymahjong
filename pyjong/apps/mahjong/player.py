@@ -261,7 +261,7 @@ class Player():
                 self.atama_check(self.non_mentu_hai)
 
                 room_dict[session['room']][0].kyoku.kyoku_on = False
-
+                
                 return True
 
     def ron_input(self,choice):

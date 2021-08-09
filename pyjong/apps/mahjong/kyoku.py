@@ -343,7 +343,7 @@ class Kyoku():
             print('action')
             self.next_player()
         #do not go to next player unless in 'cycle', stop for user input
-        elif room_dict[session['room']][1] == 'cycle':
+        elif room_dict[session['room']][1] == 'cycle' and self.kyoku_on:
             self.next_player()
             self.next_player()
 
@@ -482,7 +482,7 @@ class Kyoku():
             if self.pon_kan_chi_check_sutehai in self.current_player.machihai:
                 if self.current_player.ron(self.pon_kan_chi_check_sutehai,True):
                     break
-                
+
 
             #check if the next player can chi previous player's sutehai
             if room_dict[session['room']][2] == 1:
