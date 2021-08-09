@@ -243,6 +243,7 @@ class Player():
             if self.is_computer == False:
                 emit('gameupdate',{'msg':f'{ron_hai}{text[0]}\nYもしくはNを入力してください。'},room=session['room'])
                 room_dict[session['room']][1] = 'roncheck'
+                return True
                 ### BReak to ron_input to continue
 
             else:
