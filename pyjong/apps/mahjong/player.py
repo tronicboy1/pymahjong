@@ -325,7 +325,7 @@ class Player():
                 room_dict[session['room']][0].kyoku.board_gui()
                 socketio.sleep(1)
                 return True
-            elif random.randint(0,6) == 0:
+            elif random.randint(0,0) == 0:
                 self.tehai.append(pon_hai)
                 for mentu in self.mentuhai: #add pon mentu into pon hai
                     if pon_hai in mentu:
