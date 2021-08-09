@@ -275,6 +275,7 @@ class Kyoku():
             #do not go to next player unless in 'cycle', stop for user input
             if room_dict[session['room']][1] == 'cycle':
                 self.next_player()
+                self.next_player()
 
             self.turn_count += 1
 
@@ -295,6 +296,7 @@ class Kyoku():
             self.current_player.ron(self.current_player.mochihai,is_ron=False)
         else:
             self.player_turn()
+            self.next_player()
 
 
 
@@ -312,11 +314,13 @@ class Kyoku():
             self.current_player.mochihai = None
             self.board_gui(clear_mochihai=True)
             sutehai = self.current_player.kawa[-1]
-            self.start_pon_kan_chi(sutehai)
             #set key to 'cycle' before pon kan chi check, will be changed to other key if player action is necesary
             room_dict[session['room']][1] = 'cycle'
+            self.start_pon_kan_chi(sutehai)
+
             #do not go to next player unless in 'cycle', stop for user input
-            if room_dict[session['room']][1] == 'cycle':
+            if room_dict[session['room']][1] == 'cycle' or room_dict[session['room']][1] == 'kan_cycle':
+                self.next_player()
                 self.next_player()
         self.turn_count += 1
 
@@ -354,7 +358,8 @@ class Kyoku():
                 self.start_pon_kan_chi(sutehai)
                 self.board_gui(clear_mochihai=True)
                 #do not go to next player unless in 'cycle', stop for user input
-                if room_dict[session['room']][1] == 'cycle':
+                if room_dict[session['room']][1] == 'cycle' or room_dict[session['room']][1] == 'kan_cycle':
+                    self.next_player()
                     self.next_player()
             else:
                 emit('gameupdate',{'msg':f'{self.current_player.name}持ち牌を手牌に入れますか？（YもしくはN)'},room=session['room'])
@@ -379,6 +384,7 @@ class Kyoku():
                 #do not go to next player unless in 'cycle', stop for user input
                 if room_dict[session['room']][1] == 'cycle' or room_dict[session['room']][1] == 'kan_cycle':
                     self.next_player()
+                    self.next_player()
             else:
                 self.current_player.swap_hai()
                 self.current_player.tenpai_check()
@@ -389,6 +395,7 @@ class Kyoku():
                 self.start_pon_kan_chi(sutehai)
                 #do not go to next player unless in 'cycle', stop for user input
                 if room_dict[session['room']][1] == 'cycle' or room_dict[session['room']][1] == 'kan_cycle':
+                    self.next_player()
                     self.next_player()
 
             self.turn_count += 1
@@ -415,8 +422,11 @@ class Kyoku():
             self.board_gui(clear_mochihai=True)
             #set key to 'cycle' before pon kan chi check, will be changed to other key if player action is necesary
             room_dict[session['room']][1] = 'cycle'
+            sutehai = self.current_player.kawa[-1]
+            self.start_pon_kan_chi(sutehai)
             #do not go to next player unless in 'cycle', stop for user input
-            if room_dict[session['room']][1] == 'cycle':
+            if room_dict[session['room']][1] == 'cycle' or room_dict[session['room']][1] == 'kan_cycle':
+                self.next_player()
                 self.next_player()
 
         self.turn_count += 1
@@ -431,6 +441,7 @@ class Kyoku():
         #do not go to next player unless in 'cycle', stop for user input
         if room_dict[session['room']][1] == 'cycle':
             self.next_player()
+            self.next_player()
 
     def after_tenpai_check(self):
         sutehai = self.current_player.kawa[-1]
@@ -439,6 +450,7 @@ class Kyoku():
         self.start_pon_kan_chi(sutehai)
         #do not go to next player unless in 'cycle', stop for user input
         if room_dict[session['room']][1] == 'cycle':
+            self.next_player()
             self.next_player()
 
 
@@ -471,10 +483,13 @@ class Kyoku():
     def pon_kan_chi_check(self):
         #add key 'cycle' check to stop pon_kan_chi_check when user input is necessary
         #variable to stop change turn after
-        while room_dict[session['room']][2] <= 3 and room_dict[session['room']][1] == 'cycle':
+        while room_dict[session['room']][2] < 3 and room_dict[session['room']][1] == 'cycle':
 
             self.next_player()
             print(f'pon kan chi execution player: {self.current_player.name}')
+            print('iterations:',room_dict[session['room']][2])
+            #add 1 to iteration key
+            room_dict[session['room']][2] +=1
             if self.pon_kan_chi_check_sutehai in self.current_player.machihai:
                 self.current_player.ron(self.pon_kan_chi_check_sutehai,True)
 
@@ -517,93 +532,10 @@ class Kyoku():
                 if self.current_player.is_computer == False:
                     break
 
-            #add 1 to iteration key
-            room_dict[session['room']][2] +=1
+
 
         #set next player to go back to start
         # check if key was changed before changing player
 
         print(f'after pon kan chi execution player: {self.current_player.name}')
-
-    def after_player_chi(self):
-        #check for possible kan
-        if self.pon_kan_chi_check_sutehai in self.current_player.can_kan_hai and self.current_player.is_riichi == False:
-            if self.current_player.kan(self.pon_kan_chi_check_sutehai):
-                self.new_dora()
-                self.current_player.is_monzen = False
-                self.current_player.mochihai = self.wanpai[0].pop(0)
-                self.current_player.tenpai_check(not_turn=True)
-                self.player_turn()
-                if self.current_player.is_computer == False:
-                    self.board_gui(player_turn=True)
-                    if self.current_player.mochihai in self.current_player.machihai:
-                        if self.current_player.ron(self.current_player.mochihai,True):
-                            self.current_player = self.player_dict[start_player]
-                    else:
-                        emit('gameupdate',{'msg':'持ち牌を手牌に入れますか？（YもしくはN)'},room=session['room'])
-                        #set room dict index1 value to type of next input
-                        room_dict[session['room']][1] = 'kan_yesno'
-
-                #Will figure out an implementation of chankan check later
-                # n = 0 #chankan check
-                # while n<3:
-                #     self.next_player()
-                #     n += 1
-                #     if sutehai in self.current_player.machihai:
-                #         if self.current_player.ron(sutehai,True):
-                #             self.current_player.is_chankan = True
-        #check for possible pon
-        elif self.pon_kan_chi_check_sutehai in self.current_player.can_pon_hai and self.current_player.is_riichi == False:
-            if self.current_player.pon(self.pon_kan_chi_check_sutehai):
-                room_dict[session['room']][1] = 'cycle'
-        room_dict[session['room']][2] +=1
-        self.pon_kan_chi_check()
-
-    def after_player_pon(self):
-        room_dict[session['room']][2] +=1
-        self.pon_kan_chi_check()
-
-    def after_player_kan(self):
-        if self.pon_kan_chi_check_sutehai in self.current_player.can_pon_hai and self.current_player.is_riichi == False:
-            self.current_player.pon(self.pon_kan_chi_check_sutehai)
-        room_dict[session['room']][2] +=1
-        #run pon_kan_chi_check to finish check
-        self.pon_kan_chi_check()
-
-    def after_player_ron_check(self):
-        if room_dict[session['room']][2] == 0: #check if the next player can chi previous player's sutehai
-            if self.pon_kan_chi_check_sutehai in self.current_player.can_chi_hai and self.current_player.is_riichi == False:
-                self.current_player.chi(self.pon_kan_chi_check_sutehai)
-        #check for possible kan
-        if self.pon_kan_chi_check_sutehai in self.current_player.can_kan_hai and self.current_player.is_riichi == False:
-            if self.current_player.kan(self.pon_kan_chi_check_sutehai):
-                self.new_dora()
-                self.current_player.is_monzen = False
-                self.current_player.mochihai = self.wanpai[0].pop(0)
-                self.current_player.tenpai_check(not_turn=True)
-                self.player_turn()
-                if self.current_player.is_computer == False:
-                    self.board_gui(player_turn=True)
-                    if self.current_player.mochihai in self.current_player.machihai:
-                        if self.current_player.ron(self.current_player.mochihai,True):
-                            self.current_player = self.player_dict[start_player]
-                    else:
-                        emit('gameupdate',{'msg':'持ち牌を手牌に入れますか？（YもしくはN)'},room=session['room'])
-                        #set room dict index1 value to type of next input
-                        room_dict[session['room']][1] = 'kan_yesno'
-
-
-            #Will figure out an implementation of chankan check later
-            # n = 0 #chankan check
-            # while n<3:
-            #     self.next_player()
-            #     n += 1
-            #     if sutehai in self.current_player.machihai:
-            #         if self.current_player.ron(sutehai,True):
-            #             self.current_player.is_chankan = True
-            #check for possible pon
-        elif sutehai in self.current_player.can_pon_hai and self.current_player.is_riichi == False:
-            self.current_player.pon(sutehai)
-        room_dict[session['room']][2] +=1
-        #run pon_kan_chi_check to finish check
-        self.pon_kan_chi_check()
+        print('iterations:',room_dict[session['room']][2])

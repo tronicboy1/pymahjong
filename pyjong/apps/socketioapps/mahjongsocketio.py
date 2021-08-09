@@ -158,8 +158,11 @@ def gamecontrol(choice):
                 room_dict[session['room']][0].kyoku_summary()
 
             else:
+                #room_dict[session['room']][2] +=1
                 room_dict[session['room']][1] = 'cycle'
-                room_dict[session['room']][0].kyoku.after_player_ron_check()
+                room_dict[session['room']][0].kyoku.pon_kan_chi_check()
+                room_dict[session['room']][0].kyoku.next_player()
+                room_dict[session['room']][0].kyoku.next_player()
                 cycle_to_human()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
@@ -199,12 +202,11 @@ def gamecontrol(choice):
                 room_dict[session['room']][0].kyoku.player_turn()
 
             else:
-                room_dict[session['room']][0].kyoku.current_player.tenpai_check()
-                room_dict[session['room']][0].kyoku.pon_kan_chi_check_sutehai = room_dict[session['room']][0].kyoku.current_player.kawa[-1]
+                #room_dict[session['room']][2] +=1
                 room_dict[session['room']][1] = 'cycle'
-                room_dict[session['room']][0].kyoku.after_player_kan()
-                # #cycle to next player once more to avoid bug where player turn repeats
-                # room_dict[session['room']][0].kyoku.next_player()
+                room_dict[session['room']][0].kyoku.pon_kan_chi_check()
+                room_dict[session['room']][0].kyoku.next_player()
+                room_dict[session['room']][0].kyoku.next_player()
                 cycle_to_human()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
@@ -228,13 +230,11 @@ def gamecontrol(choice):
                 print('pon choice yes')
 
             else:
-                room_dict[session['room']][2] +=1
+                #room_dict[session['room']][2] +=1
                 room_dict[session['room']][1] = 'cycle'
                 room_dict[session['room']][0].kyoku.pon_kan_chi_check()
-                # room_dict[session['room']][1] = 'cycle'
-                # room_dict[session['room']][0].kyoku.after_player_pon()
-                # #cycle to next player once more to avoid bug where player turn repeats
-                # room_dict[session['room']][0].kyoku.next_player()
+                room_dict[session['room']][0].kyoku.next_player()
+                room_dict[session['room']][0].kyoku.next_player()
                 cycle_to_human()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
@@ -271,13 +271,11 @@ def gamecontrol(choice):
                 room_dict[session['room']][1] = 'chi_sutehai'
 
             else:
-                room_dict[session['room']][2] +=1
+                #room_dict[session['room']][2] +=1
                 room_dict[session['room']][1] = 'cycle'
                 room_dict[session['room']][0].kyoku.pon_kan_chi_check()
-                # room_dict[session['room']][1] = 'cycle'
-                # room_dict[session['room']][0].kyoku.after_player_chi()
-                # # #cycle to next player once more to avoid bug where player turn repeats
-                # room_dict[session['room']][0].kyoku.next_player()
+                room_dict[session['room']][0].kyoku.next_player()
+                room_dict[session['room']][0].kyoku.next_player()
                 cycle_to_human()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')

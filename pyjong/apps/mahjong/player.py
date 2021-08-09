@@ -313,6 +313,9 @@ class Player():
                 pass
             elif pon_hai in (Hai(0,4),Hai(0,5),Hai(0,6)):
                 self.tehai.append(pon_hai)
+                for mentu in self.mentuhai: #add pon mentu into pon hai
+                    if pon_hai in mentu:
+                        self.pon_hai.extend(mentu)
                 #remove hai from other players kawa
                 room_dict[session['room']][0].kyoku.ponkanchi_start_player.kawa.pop(-1)
                 self.is_monzen = False
@@ -322,10 +325,13 @@ class Player():
                 room_dict[session['room']][0].kyoku.board_gui()
                 socketio.sleep(1)
                 return True
-            elif random.randint(0,7) == 0:
+            elif random.randint(0,6) == 0:
                 self.tehai.append(pon_hai)
+                for mentu in self.mentuhai: #add pon mentu into pon hai
+                    if pon_hai in mentu:
+                        self.pon_hai.extend(mentu)
                 #remove hai from other players kawa
-                room_dict[session['room']][0].kyoku.ponkanchi_start_player.kawa.pop(-1)
+                room_dict[session['room']][0].kyoku.ponkanchi_start_player.kawa.remove(pon_hai)
                 self.is_monzen = False
                 emit('gameupdate',{'msg':f'{self.name}が{pon_hai}をポンしました！'},room=session['room'])
                 self.tenpai_check(not_turn=True)
