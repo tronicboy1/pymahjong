@@ -271,11 +271,7 @@ class Kyoku():
             sutehai = self.current_player.kawa[-1]
             #set key to 'cycle' before pon kan chi check, will be changed to other key if player action is necesary
             room_dict[session['room']][1] = 'cycle'
-            self.start_pon_kan_chi(sutehai)
-            #do not go to next player unless in 'cycle', stop for user input
-            if room_dict[session['room']][1] == 'cycle':
-                self.next_player()
-                self.next_player()
+            self.kanchipon_with_player_change(sutehai)
 
             self.turn_count += 1
 
@@ -347,7 +343,7 @@ class Kyoku():
             print('action')
             self.next_player()
         #do not go to next player unless in 'cycle', stop for user input
-        elif room_dict[session['room']][1] == 'cycle' or room_dict[session['room']][1] == 'kan_cycle':
+        elif room_dict[session['room']][1] == 'cycle':
             self.next_player()
             self.next_player()
 
@@ -503,6 +499,7 @@ class Kyoku():
                     self.new_dora()
                     self.current_player.is_monzen = False
                     self.current_player.mochihai = self.wanpai[0].pop(0)
+                    room_dict[session['room']][1] = 'kan_cycle'
                     self.player_turn()
                     room_dict[session['room']][1] = 'cycle'
                     print(f'after kan execution player: {self.current_player.name}')

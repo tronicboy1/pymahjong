@@ -313,6 +313,7 @@ class Player():
                 pass
             elif pon_hai in (Hai(0,4),Hai(0,5),Hai(0,6)):
                 self.tehai.append(pon_hai)
+                self.tenpai_check(not_turn=True)
                 for mentu in self.mentuhai: #add pon mentu into pon hai
                     if pon_hai in mentu:
                         self.pon_hai.extend(mentu)
@@ -327,6 +328,7 @@ class Player():
                 return True
             elif random.randint(0,0) == 0:
                 self.tehai.append(pon_hai)
+                self.tenpai_check(not_turn=True)
                 for mentu in self.mentuhai: #add pon mentu into pon hai
                     if pon_hai in mentu:
                         self.pon_hai.extend(mentu)
@@ -338,6 +340,7 @@ class Player():
                 self.sutehai()
                 room_dict[session['room']][0].kyoku.board_gui()
                 socketio.sleep(1)
+                print('computer ponhai:',self.pon_hai)
                 return True
 
     #only executed when player inputs yes
@@ -723,8 +726,9 @@ class Player():
         self.can_chi_hai.clear()
         self.can_pon_hai.clear()
         a = (9,9)
+        self.refresh_can_sutehai_list()
         #add chi-able hai to can chi list
-        for hai in self.can_sutehai:
+        for hai in self.tehai:
             #add chi-able hai if a is not a 1 hai and hai is not a 9 hai
             if hai[0] != 0 and hai[1] != 8 and hai[0] == a[0] and hai[1] == (a[1]+1) and a[1] != 0:
                 self.can_chi_hai.append(Hai(hai[0],(hai[1]+1)))
@@ -738,10 +742,13 @@ class Player():
             else:
                 a = hai
         #add pon-able hai to can pon list
-        tehai_hai_count = {hai:self.tehai.count(hai) for hai in self.tehai}
+        tehai_hai_count = {hai:self.tehai.count(hai) for hai in self.can_sutehai}
         for hai,count in tehai_hai_count.items():
             if count == 2 and hai not in self.can_pon_hai:
                 self.can_pon_hai.append(hai)
+
+        print('can chi hai',[hai.id for hai in self.can_chi_hai])
+        print('can pon hai',[hai.id for hai in self.can_pon_hai])
 
     def can_ron_check(self,ron_pai):
         def sanshokudoujun_check(mentuhai):
