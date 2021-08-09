@@ -485,7 +485,7 @@ class Kyoku():
                     break
 
             #check if the next player can chi previous player's sutehai
-            if room_dict[session['room']][2] == 0:
+            if room_dict[session['room']][2] == 1:
                 if self.pon_kan_chi_check_sutehai in self.current_player.can_chi_hai and self.current_player.is_riichi == False:
                     if self.current_player.chi(self.pon_kan_chi_check_sutehai):
                         #break if current user is not a computer to wait for input

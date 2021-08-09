@@ -326,7 +326,7 @@ class Player():
                 room_dict[session['room']][0].kyoku.board_gui()
                 socketio.sleep(1)
                 return True
-            elif random.randint(0,0) == 0:
+            elif random.randint(0,6) == 0:
                 self.tehai.append(pon_hai)
                 self.tenpai_check(not_turn=True)
                 for mentu in self.mentuhai: #add pon mentu into pon hai
@@ -728,7 +728,7 @@ class Player():
         a = (9,9)
         self.refresh_can_sutehai_list()
         #add chi-able hai to can chi list
-        for hai in self.tehai:
+        for hai in self.can_sutehai:
             #add chi-able hai if a is not a 1 hai and hai is not a 9 hai
             if hai[0] != 0 and hai[1] != 8 and hai[0] == a[0] and hai[1] == (a[1]+1) and a[1] != 0:
                 self.can_chi_hai.append(Hai(hai[0],(hai[1]+1)))
