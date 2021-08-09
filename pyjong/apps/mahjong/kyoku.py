@@ -481,6 +481,8 @@ class Kyoku():
             room_dict[session['room']][2] +=1
             if self.pon_kan_chi_check_sutehai in self.current_player.machihai:
                 self.current_player.ron(self.pon_kan_chi_check_sutehai,True)
+                if self.current_player.is_computer == False:
+                    break
 
             #check if the next player can chi previous player's sutehai
             if room_dict[session['room']][2] == 0:
