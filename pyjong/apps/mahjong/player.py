@@ -780,24 +780,28 @@ class Player():
                     pass
             return False
         def is_ikkituukan(ron_tehai):
-            a = [9,9]
-            b = [9,9]
-            c = False
-            for hai in ron_tehai:
-                if hai[0] == a[0] and hai[1] == 8 and a[1]+1 == hai[1] and b[1]+2 == hai[1] and c:
-                    return True
-                elif hai[0] == a[0] and a[1] == 0 and hai[0] == self.tehai[2][0]:
-                    c = True
-                    b = a
-                    a = hai
-                elif hai[0] == a[0] and hai[1] == a[1]+1 and hai[0] == self.tehai[2][0]:
-                    b = a
-                    a = hai
-                else:
-                    a = hai
-                    b = None
-                    c = False
-            return False
+            try:
+
+                a = [9,9]
+                b = [9,9]
+                c = False
+                for hai in ron_tehai:
+                    if hai[0] == a[0] and hai[1] == 8 and a[1]+1 == hai[1] and b[1]+2 == hai[1] and c:
+                        return True
+                    elif hai[0] == a[0] and a[1] == 0 and hai[0] == self.tehai[2][0]:
+                        c = True
+                        b = a
+                        a = hai
+                    elif hai[0] == a[0] and hai[1] == a[1]+1 and hai[0] == self.tehai[2][0]:
+                        b = a
+                        a = hai
+                    else:
+                        a = hai
+                        b = None
+                        c = False
+                return False
+            except:
+                return False
 
         monzen = False
         ron_tehai = [hai for hai in self.tehai]
