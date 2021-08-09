@@ -8,13 +8,10 @@ from time import time
 #function to join a room provided a users session data
 @socketio.on('joined', namespace='/main/game')
 def joined(message):
-    #will give an error when player accesses game before creating a room
-    try:
-        room = session['room']
-        join_room(room)
-        emit('status', {'msg': session['username'] + 'がチャットルームに入りました'}, room=room)
-    except:
-        pass
+
+    room = session.get('room',None)
+    join_room(room)
+    emit('status', {'msg': session['username'] + 'がチャットルームに入りました'}, room=room)
 
 
 @socketio.on('text', namespace='/main/game')
