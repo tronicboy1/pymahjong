@@ -60,13 +60,19 @@ def add_game_results(game,players):
 
 def cycle_to_human():
     #changed to 'cycle' key so cycler stops whenever user input is necessary
-    #while room_dict[session['room']][0].kyoku.current_player.is_computer:
+
     while room_dict[session['room']][1] == 'cycle':
         room_dict[session['room']][0].kyoku.player_turn()
         room_dict[session['room']][0].kyoku.board_gui()
         socketio.sleep(1.5)
 
-    #room_dict[session['room']][0].kyoku.player_turn()
+def kanchiponron_no_input():
+    room_dict[session['room']][1] = 'cycle'
+    room_dict[session['room']][0].kyoku.pon_kan_chi_check()
+    room_dict[session['room']][0].kyoku.next_player()
+    room_dict[session['room']][0].kyoku.next_player()
+    cycle_to_human()
+
 
 
 
@@ -158,12 +164,7 @@ def gamecontrol(choice):
                 room_dict[session['room']][0].kyoku_summary()
 
             else:
-                #room_dict[session['room']][2] +=1
-                room_dict[session['room']][1] = 'cycle'
-                room_dict[session['room']][0].kyoku.pon_kan_chi_check()
-                room_dict[session['room']][0].kyoku.next_player()
-                room_dict[session['room']][0].kyoku.next_player()
-                cycle_to_human()
+                kanchiponron_no_input()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
     #condition to staaart new kyoku
@@ -202,12 +203,7 @@ def gamecontrol(choice):
                 room_dict[session['room']][0].kyoku.player_turn()
 
             else:
-                #room_dict[session['room']][2] +=1
-                room_dict[session['room']][1] = 'cycle'
-                room_dict[session['room']][0].kyoku.pon_kan_chi_check()
-                room_dict[session['room']][0].kyoku.next_player()
-                room_dict[session['room']][0].kyoku.next_player()
-                cycle_to_human()
+                kanchiponron_no_input()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
 
@@ -230,12 +226,7 @@ def gamecontrol(choice):
                 print('pon choice yes')
 
             else:
-                #room_dict[session['room']][2] +=1
-                room_dict[session['room']][1] = 'cycle'
-                room_dict[session['room']][0].kyoku.pon_kan_chi_check()
-                room_dict[session['room']][0].kyoku.next_player()
-                room_dict[session['room']][0].kyoku.next_player()
-                cycle_to_human()
+                kanchiponron_no_input()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
     #accept user sutehai choice after chi
@@ -271,12 +262,7 @@ def gamecontrol(choice):
                 room_dict[session['room']][1] = 'chi_sutehai'
 
             else:
-                #room_dict[session['room']][2] +=1
-                room_dict[session['room']][1] = 'cycle'
-                room_dict[session['room']][0].kyoku.pon_kan_chi_check()
-                room_dict[session['room']][0].kyoku.next_player()
-                room_dict[session['room']][0].kyoku.next_player()
-                cycle_to_human()
+                kanchiponron_no_input()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
     #accept user sutehai choice after chi
@@ -299,7 +285,7 @@ def gamecontrol(choice):
         print('riichi input:',choice)
         if choice in ('Y','N'):
             if choice == 'Y':
-                new_game_update(text=f"{session['username']}が{kan_hai}をリーチしました！")
+                new_game_update(text=f"{session['username']}がリーチしました！")
                 room_dict[session['room']][0].kyoku.current_player.player_riichi_input()
                 room_dict[session['room']][0].kyoku.after_tenpai_check()
                 cycle_to_human()
