@@ -36,5 +36,5 @@ def logout():
 print(os.path.dirname(__file__))
 
 if __name__ == '__main__':
-    socketio.run(app,cors_allowed_origins=["*"])
-    #,host='0.0.0.0',port=5000
+    socketio.run(app)
+    #,host='0.0.0.0',port=5000,cors_allowed_origins=["*"]
