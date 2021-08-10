@@ -25,9 +25,7 @@ app = Flask(__name__)
 #get base dir here for path to create db
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SECRET_KEY'] = 'mykey'
-db_uri = os.environ.get('DATABASE_URL') or "postgresql://localhost/data"
-app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir,'data.sqlite')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir,'data.sqlite')
 #keep tracking figures off until necessary
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 #create database object
