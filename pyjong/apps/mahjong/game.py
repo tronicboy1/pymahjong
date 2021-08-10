@@ -115,6 +115,8 @@ class Game():
                         else:
                             remove = int(math.ceil(tensuu/300))*100
                             player.remove_funds(remove)
+                            if player.is_computer == False:
+                                new_game_update(text=f"{player.name}が局に負けて{remove}ポイントを失ってしまった！")
                     if self.kyoku.winner.is_computer == False:
                         if self.kyoku.winner.is_tumo_agari:
                             new_game_update(text=f"{self.kyoku.winner.name}がツモ上がりで{tensuu}ポイントを獲得しました！")
@@ -128,9 +130,13 @@ class Game():
                         elif player == self.oya:
                             remove = int(math.ceil(tensuu/200))*100
                             player.remove_funds(remove)
+                            if player.is_computer == False:
+                                new_game_update(text=f"{player.name}が局に負けて{remove}ポイントを失ってしまった！")
                         else:
                             remove = int(math.ceil(tensuu/400))*100
                             player.remove_funds(remove)
+                            if player.is_computer == False:
+                                new_game_update(text=f"{player.name}が局に負けて{remove}ポイントを失ってしまった！")
                     if self.kyoku.winner.is_computer == False:
                         if self.kyoku.winner.is_tumo_agari:
                             new_game_update(text=f"{self.kyoku.winner.name}がツモ上がりで{tensuu}ポイントを獲得しました！")
