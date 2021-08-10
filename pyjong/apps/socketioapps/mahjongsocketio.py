@@ -68,9 +68,12 @@ def cycle_to_human():
 
 def kanchiponron_no_input():
     room_dict[session['room']][1] = 'cycle'
-    room_dict[session['room']][0].kyoku.pon_kan_chi_check()
-    room_dict[session['room']][0].kyoku.next_player()
-    room_dict[session['room']][0].kyoku.next_player()
+    #check to see if there was an action and new pon kan chi check needs to be started
+    if room_dict[session['room']][0].kyoku.pon_kan_chi_check():
+        room_dict[session['room']][0].kyoku.kanchipon_with_player_change(room_dict[session['room']][0].kyoku.current_player.kawa[-1])
+    else:
+        room_dict[session['room']][0].kyoku.next_player()
+        room_dict[session['room']][0].kyoku.next_player()
     cycle_to_human()
 
 

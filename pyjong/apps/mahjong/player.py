@@ -261,7 +261,7 @@ class Player():
                 self.atama_check(self.non_mentu_hai)
 
                 room_dict[session['room']][0].kyoku.kyoku_on = False
-                
+
                 return True
 
     def ron_input(self,choice):
@@ -327,7 +327,7 @@ class Player():
                 room_dict[session['room']][0].kyoku.board_gui()
                 socketio.sleep(1)
                 return True
-            elif random.randint(0,6) == 0:
+            elif random.randint(0,0) == 0:
                 self.tehai.append(pon_hai)
                 self.tenpai_check(not_turn=True)
                 for mentu in self.mentuhai: #add pon mentu into pon hai
@@ -396,6 +396,7 @@ class Player():
             self.temp_kan_hai = kan_hai
             emit('gameupdate',{'msg':f'{kan_hai}をカンしますか？\nYもしくはNを入力してください。'},room=session['room'])
             room_dict[session['room']][1] = 'kan_yesno'
+            return True
 
         elif random.randint(0,1) == 1:
             self.kan_hai.append(kan_hai)

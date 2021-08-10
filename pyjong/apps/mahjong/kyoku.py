@@ -324,11 +324,7 @@ class Kyoku():
     def new_mochihai(self):
         #check if game on and hai in yama at start and end
         if self.kyoku_on != True or self.hai_remaining == 0:
-            room_dict[session['room']][0].end_kyoku_check()
-
-            room_dict[session['room']][0].kyoku_suu_change()
-
-            room_dict[session['room']][0].kyoku_summary()
+            return False
 
         if self.turn_count < 4:
             if self.current_player.first_round_kan():
@@ -341,7 +337,7 @@ class Kyoku():
         action = self.start_pon_kan_chi(sutehai)
         if action:
             print('action')
-            self.next_player()
+            self.kanchipon_with_player_change(self.current_player.kawa[-1])
         #do not go to next player unless in 'cycle', stop for user input
         elif room_dict[session['room']][1] == 'cycle' and self.kyoku_on:
             self.next_player()
@@ -498,14 +494,18 @@ class Kyoku():
             #check for possible kan
             if self.pon_kan_chi_check_sutehai in self.current_player.can_kan_hai and self.current_player.is_riichi == False:
                 if self.current_player.kan(self.pon_kan_chi_check_sutehai):
-                    self.new_dora()
-                    self.current_player.is_monzen = False
-                    self.current_player.mochihai = self.wanpai[0].pop(0)
-                    room_dict[session['room']][1] = 'kan_cycle'
-                    self.player_turn()
-                    room_dict[session['room']][1] = 'cycle'
-                    print(f'after kan execution player: {self.current_player.name}')
-                    return True
+                    if self.current_player.is_computer == False:
+                        break
+                    else:
+                        self.new_dora()
+                        self.current_player.is_monzen = False
+                        self.current_player.mochihai = self.wanpai[0].pop(0)
+                        room_dict[session['room']][1] = 'kan_cycle'
+                        self.player_turn()
+                        room_dict[session['room']][1] = 'cycle'
+                        print(f'after kan execution player: {self.current_player.name}')
+                        return True
+
                     #Will figure out an implementation of chankan check later
                     # n = 0 #chankan check
                     # while n<3:
