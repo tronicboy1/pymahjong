@@ -79,7 +79,7 @@ class Game():
             elif len(tenpatteru_list) == 1:
                 tenpatteru_list[0].add_funds(3000)
                 if tenpatteru_list[0].is_computer == False:
-                    new_game_update(text=f"{tenpatteru_list[0].name}がロン上がりで3000ポイントを獲得しました！")
+                    new_game_update(text=f"{tenpatteru_list[0].name}がテンパイで3000ポイントを獲得しました！")
                 for player in self.player_dict.values():
                     if player not in tenpatteru_list:
                         player.remove_funds(1000)
@@ -87,7 +87,7 @@ class Game():
                 for player in tenpatteru_list:
                     player.add_funds(1500)
                     if player.is_computer == False:
-                        new_game_update(text=f"{player.name}がロン上がりで1500ポイントを獲得しました！")
+                        new_game_update(text=f"{player.name}がテンパイで1500ポイントを獲得しました！")
                 for player in self.player_dict.values():
                     if player not in tenpatteru_list:
                         player.remove_funds(1500)
@@ -95,7 +95,7 @@ class Game():
                 for player in tenpatteru_list:
                     player.add_funds(1000)
                     if player.is_computer == False:
-                        new_game_update(text=f"{player.name}がロン上がりで1000ポイントを獲得しました！")
+                        new_game_update(text=f"{player.name}がテンパイで1000ポイントを獲得しました！")
                 for player in self.player_dict.values():
                     if player not in tenpatteru_list:
                         player.remove_funds(3000)
