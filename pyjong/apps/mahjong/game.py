@@ -362,7 +362,7 @@ class Game():
                 if yaku_hai in mentu:
                     han += 1
                     emit('gameupdate',{'msg':'役牌！'},room=session['room'])
-        if len([x for x in winner.tehai if x[0] != 0 and x[1] in (0,8)]) == 0: #tanyao
+        if len([x for x in winner.tehai if x[0] != 0 and x[1] not in (0,8)]) == 0: #tanyao
             han += 1
             emit('gameupdate',{'msg':'タンヤオ！'},room=session['room'])
         if len(winner.machihai) >= 2:
