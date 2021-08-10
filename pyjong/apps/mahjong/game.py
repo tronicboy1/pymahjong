@@ -115,6 +115,11 @@ class Game():
                         else:
                             remove = int(math.ceil(tensuu/300))*100
                             player.remove_funds(remove)
+                    if self.kyoku.winner.is_computer == False:
+                        if self.kyoku.winner.is_tumo_agari:
+                            new_game_update(text=f"{self.kyoku.winner.name}がツモ上がりで{tensuu}ポイントを獲得しました！")
+                        else:
+                            new_game_update(text=f"{self.kyoku.winner.name}がロン上がりで{tensuu}ポイントを獲得しました！")
                 else:
                     self.kyoku.winner.add_funds(tensuu)
                     for player in self.player_dict.values():
