@@ -20,7 +20,7 @@ class UserData(db.Model,UserMixin):
     #setting unique to True makes sure no two values are the same in a database
     email_address = db.Column(db.String(64),unique=True,index=True)
     username = db.Column(db.String(64),unique=True,index=True)
-    password_hash = db.Column(db.String(128))
+    password_hash = db.Column(db.Binary(60),nullable=False)
 
     ###########################################################
 
