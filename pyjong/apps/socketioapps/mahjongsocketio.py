@@ -265,7 +265,11 @@ def gamecontrol(choice):
                 room_dict[session['room']][1] = 'chi_sutehai'
 
             else:
-                kanchiponron_no_input()
+                #check to see if sutehai is also in players can pon hai
+                if room_dict[session['room']][0].kyoku.pon_kan_chi_check_sutehai in room_dict[session['room']][0].kyoku.current_player.can_pon_hai:
+                    self.current_player.pon(self.pon_kan_chi_check_sutehai)
+                else:
+                    kanchiponron_no_input()
         else:
             emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
     #accept user sutehai choice after chi
