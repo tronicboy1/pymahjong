@@ -161,6 +161,7 @@ def get_new_requests(session_username):
         else:
             session['new_requests'] = False
             session['updated'] = True
+            session['requests'] = []
     else:
         if len(new_requests_list) > 0:
             for request in new_requests_list:

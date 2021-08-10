@@ -36,6 +36,7 @@ def login():
                 session['in_room'] = False
                 session['has_new_invites'] = False
                 session['players'] = 1
+                session['requests'] = []
                 get_friends_list(session['username'])
                 next = request.args.get('next')
                 #check if user was redirected, and send them to the page they were trying to access before login
@@ -68,7 +69,8 @@ def signup():
             session['username'] = form.username.data
             session['in_room'] = False
             session['has_new_invites'] = False
-            session['players'] = 0
+            session['players'] = 1
+            session['requests'] = []
             login_user(new_user)
             #add update to board of new player registration
             new_game_update(text=f"{form.username.data}が新しくPyJongに登録しました！友達リクエストを送りましょう！")
