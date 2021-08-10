@@ -231,11 +231,12 @@
 <!-- Chat room/game　script  -->
           <script type="text/javascript" charset="utf-8">
               var socket;
+              var protocol = window.location.protocol;
               // $('#p1-input').hide()
               // $('#gamebuttons').hide()
 
               $(document).ready(function(){
-                  socket = io.connect('http://' + document.domain + ':' + location.port + '/main/game');
+                  socket = io.connect(protocol + '//' + document.domain + ':' + location.port + '/main/game');
                   socket.on('connect', function() {
                       socket.emit('joined', {});
                       console.log('connected');
