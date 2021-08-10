@@ -501,7 +501,7 @@ class Kyoku():
                         self.current_player.is_monzen = False
                         self.current_player.mochihai = self.wanpai[0].pop(0)
                         room_dict[session['room']][1] = 'kan_cycle'
-                        self.player_turn()
+                        self.kan_turn()
                         room_dict[session['room']][1] = 'cycle'
                         print(f'after kan execution player: {self.current_player.name}')
                         return True
@@ -531,3 +531,47 @@ class Kyoku():
 
         print(f'after pon kan chi execution player: {self.current_player.name}')
         print('iterations:',room_dict[session['room']][2])
+
+    def kan_turn(self):
+        self.current_player.tenpai_check(not_turn=True)
+        if self.current_player.is_computer == False:
+            self.board_gui(player_turn=True)
+            if self.current_player.mochihai in self.current_player.machihai:
+                self.current_player.ron(self.current_player.mochihai)
+            elif self.current_player.mochihai in self.current_player.can_kan_hai:
+                self.current_player.kan(self.current_player.mochihai)
+
+            elif self.current_player.is_riichi == True:
+                self.current_player.is_ippatu = False
+                self.current_player.kawa.append(self.current_player.mochihai)
+                sutehai = self.current_player.kawa[-1]
+                self.current_player.mochihai = None
+                self.current_player.kawa_pic_gen()
+                self.board_gui(clear_mochihai=True)
+
+            else:
+                emit('gameupdate',{'msg':f'{self.current_player.name}持ち牌を手牌に入れますか？（YもしくはN)'},room=session['room'])
+                #set room dict index1 value to type of next input
+                room_dict[session['room']][1] = 'kyoku_yesno'
+
+
+        elif self.current_player.is_computer == True:
+            if self.current_player.mochihai in self.current_player.machihai:
+                if self.current_player.ron(self.current_player.mochihai):
+                    self.is_monzen = True
+                else:
+                    pass
+            elif self.current_player.is_riichi == True:
+                self.current_player.kawa.append(self.current_player.mochihai)
+                self.board_gui()
+                sutehai = self.current_player.kawa[-1]
+                self.current_player.mochihai = None
+
+            else:
+                self.current_player.swap_hai()
+                self.current_player.tenpai_check()
+                self.board_gui()
+                sutehai = self.current_player.kawa[-1]
+
+
+        self.turn_count += 1
