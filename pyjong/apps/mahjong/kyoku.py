@@ -46,6 +46,8 @@ class Kyoku():
         self.riichi_turn_count = 0
         self.turn_count = 0
         self.ponkanchi_start_player = 0
+        self.possible_chankan = False
+        self.possible_rinshan = False
 
         self.board_pic.paste(self.bakaze.resize((30,50)),(485,275))
 
@@ -305,7 +307,6 @@ class Kyoku():
             ####Sutehai func here
             self.current_player.sutehai()
         else:
-            # print('kyoku start N')
             self.current_player.kawa.append(self.current_player.mochihai)
             self.current_player.mochihai = None
             self.board_gui(clear_mochihai=True)
@@ -382,6 +383,7 @@ class Kyoku():
                     self.current_player.kawa.append(self.current_player.mochihai)
                     self.board_gui()
                     sutehai = self.current_player.kawa[-1]
+                    emit('gameupdate',{'msg':f'{self.current_player.name}が{sutehai}を川に捨てました！'},room=session['room'])
                     self.current_player.mochihai = None
                     #set key to 'cycle' before pon kan chi check, will be changed to other key if player action is necesary
                     room_dict[session['room']][1] = 'cycle'
@@ -451,7 +453,7 @@ class Kyoku():
 
     #wraps pon_kan_chi_check to reset iteration value first time only
     def start_pon_kan_chi(self,sutehai):
-        print('pon kan chi start player:',self.current_player.name)
+
 
         self.pon_kan_chi_check_sutehai = sutehai
         #use int function to deep copy turn count
@@ -469,10 +471,7 @@ class Kyoku():
         #add key 'cycle' check to stop pon_kan_chi_check when user input is necessary
         #variable to stop change turn after
         while room_dict[session['room']][2] < 3 and room_dict[session['room']][1] == 'cycle':
-
             self.next_player()
-            print(f'pon kan chi execution player: {self.current_player.name}')
-            print('iterations:',room_dict[session['room']][2])
             #add 1 to iteration key
             room_dict[session['room']][2] +=1
             if self.pon_kan_chi_check_sutehai in self.current_player.machihai:
@@ -504,6 +503,8 @@ class Kyoku():
                         self.kan_turn()
                         room_dict[session['room']][1] = 'cycle'
                         print(f'after kan execution player: {self.current_player.name}')
+                        #use this variable to check for chankan in ron check following kan
+                        self.possible_chankan = True
                         return True
 
                     #Will figure out an implementation of chankan check later
@@ -518,19 +519,11 @@ class Kyoku():
             if self.pon_kan_chi_check_sutehai in self.current_player.can_pon_hai and self.current_player.is_riichi == False:
                 if self.current_player.pon(self.pon_kan_chi_check_sutehai):
                     room_dict[session['room']][1] = 'cycle'
-                    print(f'after pon execution player: {self.current_player.name}')
                     return True
                 #break if current user is not a computer to wait for input
                 if self.current_player.is_computer == False:
                     break
 
-
-
-        #set next player to go back to start
-        # check if key was changed before changing player
-
-        print(f'after pon kan chi execution player: {self.current_player.name}')
-        print('iterations:',room_dict[session['room']][2])
 
     def kan_turn(self):
         self.current_player.tenpai_check(not_turn=True)

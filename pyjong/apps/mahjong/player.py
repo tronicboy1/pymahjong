@@ -250,13 +250,16 @@ class Player():
                 self.tehai.append(ron_hai)
                 emit('gameupdate',{'msg':f'{self.name}が{ron_hai}{text[1]}'},room=session['room'])
                 socketio.sleep(1)
+                #set ronned player as winner
+                room_dict[session['room']][0].kyoku.winner = room_dict[session['room']][0].kyoku.current_player
                 if is_ron == False:
                     self.is_tumo_agari = True
                 else:
-                    #set ronned player as winner
-                    room_dict[session['room']][0].kyoku.winner = room_dict[session['room']][0].kyoku.current_player
                     #set current player back to player who threw the ron hai
                     room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.ponkanchi_start_player
+                #set chankan to true if ron follows a kan
+                if room_dict[session['room']][0].kyoku.possible_chankan:
+                    self.is_chankan = True
                 self.mentu_check()
                 self.atama_check(self.non_mentu_hai)
 
@@ -272,17 +275,17 @@ class Player():
         if choice == 'Y':
             emit('gameupdate',{'msg':f'{self.ron_hai}{text[1]}'},room=session['room'])
             self.tehai.append(self.ron_hai)
+            room_dict[session['room']][0].kyoku.winner = room_dict[session['room']][0].kyoku.current_player
             if self.is_ron == False:
                 self.is_tumo_agari = True
+            else:
+                room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.ponkanchi_start_player
             if self.possible_rinshan:
                 self.is_rinshan = True
-            #set current player back to player who threw the ron hai
-            if self.is_ron:
-                room_dict[session['room']][0].kyoku.winner = room_dict[session['room']][0].kyoku.current_player
-                room_dict[session['room']][0].kyoku.current_player = room_dict[session['room']][0].kyoku.ponkanchi_start_player
-            #add kyoku win to game
-            else:
-                room_dict[session['room']][0].kyoku.winner = room_dict[session['room']][0].kyoku.current_player
+            #set chankan to true if ron follows a kan
+            if room_dict[session['room']][0].kyoku.possible_chankan:
+                self.is_chankan = True
+            
 
             if room_dict[session['room']][0].kyoku.current_player == room_dict[session['room']][0].kyoku.player1:
                 room_dict[session['room']][0].player1_kyokuwin_count += 1
