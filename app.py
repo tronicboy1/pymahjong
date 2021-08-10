@@ -36,5 +36,5 @@ def logout():
 print(os.path.dirname(__file__))
 
 if __name__ == '__main__':
-    socketio.run(app)
+    socketio.run(app,cors_allowed_origins=["https://pyjong.herokuapp.com"])
     #,host='0.0.0.0',port=5000
