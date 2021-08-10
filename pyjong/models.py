@@ -49,7 +49,7 @@ class UserData(db.Model,UserMixin):
 
     #use bcrypt to check if input password is correct and return boolean
     def check_password(self,password):
-        return bcrypt.check_password_hash(self.password_hash,password)
+        return bcrypt.check_password_hash(self.password_hash,password.encode('utf-8'))
 
     def get_friends_list(self):
         return eval(self.friends_list)
