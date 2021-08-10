@@ -9,7 +9,7 @@ import os
 #create all db
 #with app.app_context is necessary when importing alchemy db
 #with app.app_context():
-db.create_all()
+#db.create_all()
 
 #function to retrieve gameupdates for display on index page
 def get_gameupdates():
