@@ -1,2 +1,2 @@
 web: gunicorn app:app — log-file=-
-gunicorn -k gevent -w 1 module:app
+web: gunicorn -k flask_sockets.worker app:app
