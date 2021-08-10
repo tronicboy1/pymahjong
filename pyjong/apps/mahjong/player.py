@@ -358,6 +358,7 @@ class Player():
         elif self.is_computer == False:
             emit('gameupdate',{'msg':f'{self.name}、{chi_hai}をチーしますか？\nYもしくはNを入力してください。'},room=session['room'])
             room_dict[session['room']][1] = 'chi_yesno'
+            return True
 
 
         else:
