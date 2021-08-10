@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
 from flask_socketio import SocketIO
+from flaskext.markdown import Markdown
 
 
 #create login manager object
@@ -25,13 +26,17 @@ app = Flask(__name__)
 #get base dir here for path to create db
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SECRET_KEY'] = 'mykey'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir,'data.sqlite')
+db_uri = os.environ.get('DATABASE_URL') or "postgresql://localhost/data"
+app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir,'data.sqlite')
 #keep tracking figures off until necessary
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 #create database object
 db = SQLAlchemy(app)
 #migration can be added if necessary with flask_migrate.Migrate
 Migrate(app,db)
+
+Markdown(app)
 
 #link login manager to flask app
 login_manager.init_app(app)
