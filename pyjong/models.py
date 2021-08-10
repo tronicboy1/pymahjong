@@ -20,7 +20,7 @@ class UserData(db.Model,UserMixin):
     #setting unique to True makes sure no two values are the same in a database
     email_address = db.Column(db.String(64),unique=True,index=True)
     username = db.Column(db.String(64),unique=True,index=True)
-    password_hash = db.Column(db.Binary(60),nullable=False)
+    password_hash = db.Column(db.String(128))
 
     ###########################################################
 
@@ -39,7 +39,7 @@ class UserData(db.Model,UserMixin):
         self.email_address = email_address
         self.username = username
         #hash input password when creating user class
-        self.password_hash = bcrypt.generate_password_hash(password)
+        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
         self.friends_list = friends_list
         self.friend_requests = friend_requests
         self.invites = invites
