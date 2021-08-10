@@ -5,7 +5,6 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
 from flask_socketio import SocketIO
-from flaskext.markdown import Markdown
 
 
 #create login manager object
@@ -35,8 +34,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 #migration can be added if necessary with flask_migrate.Migrate
 Migrate(app,db)
-
-Markdown(app)
 
 #link login manager to flask app
 login_manager.init_app(app)
