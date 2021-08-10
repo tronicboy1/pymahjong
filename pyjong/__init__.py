@@ -29,7 +29,7 @@ app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SECRET_KEY'] = 'mykey'
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir,'data.sqlite')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://tygdtcltbosejz:1a622409a191010e308c49a607343f1ab72d2bc66e7f90bba894f5dc42140cb0@ec2-44-194-145-230.compute-1.amazonaws.com:5432/d5g33isn665nuf'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://pwgpahkpakluol:5501fe5faa5b3f44b4bf4225aad1eead65a137f9a01cc8863d5966930462e942@ec2-44-196-146-152.compute-1.amazonaws.com:5432/d3peihanv904u3'
 #keep tracking figures off until necessary
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 #create database object
