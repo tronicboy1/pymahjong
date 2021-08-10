@@ -1,70 +1,36 @@
-# This file may be used to create an environment using:
-# $ conda create --name <env> --file <this file>
-# platform: osx-64
-alembic=1.6.5=pypi_0
-amqp=5.0.6=pypi_0
-bcrypt=3.2.0=pypi_0
-bidict=0.21.2=pypi_0
-billiard=3.6.4.0=pypi_0
-ca-certificates=2021.7.5=hecd8cb5_1
-cached-property=1.5.2=pypi_0
-celery=5.1.2=pypi_0
-certifi=2021.5.30=py36hecd8cb5_0
-cffi=1.14.6=pypi_0
-charset-normalizer=2.0.4=pypi_0
-click=7.1.2=pypi_0
-click-didyoumean=0.0.3=pypi_0
-click-plugins=1.1.1=pypi_0
-click-repl=0.2.0=pypi_0
-dataclasses=0.8=pypi_0
-dnspython=2.1.0=pypi_0
-email-validator=1.1.3=pypi_0
-flask=2.0.1=pypi_0
-flask-bcrypt=0.7.1=pypi_0
-flask-login=0.5.0=pypi_0
-flask-migrate=3.0.1=pypi_0
-flask-socketio=5.1.0=pypi_0
-flask-sqlalchemy=2.5.1=pypi_0
-flask-wtf=0.15.1=pypi_0
-gevent=1.4.0=pypi_0
-gevent-websocket=0.10.1=pypi_0
-greenlet=1.1.0=pypi_0
-idna=3.2=pypi_0
-importlib-metadata=4.6.2=pypi_0
-itsdangerous=2.0.1=pypi_0
-jinja2=3.0.1=pypi_0
-kombu=5.1.0=pypi_0
-libcxx=10.0.0=1
-libffi=3.3=hb1e8313_2
-mako=1.1.4=pypi_0
-markupsafe=2.0.1=pypi_0
-ncurses=6.2=h0a44026_1
-openssl=1.1.1k=h9ed2024_0
-pillow=8.3.1=pypi_0
-pip=21.1.3=py36hecd8cb5_0
-prompt-toolkit=3.0.19=pypi_0
-pycparser=2.20=pypi_0
-python=3.6.13=h88f2d9e_0
-python-dateutil=2.8.2=pypi_0
-python-editor=1.0.4=pypi_0
-python-engineio=4.2.0=pypi_0
-python-socketio=5.3.0=pypi_0
-pytz=2021.1=pypi_0
-readline=8.1=h9ed2024_0
-requests=2.26.0=pypi_0
-setuptools=52.0.0=py36hecd8cb5_0
-six=1.16.0=pypi_0
-sqlalchemy=1.4.22=pypi_0
-sqlite=3.36.0=hce871da_0
-tk=8.6.10=hb0a8c7a_0
-typing-extensions=3.10.0.0=pypi_0
-urllib3=1.26.6=pypi_0
-vine=5.0.0=pypi_0
-wcwidth=0.2.5=pypi_0
-websocket-client=1.1.0=pypi_0
-werkzeug=2.0.1=pypi_0
-wheel=0.36.2=pyhd3eb1b0_0
-wtforms=2.3.3=pypi_0
-xz=5.2.5=h1de35cc_0
-zipp=3.5.0=pypi_0
-zlib=1.2.11=h1de35cc_3
+alembic==1.6.5
+bcrypt==3.2.0
+bidict==0.21.2
+certifi==2021.5.30
+cffi==1.14.6
+click @ file:///tmp/build/80754af9/click_1621604852318/work
+colorama==0.4.4
+dnspython==2.1.0
+email-validator==1.1.3
+Flask @ file:///home/ktietz/src/ci/flask_1611932660458/work
+Flask-Bcrypt==0.7.1
+Flask-Login==0.5.0
+Flask-Migrate==3.1.0
+Flask-SocketIO==5.1.1
+Flask-SQLAlchemy==2.5.1
+Flask-WTF==0.15.1
+greenlet==1.1.1
+gunicorn==20.1.0
+idna==3.2
+importlib-metadata @ file:///C:/ci/importlib-metadata_1617877477759/work
+itsdangerous @ file:///tmp/build/80754af9/itsdangerous_1621432558163/work
+Jinja2 @ file:///tmp/build/80754af9/jinja2_1624781299557/work
+Mako==1.1.4
+MarkupSafe @ file:///C:/ci/markupsafe_1621528502553/work
+Pillow==8.3.1
+pycparser==2.20
+python-dateutil==2.8.2
+python-editor==1.0.4
+python-engineio==4.2.1
+python-socketio==5.4.0
+six==1.16.0
+SQLAlchemy==1.4.22
+Werkzeug @ file:///home/ktietz/src/ci/werkzeug_1611932622770/work
+wincertstore==0.2
+WTForms==2.3.3
+zipp @ file:///tmp/build/80754af9/zipp_1625570634446/work
