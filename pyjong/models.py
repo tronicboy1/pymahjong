@@ -59,7 +59,7 @@ class GameUpdates(db.Model):
 
     id = db.Column(db.Integer,primary_key=True)
 
-    date = db.Column(db.DateTime,nullable=False,default=datetime.now(pytz.timezone('Asia/Tokyo')))
+    date = db.Column(db.DateTime,nullable=False,default=datetime.now)
     text = db.Column(db.Text,nullable=False)
 
     def __init__(self,text,user_id):
