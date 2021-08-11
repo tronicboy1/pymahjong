@@ -3,6 +3,7 @@ from flask_login import UserMixin,current_user
 from datetime import datetime
 from sqlalchemy import desc
 from flask import session
+import pytz
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -58,7 +59,7 @@ class GameUpdates(db.Model):
 
     id = db.Column(db.Integer,primary_key=True)
 
-    date = db.Column(db.DateTime,nullable=False,default=datetime.now)
+    date = db.Column(db.DateTime,nullable=False,default=datetime.now(pytz.timezone('Asia/Tokyo')))
     text = db.Column(db.Text,nullable=False)
 
     def __init__(self,text,user_id):
