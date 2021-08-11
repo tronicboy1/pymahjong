@@ -4,11 +4,18 @@ from flask_login import current_user
 from flask import session
 from time import time
 
+#dictionary for list of online format: {'username':login time}
+login_times = dict()
+
 #information to join room will be held in session
 #function to join a room provided a users session data
+@socketio.on('online')
+def online_update(username):
+    login_times[username] = int(time())
+
+
 @socketio.on('joined', namespace='/main/game')
 def joined(message):
-
     room = session.get('room',None)
     join_room(room)
     emit('status', {'msg': session['username'] + 'がチャットルームに入りました'}, room=room)
