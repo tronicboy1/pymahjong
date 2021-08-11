@@ -184,7 +184,7 @@ def get_friends_list(session_username):
             friend_info = UserData.query.filter_by(username=friend).first()
             try:
                 #add online time if time since update is less than 5 minutes
-                if (int(time()) - login_times[friend]) < 300:
+                if (int(time()) - login_times[friend]) < 1800:
                     online = 'オンライン'
                 else:
                     online = 'オフライン'
