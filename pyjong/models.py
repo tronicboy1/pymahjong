@@ -3,6 +3,9 @@ from flask_login import UserMixin,current_user
 from datetime import datetime
 from sqlalchemy import desc
 from flask import session
+import pytz
+from pyjong.apps.socketioapps.chat import login_times
+from time import time
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -175,6 +178,21 @@ def get_new_requests(session_username):
 
 #retrieve list of users friends
 def get_friends_list(session_username):
+    #function to add all stats to friend_stats dict value
+    def add_stats(friends_list_stat):
+        for friend in friends_list_stat:
+            friend_info = UserData.query.filter_by(username=friend).first()
+            try:
+                #add online time if time since update is less than 5 minutes
+                if (int(time()) - login_times[friend]) < 300:
+                    online = 'オンライン'
+                else:
+                    online = 'オフライン'
+            except:
+                online = 'オフライン'
+            session['friend_stats'].append([friend,online,friend_info.kyoku_win_count,friend_info.game_win_count,friend_info.points])
+
+
     current_usr = UserData.query.filter_by(username=session_username).first()
     friends_list = eval(current_usr.friends_list)
     session['friends'] = friends_list
@@ -186,15 +204,14 @@ def get_friends_list(session_username):
         session['has_friends'] = True
         #retrieve friend stats
         session['friend_stats'] = list()
-        for friend in friends_list_stat:
-            friend_info = UserData.query.filter_by(username=friend).first()
-            session['friend_stats'].append([friend,friend_info.kyoku_win_count,friend_info.game_win_count,friend_info.points])
+        add_stats(friends_list_stat)
+
     else:
         session['has_friends'] = False
         session['friend_stats'] = list()
-        for friend in friends_list_stat:
-            friend_info = UserData.query.filter_by(username=friend).first()
-            session['friend_stats'].append([friend,friend_info.kyoku_win_count,friend_info.game_win_count,friend_info.points])
+        add_stats(friends_list_stat)
+
+
 
 
 #call username and retrieve invites. invites retrieved will be transferred to session memory and deleted form database

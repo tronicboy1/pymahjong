@@ -59,6 +59,7 @@
   <h3 class="pb-2">友達の情報</h3>
   <div class="row border bg-secondary">
     <div class="col">ユーザーネーム</div>
+    <div class="col">状態</div>
     <div class="col">局勝利数</div>
     <div class="col">ゲーム勝利数</div>
     <div class="col">獲得ポイント</div>
@@ -67,7 +68,13 @@
   {% for row in session['friend_stats'] %}
 <div class="row border">
   {% for cell in row %}
+    {% if cell == 'オンライン' %}
+    <div class="col bg-dark text-success"><strong>{{cell}}</strong></div>
+    {% elif cell == 'オフライン' %}
+    <div class="col bg-dark text-danger"><strong>{{cell}}</strong></div>
+    {% else %}
     <div class="col bg-dark">{{cell}}</div>
+    {% endif %}
     {% endfor %}
 </div>
   {% endfor %}
@@ -104,7 +111,20 @@
 
 <p class="relative-bottom p-3 text-muted">注意：招待と友達リクエストはログアウトする時に消えるので、ログアウトする前にしっかり確認してくださいね。</p>
 
+<script type="text/javascript">
+var socket;
+var protocol = window.location.protocol;
+// $('#p1-input').hide()
+// $('#gamebuttons').hide()
 
+$(document).ready(function(){
+    socket = io.connect(protocol + '//' + document.domain + ':' + location.port);
+    socket.on('connect', function() {
+        socket.emit('online', '{{current_user.username}}');
+        console.log('online');
+    });
+  });
+</script>
 
 </div>
 
