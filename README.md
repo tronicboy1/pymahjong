@@ -2,7 +2,7 @@ About this Project
 __________________________
 
 This is an online mahjong application experimenting with Flask-SocketIO to allow communication between server and user in realtime to conduct multiplayer games.
-The GUI and text of this project are all written in Japanese. Most of the terms used referring to MahJong concepts are Japanese. 
+The GUI and text of this project are all written in Japanese. Most of the terms used referring to MahJong concepts are Japanese.
 
 Built with:
 1. Flask
@@ -43,6 +43,17 @@ Steps for Heroku:
   $ git commit -am "YOUR NOTE HERE"
   $ git push heroku master
 12. Then you should have this app running!
+
+Steps for Google Cloud
+1. Create a new Project in Google Cloud
+2. Open console
+3. Clone this git using git cli
+  $ git https://github.com/inoueaus/pymahjong/ -b google-cloud-version
+4. cd to the cloned repository
+  $ cd pymahjong
+5. Deploy app using gcloud
+  $ gcloud app deploy
+6. You're good to go!
 
 
 Usage
