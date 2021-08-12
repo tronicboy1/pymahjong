@@ -151,13 +151,13 @@ class Game():
     def change_kazamuki(self):
         if self.kazamuki == 3:
             self.game_on = False #end game if 16kyoku played through
-            
+
         else:
             self.kazamuki += 1
 
     def oya_gime(self,winner_check=False):
         if winner_check:
-            if self.kyoku.winner != None:
+            if self.kyoku.winner == None or self.winner == self.player_dict[self.oya]:
                 emit('gameupdate',{'msg':f'{self.player_dict[self.oya].name}が親を続けます。'},room=session['room'])
             else:
                 if self.oya == 3:
