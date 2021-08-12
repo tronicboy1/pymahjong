@@ -58,9 +58,9 @@ class Kyoku():
         haichi_dic = {0:(0,1,2,3),1:(1,2,3,0),2:(2,3,0,1),3:(3,0,1,2)}
         haichi = haichi_dic[oya]
         for i,player in enumerate(haichi):
-            bg = Image.new('RGB',(104,104),(255,255,255))
+            bg = Image.new('RGB',(110,110),(255,255,255))
             img = Image.open(basedir+path[i])
-            bg.paste(img,(2,2))
+            bg.paste(img,(5,5))
             img = bg.rotate(rotation[player],expand=True)
             self.board_pic.paste(img.resize((40,40)),jikaze_coord[player])
             self.player_dict[player].jikaze = i

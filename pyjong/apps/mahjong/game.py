@@ -154,20 +154,31 @@ class Game():
         else:
             self.kazamuki += 1
 
-    def oya_gime(self):
-        self.oya = 0
-        emit('gameupdate',{'msg':'サイコロを振ります。'},room=session['room'])
-        socketio.sleep(1)
-        saikoro_result = random.randint(1,6)
-        emit('gameupdate',{'msg':f'{saikoro_result}が出ました！'},room=session['room'])
-        socketio.sleep(1)
-        for n in range(0,saikoro_result):
-            if self.oya == 3:
-                self.oya = 0
+    def oya_gime(self,winner_check=False):
+        if winner_check:
+            if self.kyoku.winner != None:
+                emit('gameupdate',{'msg':f'{self.player_dict[self.oya].name}が親を続けます。'},room=session['room'])
             else:
-                self.oya += 1
-        emit('gameupdate',{'msg':f'{self.player_dict[self.oya].name}が親になりました！'},room=session['room'])
-        socketio.sleep(1)
+                if self.oya == 3:
+                    self.oya = 0
+                else:
+                    self.oya += 1
+                emit('gameupdate',{'msg':f'{self.player_dict[self.oya].name}が親になりました！'},room=session['room'])
+        else:
+            self.oya = 0
+            emit('gameupdate',{'msg':'サイコロを振ります。'},room=session['room'])
+            socketio.sleep(1)
+            saikoro_result = random.randint(1,6)
+            emit('gameupdate',{'msg':f'{saikoro_result}が出ました！'},room=session['room'])
+            socketio.sleep(1)
+            for n in range(0,saikoro_result):
+                if self.oya == 3:
+                    self.oya = 0
+                else:
+                    self.oya += 1
+            emit('gameupdate',{'msg':f'{self.player_dict[self.oya].name}が親になりました！'},room=session['room'])
+            socketio.sleep(1)
+
 
     def oya_koutai(self):
         if self.oya == 3:
@@ -669,5 +680,5 @@ class Game():
         for player in self.player_dict.values():
             player.clear()
         #reset kyoku here
-        self.oya_gime()
+        self.oya_gime(True)
         self.kyoku = Kyoku(self.player1,self.player2,self.player3,self.player4,bakaze=self.kazamuki,oya=self.oya)

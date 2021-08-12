@@ -345,7 +345,6 @@ class Player():
                 self.sutehai()
                 room_dict[session['room']][0].kyoku.board_gui()
                 socketio.sleep(1)
-                print('computer ponhai:',self.pon_hai)
                 return True
 
     #only executed when player inputs yes
@@ -754,8 +753,6 @@ class Player():
             if count == 2 and hai not in self.can_pon_hai:
                 self.can_pon_hai.append(hai)
 
-        print('can chi hai',[hai.id for hai in self.can_chi_hai])
-        print('can pon hai',[hai.id for hai in self.can_pon_hai])
 
     def can_ron_check(self,ron_pai):
         def sanshokudoujun_check(mentuhai):
