@@ -142,7 +142,7 @@ class Kyoku():
             except:
                 pass
             if self.player2.is_riichi:
-                self.board_pic.paste(self.senbou.rotate(90,expand=True),(580,270))
+                self.board_pic.paste(self.senbou.rotate(90,expand=True),(580,250))
 
             #player3
             self.board_pic.paste(self.player3.kawa_pic_gen().resize((180,200)).rotate(180,expand=True),(420,10))
@@ -151,7 +151,7 @@ class Kyoku():
             except:
                 pass
             if self.player3.is_riichi:
-                self.board_pic.paste(self.senbou.rotate(180,expand=True),(450,210))
+                self.board_pic.paste(self.senbou.rotate(180,expand=True),(450,250))
 
             #player4
             self.board_pic.paste(self.player4.kawa_pic_gen().resize((180,200)).rotate(270,expand=True),(10,200))
