@@ -42,6 +42,7 @@ class Kyoku():
         self.kyoku_on = True #use this to end kyoku when winner is declared
         self.winner = None
         self.board_pic = Image.new('RGB',(1000,600),(31,61,12))
+        self.board_pic.paste(Image.new('RGB',(150,150),(148,107,69)),(425,225))
         self.senbou = Image.open(basedir+'senbou.jpeg').reduce(3)
         self.riichi_turn_count = 0
         self.turn_count = 0
@@ -49,7 +50,21 @@ class Kyoku():
         self.possible_chankan = False
         self.possible_rinshan = False
 
-        self.board_pic.paste(self.bakaze.resize((30,50)),(485,275))
+        self.board_pic.paste(self.bakaze.resize((50,50)),(475,275))
+        #add jikaze hai to board
+        jikaze_coord = {0:(480,330),1:(530,280),2:(480,230),3:(430,280)}
+        rotation = {0:0,1:90,2:180,3:270}
+        path = {0:'ton_jikaze.jpg',1:'nan_jikaze.jpg',2:'sha_jikaze.jpg',3:'pe_jikaze.jpg'}
+        haichi_dic = {0:(0,1,2,3),1:(1,2,3,0),2:(2,3,0,1),3:(3,0,1,2)}
+        haichi = haichi_dic[oya]
+        for i,player in enumerate(haichi):
+            bg = Image.new('RGB',(104,104),(255,255,255))
+            img = Image.open(basedir+path[i])
+            bg.paste(img,(2,2))
+            img = bg.rotate(rotation[player],expand=True)
+            self.board_pic.paste(img.resize((40,40)),jikaze_coord[player])
+            self.player_dict[player].jikaze = i
+
 
     def next_player(self):
         if self.turn == 3:
@@ -347,6 +362,7 @@ class Kyoku():
 
     def player_turn(self):
         #run only if new mochihai is available
+        print('jikaze:',self.current_player.jikaze)
         if self.new_mochihai():
             self.current_player.tenpai_check(not_turn=True)
             if self.current_player.is_computer == False:

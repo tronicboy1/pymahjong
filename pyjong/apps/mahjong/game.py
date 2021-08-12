@@ -363,7 +363,7 @@ class Game():
         if winner.is_tumo_agari and monzen: #monzen tumo check
             han += 1
             emit('gameupdate',{'msg':'門前ツモ！'},room=session['room'])
-        for yaku_hai in (Hai(0,bakaze),Hai(0,4),Hai(0,5),Hai(0,6)): #yakuhai check
+        for yaku_hai in (Hai(0,bakaze),Hai(0,winner.jikaze),Hai(0,4),Hai(0,5),Hai(0,6)): #yakuhai check
             for mentu in winner.mentuhai:
                 if yaku_hai in mentu:
                     han += 1

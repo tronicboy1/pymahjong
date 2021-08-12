@@ -42,6 +42,7 @@ class Player():
         self.is_ron = False
         self.ron_hai = None
         self.possible_rinshan = False
+        self.jikaze = 0
 
     def clear(self):
         self.tehai.clear()
@@ -315,7 +316,7 @@ class Player():
         else:
             if self.is_tenpatteru == True:
                 pass
-            elif self.pon_hai in (Hai(0,4),Hai(0,5),Hai(0,6)):
+            elif pon_hai in (Hai(0,4),Hai(0,5),Hai(0,6)):
                 self.tehai.append(pon_hai)
                 self.tenpai_check(not_turn=True)
                 for mentu in self.mentuhai: #add pon mentu into pon hai
@@ -330,7 +331,7 @@ class Player():
                 room_dict[session['room']][0].kyoku.board_gui()
                 socketio.sleep(1)
                 return True
-            elif pon_hai:
+            elif len(self.pon_hai) > 0:
                 self.tehai.append(pon_hai)
                 self.tenpai_check(not_turn=True)
                 for mentu in self.mentuhai: #add pon mentu into pon hai
@@ -367,7 +368,7 @@ class Player():
         else:
             if self.is_tenpatteru == True:
                 pass
-            elif self.pon_hai == 0:
+            elif len(self.pon_hai) > 0:
                 self.tehai.append(chi_hai)
                 #remove hai from other players kawa
                 room_dict[session['room']][0].kyoku.ponkanchi_start_player.kawa.pop(-1)
@@ -832,7 +833,7 @@ class Player():
                     ron_new_mentu.remove(hai)
         ron_mentuhai.append(ron_new_mentu)
 
-        for yaku_hai in (Hai(0,room_dict[session['room']][0].kazamuki),Hai(0,4),Hai(0,5),Hai(0,6)): #yakuhai check
+        for yaku_hai in (Hai(0,room_dict[session['room']][0].kazamuki),Hai(0,self.jikaze),Hai(0,4),Hai(0,5),Hai(0,6)): #yakuhai check
             for mentu in ron_mentuhai:
                 if yaku_hai in mentu:
                     return True
