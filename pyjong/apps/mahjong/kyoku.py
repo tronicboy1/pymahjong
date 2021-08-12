@@ -352,7 +352,6 @@ class Kyoku():
         #only change player once if kanchipon action
         action = self.start_pon_kan_chi(sutehai)
         if action:
-            print('action')
             self.kanchipon_with_player_change(self.current_player.kawa[-1])
         #do not go to next player unless in 'cycle', stop for user input
         elif room_dict[session['room']][1] == 'cycle' and self.kyoku_on:
@@ -362,7 +361,7 @@ class Kyoku():
 
     def player_turn(self):
         #run only if new mochihai is available
-        print('jikaze:',self.current_player.jikaze)
+
         if self.new_mochihai():
             self.current_player.tenpai_check(not_turn=True)
             if self.current_player.is_computer == False:
@@ -518,7 +517,6 @@ class Kyoku():
                         room_dict[session['room']][1] = 'kan_cycle'
                         self.kan_turn()
                         room_dict[session['room']][1] = 'cycle'
-                        print(f'after kan execution player: {self.current_player.name}')
                         #use this variable to check for chankan in ron check following kan
                         self.possible_chankan = True
                         return True

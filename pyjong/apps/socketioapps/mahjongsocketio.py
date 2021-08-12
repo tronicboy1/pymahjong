@@ -111,7 +111,6 @@ def gamecheck():
 @socketio.on('gamecontrol',namespace='/main/game')
 def gamecontrol(choice):
     choice = choice['msg'].upper()
-    print(choice)
     #check what the next input type will be
     if room_dict[session['room']][1] == 'kyokustart_yesno':
         if choice in ('Y','N'):
@@ -240,7 +239,6 @@ def gamecontrol(choice):
                 room_dict[session['room']][0].kyoku.board_gui(False,True)
                 emit('gameupdate',{'msg':'{}、捨て牌を入力してください。'.format(room_dict[session['room']][0].kyoku.current_player.name)},namespace='/main/game')
                 room_dict[session['room']][1] = 'pon_sutehai'
-                print('pon choice yes')
 
             else:
                 kanchiponron_no_input()
@@ -299,7 +297,6 @@ def gamecontrol(choice):
             emit('gameupdate',{'msg':'不適切な入力がありました。'},namespace='/main/game')
     #user input for riichi
     elif room_dict[session['room']][1] == 'riichi_yesno':
-        print('riichi input:',choice)
         if choice in ('Y','N'):
             if choice == 'Y':
                 new_game_update(text=f"{session['username']}がリーチしました！")
