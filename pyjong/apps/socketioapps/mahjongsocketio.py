@@ -178,6 +178,12 @@ def gamecontrol(choice):
     elif room_dict[session['room']][1] == 'newkyoku_yesno':
             if choice in ('Y','N'):
                 if choice == 'Y':
+                    #handling for 1 player mode
+                    if session['players'] == 1:
+                        add_game_results(room_dict[session['room']][0],1)
+                    #handling for 2 player mode
+                    elif session['players'] == 2:
+                        add_game_results(room_dict[session['room']][0],2)
                     room_dict[session['room']][0].kyoku_summary_choice('Y')
                     room_dict[session['room']][0].kyoku_suu_change()
                     if room_dict[session['room']][0].game_on:
