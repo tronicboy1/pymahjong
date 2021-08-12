@@ -100,9 +100,18 @@ class Kyoku():
             emit(f'p{player_id}-mochihai',{'img':byte_arr},broadcast=True,namespace='/main/game',room=session['room'])
 
         def send_board(player_id=1):
+            #set turn back once
+            if self.turn == 0:
+                ind_turn = 3
+            else:
+                ind_turn = self.turn - 1
+            board = self.board_pic.copy()
+            draw = ImageDraw.Draw(board)
+            indicator_coord = {0:(400,580,600,600),1:(980,200,1000,400),2:(400,0,600,20),3:(0,200,20,400)}
+            draw.rounded_rectangle(indicator_coord[ind_turn],fill=(150,0,0),radius=8)
             if player_id == 1:
                 byte_arr = io.BytesIO()
-                self.board_pic.save(byte_arr,format='jpeg')
+                board.save(byte_arr,format='jpeg')
                 byte_arr = byte_arr.getvalue()
                 emit('p1-board_gui',{'img':byte_arr},broadcast=True,namespace='/main/game',room=session['room'])
 
@@ -110,7 +119,7 @@ class Kyoku():
                 #player 2 gui Emit
             elif player_id == 2:
                 byte_arr = io.BytesIO()
-                rotated_board = self.board_pic.rotate(180)
+                rotated_board = board.rotate(180)
                 rotated_board.save(byte_arr,format='jpeg')
                 byte_arr = byte_arr.getvalue()
                 emit('p2-guiimg',{'img':byte_arr},broadcast=True,namespace='/main/game',room=session['room'])
@@ -124,7 +133,7 @@ class Kyoku():
             except:
                 pass
             if self.player1.is_riichi:
-                self.board_pic.paste(self.senbou,(450,350))
+                self.board_pic.paste(self.senbou,(450,380))
 
             #Player2
             self.board_pic.paste(self.player2.kawa_pic_gen().resize((180,200)).rotate(90,expand=True),(790,200))
@@ -133,7 +142,7 @@ class Kyoku():
             except:
                 pass
             if self.player2.is_riichi:
-                self.board_pic.paste(self.senbou.rotate(90,expand=True),(750,270))
+                self.board_pic.paste(self.senbou.rotate(90,expand=True),(580,270))
 
             #player3
             self.board_pic.paste(self.player3.kawa_pic_gen().resize((180,200)).rotate(180,expand=True),(420,10))
@@ -142,7 +151,7 @@ class Kyoku():
             except:
                 pass
             if self.player3.is_riichi:
-                self.board_pic.paste(self.senbou.rotate(180,expand=True),(450,270))
+                self.board_pic.paste(self.senbou.rotate(180,expand=True),(450,210))
 
             #player4
             self.board_pic.paste(self.player4.kawa_pic_gen().resize((180,200)).rotate(270,expand=True),(10,200))
@@ -151,7 +160,7 @@ class Kyoku():
             except:
                 pass
             if self.player4.is_riichi:
-                self.board_pic.paste(self.senbou.rotate(270,expand=True),(340,270))
+                self.board_pic.paste(self.senbou.rotate(270,expand=True),(400,270))
 
 
         #update kawa for all players

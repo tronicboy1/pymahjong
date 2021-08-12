@@ -3,7 +3,7 @@ from pyjong import socketio,room_dict,room_players,db
 from flask_login import current_user
 from pyjong.models import UserData,new_game_update
 from flask import session,redirect,flash,url_for
-from time import sleep
+from time import time
 
 
 
@@ -11,6 +11,8 @@ from time import sleep
 #room dict is used in Kyoku so import must be done after creation
 from pyjong.apps.mahjong.yama import Yama
 from pyjong.apps.mahjong.game import Game
+#import time dict to update online status
+from pyjong.apps.socketioapps.chat import login_times
 
 #################################################
 #DATABASE FUNCTIONS
@@ -60,7 +62,8 @@ def add_game_results(game,players):
 
 def cycle_to_human():
     #changed to 'cycle' key so cycler stops whenever user input is necessary
-
+    room_dict[session['room']][0].kyoku.board_gui()
+    socketio.sleep(1.5)
     while room_dict[session['room']][1] == 'cycle':
         room_dict[session['room']][0].kyoku.player_turn()
         room_dict[session['room']][0].kyoku.board_gui()
@@ -110,6 +113,8 @@ def gamecheck():
 
 @socketio.on('gamecontrol',namespace='/main/game')
 def gamecontrol(choice):
+    #update online status
+    login_times[current_user.username] = int(time())
     choice = choice['msg'].upper()
     #check what the next input type will be
     if room_dict[session['room']][1] == 'kyokustart_yesno':

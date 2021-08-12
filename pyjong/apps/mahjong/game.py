@@ -157,7 +157,7 @@ class Game():
 
     def oya_gime(self,winner_check=False):
         if winner_check:
-            if self.kyoku.winner == None or self.winner == self.player_dict[self.oya]:
+            if self.kyoku.winner == None or self.kyoku.winner == self.player_dict[self.oya]:
                 emit('gameupdate',{'msg':f'{self.player_dict[self.oya].name}が親を続けます。'},room=session['room'])
             else:
                 if self.oya == 3:
@@ -377,6 +377,9 @@ class Game():
             emit('gameupdate',{'msg':'門前ツモ！'},room=session['room'])
         for yaku_hai in (Hai(0,bakaze),Hai(0,winner.jikaze),Hai(0,4),Hai(0,5),Hai(0,6)): #yakuhai check
             for mentu in winner.mentuhai:
+                if Hai(0,bakaze) in mentu and Hai(0,winner.jikaze) in mentu:
+                    han += 2
+                    emit('gameupdate',{'msg':'場風と自風の役牌！'},room=session['room'])
                 if yaku_hai in mentu:
                     han += 1
                     emit('gameupdate',{'msg':'役牌！'},room=session['room'])

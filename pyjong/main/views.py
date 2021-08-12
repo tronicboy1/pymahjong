@@ -2,7 +2,7 @@ from flask import Blueprint,render_template,redirect,url_for,flash,session
 from flask_login import login_required,current_user
 from pyjong import db,room_players
 from pyjong.models import UserData,retrieve_game_updates,add_friend,delete_friend,send_request,get_new_requests,get_friends_list,get_invites,send_invite
-from pyjong.main.forms import FriendRequest,AcceptFriendRequest,DeleteFriend,InviteFriend,AcceptInvite,PlaySolo
+from pyjong.main.forms import FriendRequest,AcceptFriendRequest,DeleteFriend,InviteFriend,AcceptInvite,PlaySolo,LeaveRoom
 import datetime
 from time import time
 
@@ -51,20 +51,27 @@ def add_invites_to_form(form):
 def info():
     return render_template('info.html')
 
+@main_blueprint.route('/leaveroom',methods=['POST','GET'])
+def leaveroom():
+    session['players'] = 1
+    session['in_room'] = False
+    return redirect(url_for('main.friends'))
+
 @main_blueprint.route('/game',methods=['GET','POST'])
 @login_required
 def game():
-
-
     #forms
     form = InviteFriend()
     form = add_friends_to_form(form)
     solo_form = PlaySolo()
+    leaveroom_form = LeaveRoom()
+
 
     if session['in_room']:
         name = session['username']
         room = session['room']
-        return render_template('game.html',form=form,name=name,room=room)
+        return render_template('game.html',form=form,name=name,room=room,leaveroom_form=leaveroom_form)
+
 
     #validation check for invite
     if form.validate_on_submit():
@@ -89,7 +96,8 @@ def game():
         room_players[session['room']] = [session['username'],None]
         return redirect(url_for('main.game'))
 
-    return render_template('game.html',form=form,solo_form=solo_form)
+
+    return render_template('game.html',form=form,solo_form=solo_form,leaveroom_form=leaveroom_form)
 
 @main_blueprint.route('/friends',methods=['GET','POST'])
 @login_required

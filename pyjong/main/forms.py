@@ -9,7 +9,10 @@ class InviteFriend(FlaskForm):
 
 #form to start solo played
 class PlaySolo(FlaskForm):
-    submit = SubmitField("一人で麻雀を始める")
+    solo_submit = SubmitField("一人で麻雀を始める")
+
+class LeaveRoom(FlaskForm):
+    leave_submit = SubmitField("雀荘を退室")
 
 #form for users to send friend requests
 class FriendRequest(FlaskForm):

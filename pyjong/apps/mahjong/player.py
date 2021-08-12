@@ -207,7 +207,7 @@ class Player():
             self.kawa.append(sutehai)
             self.tehai.remove(sutehai)
             self.kawa_pic_gen()
-            emit('gameupdate',{'msg':f'{self.name}が{sutehai}を川に捨てました！'},room=session['room'])
+
 
 
     def sutehai_user_input(self,choice):
@@ -216,7 +216,7 @@ class Player():
         self.kawa.append(sutehai)
         self.tehai.remove(sutehai)
         self.kawa_pic_gen()
-        emit('gameupdate',{'msg':f'{self.name}が{sutehai}を川に捨てました！'},room=session['room'])
+        
 
 
 
@@ -329,7 +329,6 @@ class Player():
                 self.tenpai_check(not_turn=True)
                 self.sutehai()
                 room_dict[session['room']][0].kyoku.board_gui()
-                socketio.sleep(1)
                 return True
             elif len(self.pon_hai) > 0:
                 self.tehai.append(pon_hai)
@@ -344,7 +343,6 @@ class Player():
                 self.tenpai_check(not_turn=True)
                 self.sutehai()
                 room_dict[session['room']][0].kyoku.board_gui()
-                socketio.sleep(1)
                 return True
 
     #only executed when player inputs yes
