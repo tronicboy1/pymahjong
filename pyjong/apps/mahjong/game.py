@@ -151,6 +151,7 @@ class Game():
     def change_kazamuki(self):
         if self.kazamuki == 3:
             self.game_on = False #end game if 16kyoku played through
+            
         else:
             self.kazamuki += 1
 

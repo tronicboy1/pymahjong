@@ -176,19 +176,33 @@ def gamecontrol(choice):
                 if choice == 'Y':
                     room_dict[session['room']][0].kyoku_summary_choice('Y')
                     room_dict[session['room']][0].kyoku_suu_change()
-                    room_dict[session['room']][0].kyoku.kyoku_start()
-                    cycle_to_human()
+                    if room_dict[session['room']][0].game_on:
+                        room_dict[session['room']][0].kyoku.kyoku_start()
+                        cycle_to_human()
+                    #record scores if game at end
+                    else:
+                        #handling for 1 player mode
+                        if session['players'] == 1:
+                            add_game_results(room_dict[session['room']][0],1)
+                            flash("プレーヤー情報が更新されました！","alert-success")
+                            redirect(url_for('main.friends'))
+                        #handling for 2 player mode
+                        elif session['players'] == 2:
+                            add_game_results(room_dict[session['room']][0],2)
+                            flash("プレーヤー情報が更新されました！","alert-success")
+                            redirect(url_for('main.friends'))
+
                 else:
                     #handling for 1 player mode
                     if session['players'] == 1:
                         add_game_results(room_dict[session['room']][0],1)
                         flash("プレーヤー情報が更新されました！","alert-success")
-                        return redirect(url_for('main.friends'))
+                        redirect(url_for('main.friends'))
                     #handling for 2 player mode
                     elif session['players'] == 2:
                         add_game_results(room_dict[session['room']][0],2)
                         flash("プレーヤー情報が更新されました！","alert-success")
-                        return redirect(url_for('main.friends'))
+                        redirect(url_for('main.friends'))
 
                     #will add features to store game data to database here
 
