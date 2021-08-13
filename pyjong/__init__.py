@@ -31,7 +31,7 @@ app.config['SECRET_KEY'] = 'mykey'
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir,'data.sqlite')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://pwgpahkpakluol:5501fe5faa5b3f44b4bf4225aad1eead65a137f9a01cc8863d5966930462e942@ec2-44-196-146-152.compute-1.amazonaws.com:5432/d3peihanv904u3'
 # mysql+pymysql://<db_user>:<db_pass>@/<db_name>?unix_socket=<socket_path>/<cloud_sql_instance_name>
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Downhillski19@pyjdb?unix_socket=/cloudsql/symmetric-host-322721:asia-northeast1:pyjdb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Downhillski19@pyjong?unix_socket=/cloudsql/pyjong:asia-northeast1:pyjong'
 
 
 
