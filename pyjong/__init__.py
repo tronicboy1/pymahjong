@@ -29,7 +29,22 @@ app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SECRET_KEY'] = 'mykey'
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir,'data.sqlite')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://pwgpahkpakluol:5501fe5faa5b3f44b4bf4225aad1eead65a137f9a01cc8863d5966930462e942@ec2-44-196-146-152.compute-1.amazonaws.com:5432/d3peihanv904u3'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://pwgpahkpakluol:5501fe5faa5b3f44b4bf4225aad1eead65a137f9a01cc8863d5966930462e942@ec2-44-196-146-152.compute-1.amazonaws.com:5432/d3peihanv904u3'
+db_user = os.environ["DB_USER"]
+db_pass = os.environ["DB_PASS"]
+db_name = os.environ["DB_NAME"]
+db_socket_dir = os.environ.get("DB_SOCKET_DIR", "/cloudsql")
+cloud_sql_connection_name = os.environ["CLOUD_SQL_CONNECTION_NAME"]
+app.config['SQLALCHEMY_DATABASE_URI'] = sqlalchemy.engine.url.URL.create(
+        drivername="postgresql+pg8000",
+        username=db_user,  # e.g. "my-database-user"
+        password=db_pass,  # e.g. "my-database-password"
+        database=db_name,  # e.g. "my-database-name"
+        query={"unix_sock": "{}/{}/.s.PGSQL.5432".format(db_socket_dir,cloud_sql_connection_name)})
+
+
+
+
 #keep tracking figures off until necessary
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 #create database object

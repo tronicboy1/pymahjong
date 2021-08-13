@@ -27,6 +27,13 @@ runtime_config:
 manual_scaling:
   instances: 1
 
+env_variables:
+  CLOUD_SQL_CONNECTION_NAME: symmetric-host-322721:asia-northeast1:pyjongdb
+  DB_USER: root
+  DB_PASS: Downhillski19
+  DB_NAME: pyjongdb
+
+
 
 
 # For applications which can take advantage of session affinity
