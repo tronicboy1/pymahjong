@@ -28,7 +28,7 @@ manual_scaling:
   instances: 1
 
 beta_settings:
-  cloud_sql_instances: symmetric-host-322721:asia-northeast1:pyjdb=tcp:3306
+  cloud_sql_instances: symmetric-host-322721:asia-northeast1:pyjdb
 
 
 
