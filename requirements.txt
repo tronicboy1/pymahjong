@@ -25,7 +25,7 @@ Jinja2
 Mako==1.1.4
 MarkupSafe
 Pillow==8.3.1
-psycopg2
+Psycopg2-binary==2.8.6
 pytz
 pycparser==2.20
 python-dateutil==2.8.2
