@@ -8,6 +8,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
 from flask_socketio import SocketIO
+import psycopg2 as pg2
 
 
 #create login manager object
@@ -33,7 +34,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://pwgpahkpakluol:5501fe5faa5
 # mysql+pymysql://<db_user>:<db_pass>@/<db_name>?unix_socket=<socket_path>/<cloud_sql_instance_name>
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Downhillski19@pyjong?unix_socket=/cloudsql/pyjong:asia-northeast1:pyjong'
 
-
+conn = pg2.connect(user='master',password='Downhillski19',host='/cloudsql/pyjong:asia-northeast1:pyjong-postgre')
 
 
 #keep tracking figures off until necessary

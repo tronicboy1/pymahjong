@@ -27,7 +27,8 @@ runtime_config:
 manual_scaling:
   instances: 1
 
-
+beta_settings:
+  cloud_sql_instances: pyjong:asia-northeast1:pyjong-postgre
 
 # For applications which can take advantage of session affinity
 # (where the load balancer will attempt to route multiple connections from
