@@ -34,8 +34,11 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://pwgpahkpakluol:5501fe5faa5
 # mysql+pymysql://<db_user>:<db_pass>@/<db_name>?unix_socket=<socket_path>/<cloud_sql_instance_name>
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Downhillski19@pyjong?unix_socket=/cloudsql/pyjong:asia-northeast1:pyjong'
 
-conn = pg2.connect(user='master',password='Downhillski19',host='/cloudsql/pyjong:asia-northeast1:pyjong-postgre')
-
+try:
+    conn = pg2.connect(user='root',password='Downhillski19',host='/cloudsql/pyjong:asia-northeast1:pyjong-postgre')
+    print('db connected')
+except:
+    print('db failed')
 
 #keep tracking figures off until necessary
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
