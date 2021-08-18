@@ -404,6 +404,7 @@ class Kyoku():
                     else:
                         pass
                 elif self.current_player.is_riichi == True:
+                    self.current_player.is_ippatu = False
                     self.current_player.kawa.append(self.current_player.mochihai)
                     self.board_gui()
                     sutehai = self.current_player.kawa[-1]
